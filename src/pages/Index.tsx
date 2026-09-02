@@ -199,7 +199,7 @@ const Index = () => {
               {t("homeHeroBadge")}
             </div>
             <h1 style={{ fontSize: isMobile ? "clamp(30px, 7.5vw, 36px)" : "clamp(38px, 5vw, 68px)", fontWeight: 900, lineHeight: isMobile ? 1.05 : 1.03, letterSpacing: "-0.045em", margin: "0 0 16px" }}>
-              {t("homeHeroTitle1")}<br /><br />
+              {t("homeHeroTitle1")}<br />
               {t("homeHeroTitle2Prefix")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeHeroTitle2Em")}</span>
             </h1>
             <p style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, maxWidth: 520, margin: "0 0 22px" }}>
@@ -295,7 +295,7 @@ const Index = () => {
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "auto 1fr", gap: isMobile ? 28 : 48, alignItems: "start", justifyItems: isMobile ? "center" : "start", textAlign: isMobile ? "center" : "left" }}>
           <div style={{ position: "relative", flexShrink: 0 }}>
-            <img src="/founder-farooq.jpg" alt="Farooq Rashid" style={{ width: isMobile ? 160 : 200, height: isMobile ? 210 : 260, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
+            <img src="/founder-farooq.jpg" alt="Farooq Rashid" loading="lazy" decoding="async" width={isMobile ? 160 : 200} height={isMobile ? 210 : 260} style={{ width: isMobile ? 160 : 200, height: isMobile ? 210 : 260, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
             <div style={{ position: "absolute", bottom: -12, right: -12, background: BG, border: "0.5px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px 14px", fontFamily: MONO }}>
               <div style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>40+</div>
               <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>{t("homeFounderYears")}</div>
