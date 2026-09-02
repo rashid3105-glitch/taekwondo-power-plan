@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import { EmailAPIError, sendLovableEmail } from 'npm:@lovable.dev/email-js@0.1.0'
 import {
   DIMENSION_CONTENT,
   LEVEL_CONTENT,
@@ -19,8 +20,8 @@ const json = (body: unknown, status = 200) =>
   })
 
 const SITE = 'https://sportstalent.dk'
-const FROM = 'Farooq Rashid <farooq@sportstalent.dk>'
 const REPLY_TO = 'farooq@sportstalent.dk'
+const SENDER_DOMAIN = 'notify.sportstalent.dk'
 const COMPANY = 'Sportstalent · Farooq Rashid · Danmark'
 
 const GOLD = '#C9A227'
@@ -346,9 +347,16 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 
-  // Kun betroede server-kaldere (service role) må sende rapporter.
+  // Betroede server-kaldere og platformadmins må sende eller gensende rapporter.
   const bearer = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '')
-  if (!bearer || bearer !== serviceKey) return json({ error: 'unauthorized' }, 401)
+  if (!bearer) return json({ error: 'unauthorized' }, 401)
+  if (bearer !== serviceKey) {
+    const authClient = createClient(supabaseUrl, serviceKey)
+    const { data: { user } } = await authClient.auth.getUser(bearer)
+    if (!user) return json({ error: 'unauthorized' }, 401)
+    const { data: isAdmin } = await authClient.rpc('is_admin', { _user_id: user.id })
+    if (!isAdmin) return json({ error: 'forbidden' }, 403)
+  }
 
   // FEATURE FLAG — slået fra ved deploy. Sæt ASSESSMENT_REPORT_ENABLED=true
   // i Project Settings → Secrets, når SPF/DKIM/DMARC er verificeret.
@@ -358,10 +366,10 @@ Deno.serve(async (req) => {
     return json({ success: false, reason: 'disabled' })
   }
 
-  const resendKey = Deno.env.get('RESEND_API_KEY')
+  const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')
   const tokenSecret = Deno.env.get('ASSESSMENT_TOKEN_SECRET')
-  if (!resendKey || !tokenSecret) {
-    console.error('send-assessment-report: missing RESEND_API_KEY or ASSESSMENT_TOKEN_SECRET')
+  if (!lovableApiKey || !tokenSecret) {
+    console.error('send-assessment-report: missing LOVABLE_API_KEY or ASSESSMENT_TOKEN_SECRET')
     return json({ error: 'not_configured' }, 500)
   }
 
@@ -401,27 +409,30 @@ Deno.serve(async (req) => {
   const html = buildHtml(row as Row, unsubUrl, loc)
   const text = buildText(row as Row, unsubUrl, loc)
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: FROM,
-      reply_to: REPLY_TO,
-      to: [row.email],
-      subject,
-      html,
-      text,
-      headers: { 'List-Unsubscribe': `<${unsubUrl}>` },
-    }),
-  })
-
-  if (!res.ok) {
-    const errBody = await res.text()
-    console.error(`send-assessment-report: Resend failed [${res.status}]: ${errBody}`)
-    return json({ error: 'send_failed', status: res.status, details: errBody }, res.status)
+  try {
+    await sendLovableEmail(
+      {
+        to: row.email,
+        from: 'Sportstalent <noreply@sportstalent.dk>',
+        sender_domain: SENDER_DOMAIN,
+        reply_to: REPLY_TO,
+        subject,
+        html,
+        text,
+        purpose: 'transactional',
+        label: 'club-assessment-report',
+        idempotency_key: `club-assessment-report-${row.id}`,
+      },
+      { apiKey: lovableApiKey, sendUrl: Deno.env.get('LOVABLE_SEND_URL') },
+    )
+  } catch (error) {
+    if (error instanceof EmailAPIError && error.code === 'recipient_suppressed') {
+      console.warn('send-assessment-report: recipient suppressed', { id: row.id })
+      return json({ success: false, reason: 'recipient_suppressed' })
+    }
+    const code = error instanceof EmailAPIError ? error.code : 'unknown'
+    console.error('send-assessment-report: managed send failed', { id: row.id, code, error })
+    return json({ error: 'send_failed', code }, 500)
   }
 
   await admin
