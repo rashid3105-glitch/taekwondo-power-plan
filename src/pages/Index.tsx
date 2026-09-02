@@ -337,7 +337,7 @@ const Index = () => {
         </div>
       </section>
 
-      <Chapter n="02" label={t("homeCh2Label")} title={t("homeCh2Title")} />
+      <Chapter n="03" label={t("homeCh2Label")} title={t("homeCh2Title")} />
       <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
           <div>
