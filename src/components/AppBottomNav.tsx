@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Home, Zap, CalendarRange, Heart, Video as VideoIcon, Users, Trophy,
+  Home, Zap, CalendarRange, Heart, Video as VideoIcon, Trophy,
   MessageCircle, User as UserIcon, BookOpen, HelpCircle, Repeat, ClipboardList,
+  CalendarCheck, NotebookPen,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
@@ -92,11 +93,11 @@ export function AppBottomNav() {
 
   const items = coachMode
     ? [
-        { key: "coach-idag", label: t("todayTab") || "I dag", icon: Home, iconClassName: "text-primary", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
+        { key: "coach-home", label: t("navHome") || "Hjem", icon: Home, iconClassName: "text-primary", active: path === "/coach", badge: 0, onClick: () => navigate("/coach") },
         ...(labEnabled
           ? [{ key: "coach-logs", label: t("labLogsNav") || "Logs", icon: ClipboardList, iconClassName: "text-primary", active: path.startsWith("/coach/logs"), badge: logCount, onClick: () => navigate("/coach/logs") }]
           : []),
-        { key: "coach-hold", label: t("coachNav") || "Hold", icon: Users, iconClassName: "text-tab-plan", active: path === "/coach", badge: 0, onClick: () => navigate("/coach") },
+        { key: "coach-fremmoede", label: t("todayTab") || "Fremmøde", icon: CalendarCheck, iconClassName: "text-tab-plan", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
         { key: "coach-staevner", label: t("competitionsTitle") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), badge: 0, onClick: () => navigate("/coach/competitions") },
         chatItem,
         meItem,
@@ -113,12 +114,14 @@ export function AppBottomNav() {
     ...(coachMode
       ? []
       : [
+          { key: "diary", label: t("diary") || "Dagbog", icon: NotebookPen, to: "/diary" },
           { key: "health", label: t("healthNav"), icon: Heart, to: "/health" },
           ...(matchAnalysisEnabled
             ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, to: "/match-analysis/me" }]
             : []),
           { key: "library", label: t("library"), icon: BookOpen, to: "/library" },
         ]),
+
     { key: "profile", label: t("profile") || "Profil", icon: UserIcon, to: "/profile" },
     ...(hasCoachRole
       ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach" }]
