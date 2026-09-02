@@ -374,35 +374,6 @@ const Index = () => {
         </div>
       </section>
 
-      <Chapter n="03" label={t("homeCh3Label")} title={t("homeCh3Title")} />
-      <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <SectionEyebrow>{t("homeFeatEyebrow")}</SectionEyebrow>
-            <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, letterSpacing: "-0.035em", margin: 0 }}>{t("homeFeatTitle")}</h2>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", maxWidth: 500, margin: "16px auto 0" }}>{t("homeFeatSub")}</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>
-            {[
-              { code: "TRAIN.01", title: t("homeFeat1T"), desc: t("homeFeat1D") },
-              { code: "VIDEO.02", title: t("homeFeat2T"), desc: t("homeFeat2D") },
-              { code: "PERF.03", title: t("homeFeat3T"), desc: t("homeFeat3D") },
-              { code: "COMP.04", title: t("homeFeat4T"), desc: t("homeFeat4D") },
-              { code: "MIND.05", title: t("homeFeat5T"), desc: t("homeFeat5D") },
-              { code: "REHAB.06", title: t("homeFeat6T"), desc: t("homeFeat6D") },
-              { code: "CHAT.07", title: t("homeFeat7T"), desc: t("homeFeat7D") },
-              { code: "REPORT.08", title: t("homeFeat8T"), desc: t("homeFeat8D") },
-            ].map((f, i) => (
-              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: isMobile ? "18px 16px" : "22px 20px" }}>
-                <div style={{ fontFamily: MONO, fontSize: 10, color: GOLD, letterSpacing: "0.12em", marginBottom: 12 }}>{f.code}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{f.title}</div>
-                <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <Chapter n="04" label={t("homeCh4Label")} title={t("homeCh4Title")} />
       <section id="how-it-works" style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
         <div style={{ textAlign: "center", marginBottom: 44 }}>
