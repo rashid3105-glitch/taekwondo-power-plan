@@ -236,14 +236,31 @@ const Index = () => {
             </ul>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaStart")}</button>
-              <button onClick={() => scrollTo("how-it-works")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaHow")}</button>
+              <button onClick={() => navigate("/contact")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaDemo")}</button>
+              <button onClick={() => navigate("/klubanalyse")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaAnalysis")}</button>
             </div>
+
+            {founderCreditOk && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <img
+                  src="/founder-farooq.jpg"
+                  alt="Farooq Rashid"
+                  width={40}
+                  height={40}
+                  style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: "0.5px solid rgba(255,255,255,0.12)", display: "block", flexShrink: 0 }}
+                  onError={() => setFounderCreditOk(false)}
+                />
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("homeFounderCredit")}</span>
+              </div>
+            )}
+
             <div style={{ display: "flex", gap: 18, fontSize: 12, color: "rgba(255,255,255,0.62)", flexWrap: "wrap" }}>
               {[t("homeTrust1"), t("homeTrust2"), t("homeTrust3")].map((tt, i) => (
                 <span key={i} style={{ display: "inline-flex", gap: 6 }}><span style={{ color: GOLD }}>✓</span>{tt}</span>
               ))}
             </div>
+            <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.45)", lineHeight: 1.5, maxWidth: 520 }}>{t("homeSportsInline")}</div>
+
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 12 : 16 }}>
