@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { fetchClubStaffIds } from "@/lib/clubStaff";
+
 
 /**
  * Number of today's shared training logs in the active club that no coach has
