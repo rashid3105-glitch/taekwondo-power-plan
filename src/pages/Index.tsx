@@ -37,7 +37,7 @@ const Index = () => {
   const w = useWidth();
   const isMobile = w < 720;
   const isTablet = w >= 720 && w < 1024;
-  const [promoOpen, setPromoOpen] = useState(true);
+  const [founderCreditOk, setFounderCreditOk] = useState(true);
   const native = isNativeApp();
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const Index = () => {
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 24, behavior: "smooth" });
   };
 
   // Cockpit HUD ------------------------------------------------------------
@@ -74,7 +74,7 @@ const Index = () => {
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#3ADB7C", boxShadow: "0 0 8px #3ADB7C" }} />
           {t("homeHudLive")}
         </span>
-        <span>W 34 · MON</span>
+        <span>{t("homeHudExample")}</span>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: 10, marginBottom: 14 }}>
@@ -181,24 +181,6 @@ const Index = () => {
         description={t("homeSeoDesc")}
         canonical="https://sportstalent.dk/"
       />
-
-      {promoOpen && (
-        <div style={{ background: "#101322", borderBottom: "0.5px solid rgba(212,175,55,0.2)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `${isMobile ? 8 : 10}px ${isMobile ? 14 : pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: isMobile ? 11 : 12, color: "rgba(255,255,255,0.85)", position: "relative", lineHeight: 1 }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, lineHeight: 1 }}>
-              <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
-              <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: isMobile ? 10 : 11, lineHeight: 1 }}>{t("homePromoLabel")}</strong>
-              <span style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1 }}>{t("homePromoText")}</span>
-            </span>
-            {!isMobile && (
-              <button onClick={() => navigate("/contact")} style={{ display: "inline-flex", alignItems: "center", lineHeight: 1, background: "transparent", color: GOLD, border: `1px solid ${GOLD}`, borderRadius: 6, padding: "5px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-                {t("homePromoCta")}
-              </button>
-            )}
-            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: isMobile ? 10 : pad, top: "50%", transform: "translateY(-50%)", display: "inline-flex", alignItems: "center", background: "transparent", border: "none", color: "rgba(255,255,255,0.62)", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>×</button>
-          </div>
-        </div>
-      )}
 
       <section style={{ position: "relative", padding: `${isMobile ? 28 : 72}px ${isMobile ? 16 : 32}px ${isMobile ? 36 : 96}px`, overflow: "hidden" }}>
 
