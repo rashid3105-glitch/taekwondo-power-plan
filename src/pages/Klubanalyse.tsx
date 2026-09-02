@@ -242,6 +242,7 @@ export default function Klubanalyse() {
           level: overall,
           weakest: DIMENSIONS_DA[weakestIdx].name,
           strongest: DIMENSIONS_DA[strongestIdx].name,
+          locale: isEn ? "en" : "da",
           website,
         },
       });

@@ -103,6 +103,7 @@ Deno.serve(async (req) => {
   const level = Number(body.level)
   const weakest = String(body.weakest || '').slice(0, 60)
   const strongest = String(body.strongest || '').slice(0, 60)
+  const locale = String(body.locale || 'da').toLowerCase() === 'en' ? 'en' : 'da'
 
   if (!EMAIL_RE.test(email) || email.length > 254) return json({ error: 'invalid_email' }, 400)
   if (!consent) return json({ error: 'consent_required' }, 400)
@@ -138,6 +139,7 @@ Deno.serve(async (req) => {
       level,
       weakest,
       strongest,
+      locale,
       ip_hash: ipHash,
     })
     .select('id')
