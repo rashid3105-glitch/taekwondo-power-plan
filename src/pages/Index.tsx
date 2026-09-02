@@ -263,52 +263,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* ── Any sport ───────────────────────────────────────────── */}
-      <section style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)", background: CARD }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 40 : 64}px ${pad}px` }}>
-          <SectionEyebrow>{t("homeSportsEyebrow")}</SectionEyebrow>
-          <h2 style={{ fontSize: "clamp(22px,3.4vw,34px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.12, margin: "0 0 12px" }}>
-            {t("homeSportsTitle")}
-          </h2>
-          <p style={{ fontSize: isMobile ? 14 : 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.65, maxWidth: 620, margin: "0 0 22px" }}>
-            {t("homeSportsBody")}
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {[
-              { k: "sportTaekwondo", on: true }, { k: "sportKarate", on: true }, { k: "sportKickboxing", on: true }, { k: "sportFitness", on: true },
-              { k: "sportMartialArts", on: false }, { k: "sportHandball", on: false }, { k: "sportFootball", on: false }, { k: "sportSwimming", on: false },
-              { k: "sportAthletics", on: false }, { k: "sportBadminton", on: false }, { k: "sportCycling", on: false }, { k: "sportGymnastics", on: false },
-              { k: "sportVolleyball", on: false }, { k: "sportIceHockey", on: false }, { k: "sportBasketball", on: false },
-            ].map((s) => (
-              <span
-                key={s.k}
-                style={{
-                  padding: isMobile ? "7px 13px" : "8px 16px",
-                  borderRadius: 999,
-                  fontSize: isMobile ? 11 : 12,
-                  fontFamily: MONO,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  border: s.on ? `0.5px solid ${GOLD}` : "0.5px solid rgba(255,255,255,0.14)",
-                  background: s.on ? GOLD : "transparent",
-                  color: s.on ? BG : "rgba(255,255,255,0.7)",
-                  fontWeight: s.on ? 800 : 500,
-                }}
-              >
-                {t(s.k as never)}
-              </span>
-            ))}
-            <span style={{ padding: isMobile ? "7px 13px" : "8px 16px", borderRadius: 999, fontSize: isMobile ? 11 : 12, fontFamily: MONO, letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px dashed rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.5)" }}>
-              {t("sportYours")}
-            </span>
-          </div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 18 }}>{t("homeSportsFootnote")}</div>
-        </div>
-      </section>
-
-
-
       <Chapter n="01" label={t("homeCh1Label")} title={t("homeCh1Title")} />
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
