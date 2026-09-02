@@ -140,8 +140,6 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
           >
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
-              // Red dot marks recently updated sections (new pricing structure).
-              const hasUpdate = l.href === "/priser";
               return (
                 <span
                   key={l.href}
