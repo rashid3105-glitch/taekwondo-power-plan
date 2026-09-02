@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Home, Zap, CalendarRange, Heart, Video as VideoIcon, Users, Trophy,
+  Home, Zap, CalendarRange, Heart, Video as VideoIcon, Trophy,
   MessageCircle, User as UserIcon, BookOpen, HelpCircle, Repeat, ClipboardList,
   CalendarCheck, NotebookPen,
 } from "lucide-react";
@@ -97,7 +97,7 @@ export function AppBottomNav() {
         ...(labEnabled
           ? [{ key: "coach-logs", label: t("labLogsNav") || "Logs", icon: ClipboardList, iconClassName: "text-primary", active: path.startsWith("/coach/logs"), badge: logCount, onClick: () => navigate("/coach/logs") }]
           : []),
-        { key: "coach-fremmoede", label: t("attendanceTitle") || "Fremmøde", icon: CalendarCheck, iconClassName: "text-tab-plan", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
+        { key: "coach-fremmoede", label: t("todayTab") || "Fremmøde", icon: CalendarCheck, iconClassName: "text-tab-plan", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
         { key: "coach-staevner", label: t("competitionsTitle") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), badge: 0, onClick: () => navigate("/coach/competitions") },
         chatItem,
         meItem,
@@ -114,7 +114,7 @@ export function AppBottomNav() {
     ...(coachMode
       ? []
       : [
-          { key: "diary", label: t("diaryTitle") || "Dagbog", icon: NotebookPen, to: "/diary" },
+          { key: "diary", label: t("diary") || "Dagbog", icon: NotebookPen, to: "/diary" },
           { key: "health", label: t("healthNav"), icon: Heart, to: "/health" },
           ...(matchAnalysisEnabled
             ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, to: "/match-analysis/me" }]
