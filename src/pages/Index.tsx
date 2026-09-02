@@ -51,10 +51,8 @@ const Index = () => {
 
   const pad = isMobile ? 18 : 32;
 
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 24, behavior: "smooth" });
-  };
+
+
 
   // Cockpit HUD ------------------------------------------------------------
   const HUD = () => (
