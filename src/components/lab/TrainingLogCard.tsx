@@ -1,9 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Lock, Users, MessageSquare } from "lucide-react";
+import { CheckCircle2, Lock, Users, MessageSquare, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useOfflineDiary } from "@/hooks/useOfflineDiary";
 import { cn } from "@/lib/utils";
+
+const SNOOZE_KEY = "st_training_log_snooze";
+
+/** Reads snooze state: returns the timestamp (ms) the card stays hidden until, or 0. */
+function readSnooze(): number {
+  try {
+    const raw = localStorage.getItem(SNOOZE_KEY);
+    if (!raw) return 0;
+    const until = Number(raw);
+    if (!Number.isFinite(until) || until <= Date.now()) return 0;
+    return until;
+  } catch {
+    return 0;
+  }
+}
+
 
 type Status = "done" | "partial" | "skipped";
 type Audience = "coaches" | "me";
