@@ -1,0 +1,1 @@
+ALTER TABLE public.club_assessments ADD COLUMN IF NOT EXISTS locale text NOT NULL DEFAULT 'da';

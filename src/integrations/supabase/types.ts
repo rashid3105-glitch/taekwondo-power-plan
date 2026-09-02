@@ -640,6 +640,7 @@ export type Database = {
           id: string
           ip_hash: string | null
           level: number | null
+          locale: string
           profile_completed_at: string | null
           report_sent_at: string | null
           role: string | null
@@ -659,6 +660,7 @@ export type Database = {
           id?: string
           ip_hash?: string | null
           level?: number | null
+          locale?: string
           profile_completed_at?: string | null
           report_sent_at?: string | null
           role?: string | null
@@ -678,6 +680,7 @@ export type Database = {
           id?: string
           ip_hash?: string | null
           level?: number | null
+          locale?: string
           profile_completed_at?: string | null
           report_sent_at?: string | null
           role?: string | null
