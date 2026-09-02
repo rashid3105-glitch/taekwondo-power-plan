@@ -588,14 +588,15 @@ const Index = () => {
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 460, margin: "0 auto 32px", lineHeight: 1.65 }}>
             {t("homeCtaBody")}
           </p>
-          <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
+          <button onClick={() => navigate("/contact")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
           <div style={{ marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: MONO, letterSpacing: "0.06em" }}>{t("homeCtaTrust")}</div>
           <div style={{ marginTop: 20, fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
-            Ikke klar til en demo?{" "}
+            {t("homeCtaNotReady")}{" "}
             <button onClick={() => navigate("/klubanalyse")} style={{ background: "none", border: "none", padding: 0, color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>
-              Tag Klubanalysen — 15 spørgsmål om, hvor klubben står
+              {t("homeCtaAnalysisLink")}
             </button>
           </div>
+
         </div>
       </section>
 
