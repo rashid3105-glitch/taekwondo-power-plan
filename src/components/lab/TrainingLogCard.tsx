@@ -275,6 +275,28 @@ export function TrainingLogCard({ isRestDay, sessionLabel, bare }: Props) {
       >
         {saving ? "…" : t("labSend")}
       </button>
+
+      <div className="flex items-center justify-center gap-3 pt-0.5">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          {t("labLater")}
+        </span>
+        <button
+          type="button"
+          onClick={() => snooze(Date.now() + 2 * 60 * 60 * 1000)}
+          className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          {t("labSnooze2h")}
+        </button>
+        <span className="text-muted-foreground/50">·</span>
+        <button
+          type="button"
+          onClick={() => snooze(endOfDay())}
+          className="text-xs font-semibold text-muted-foreground underline-offset-2 hover:underline"
+        >
+          {t("labHideToday")}
+        </button>
+      </div>
+
     </>,
   );
 }
