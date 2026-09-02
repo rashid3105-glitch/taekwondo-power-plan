@@ -164,6 +164,27 @@ export function TrainingLogCard({ isRestDay, sessionLabel, bare }: Props) {
     );
   }
 
+  if (snoozedUntil) {
+    const restOfDay = snoozedUntil >= endOfDay();
+    return wrap(
+      <div className="flex items-center gap-2">
+        <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+        <p className="text-xs text-muted-foreground">
+          {restOfDay ? t("labSnoozedToday") : t("labSnoozed")}
+        </p>
+        <button
+          type="button"
+          onClick={clearSnooze}
+          className="ml-auto text-xs font-bold text-primary"
+        >
+          {t("labUndoSnooze")}
+        </button>
+      </div>,
+    );
+  }
+
+
+
   return wrap(
     <>
       <div>
