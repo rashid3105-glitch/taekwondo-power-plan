@@ -365,12 +365,13 @@ const Index = () => {
             </div>
           </div>
           <div style={{ position: "relative" }}>
-            <img src={coachSittingAsset} alt={t("homeSolImgAlt")} style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
+            <img src={coachSittingAsset} alt={t("homeSolImgAlt")} loading="lazy" width={1200} height={1200} style={{ width: "100%", height: "auto", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
             <div style={{ position: "absolute", bottom: -14, right: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase" }}>{t("homeSolAthletesReady")}</div>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase" }}>{t("homeExamplePrefix")} {t("homeSolAthletesReady")}</div>
               <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginTop: 2 }}>18 / 24</div>
             </div>
           </div>
+
         </div>
       </section>
 
