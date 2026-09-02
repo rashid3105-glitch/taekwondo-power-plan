@@ -199,7 +199,7 @@ const Index = () => {
               {t("homeHeroBadge")}
             </div>
             <h1 style={{ fontSize: isMobile ? "clamp(30px, 7.5vw, 36px)" : "clamp(38px, 5vw, 68px)", fontWeight: 900, lineHeight: isMobile ? 1.05 : 1.03, letterSpacing: "-0.045em", margin: "0 0 16px" }}>
-              {t("homeHeroTitle1")}<br />
+              {t("homeHeroTitle1")}<br /><br />
               {t("homeHeroTitle2Prefix")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeHeroTitle2Em")}</span>
             </h1>
             <p style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, maxWidth: 520, margin: "0 0 22px" }}>
