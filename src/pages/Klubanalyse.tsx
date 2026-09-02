@@ -4,13 +4,122 @@ import { PageMeta } from "@/components/PageMeta";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import {
-  QUESTIONS,
-  DIMENSIONS,
-  LEVELS,
-  ROLES,
+  QUESTIONS as QUESTIONS_DA,
+  DIMENSIONS as DIMENSIONS_DA,
+  LEVELS as LEVELS_DA,
+  ROLES as ROLES_DA,
   computeScores,
   levelForScore,
 } from "@/data/clubAssessment";
+import {
+  QUESTIONS_EN,
+  DIMENSIONS_EN,
+  LEVELS_EN,
+  ROLES_EN,
+} from "@/data/clubAssessmentEn";
+import { useLanguage } from "@/i18n/LanguageContext";
+
+// UI-tekster. Engelsk for locale "en", ellers dansk (som hidtil).
+const COPY = {
+  da: {
+    metaTitle: "Klubanalysen — hvor står jeres klub? | Sportstalent",
+    metaDesc:
+      "15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber.",
+    eyebrow: "KLUBANALYSEN",
+    heroTitle: "15 spørgsmål. Ét ærligt svar på, hvor jeres klub står.",
+    heroP1:
+      "Analysen måler fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning. Klubbens niveau sættes af det svageste led — ikke af gennemsnittet.",
+    heroP2: "Svar på, hvordan det er i dag. Ikke på en god dag. Det tager omkring fem minutter.",
+    start: "Start analysen",
+    back: "← Tilbage",
+    milestoneEyebrow: "OTTE SVAR AFGIVET",
+    milestoneTitle: "Godt halvvejs.",
+    milestoneP1a: "Indtil videre tegner ",
+    milestoneP1b: " sig som det svageste område. Det kan nå at ændre sig — der er syv spørgsmål tilbage.",
+    milestoneP2: "Der er ingen tilmelding undervejs.",
+    continue: "Fortsæt",
+    gateTitle: "Jeres resultat er klar.",
+    gateP: "Skriv den e-mail, rapporten skal sendes til.",
+    emailPlaceholder: "navn@klub.dk",
+    consent: "Send mig rapporten og opfølgning på analysen. Kan afmeldes når som helst.",
+    privacy: "Privatlivspolitik",
+    calculating: "Beregner…",
+    seeResult: "Se resultatet",
+    genericError: "Noget gik galt. Prøv igen om et øjeblik.",
+    blockedBy: (d: string) => `Bremset af ${d}.`,
+    ceiling:
+      "Niveauet sættes af det svageste led, ikke af gennemsnittet. Det er ikke en karakter — det er et loft.",
+    even: "Jeres fem områder ligger lige — ingen af dem trækker fra endnu. Løftet skal komme bredt.",
+    strongestLine: (strong: string, weak: string) =>
+      `${strong} står stærkest hos jer — men det tæller først for alvor, når hullet i ${weak} er lukket.`,
+    distribution: "FORDELING",
+    level: "Niveau",
+    gapsTitle: "De tre huller, der koster mest",
+    firstStep: "FØRSTE SKRIDT",
+    closingP1:
+      "De tre skridt ovenfor kræver ingen software. De kræver, at nogen har tid til at gøre dem — og at det, der bliver skrevet, stadig findes om to år.",
+    closingP2:
+      "Det er dér, de fleste klubber løber tør. Sportstalent er bygget til at holde arbejdet i live, når ildsjælen får travlt eller stopper.",
+    cta: "Book en gennemgang af jeres tre huller",
+    profileTitle: "Frivilligt: fortæl lidt om jer",
+    profileP: "Det hjælper os med at gøre rapporten mere præcis. Du kan springe det over.",
+    clubName: "Klubnavn",
+    sport: "Sportsgren",
+    chooseRole: "Vælg rolle",
+    saveProfile: "Gem oplysninger",
+    profileSaved: "Tak — oplysningerne er gemt",
+    profileFailed: "Oplysningerne kunne ikke gemmes. Det er frivilligt — din analyse er registreret.",
+  },
+  en: {
+    metaTitle: "The Club Assessment — where does your club stand? | Sportstalent",
+    metaDesc:
+      "15 questions and an honest picture of your club's maturity: common thread, coaching capacity, data, culture and leadership. Free self-assessment for sports clubs.",
+    eyebrow: "THE CLUB ASSESSMENT",
+    heroTitle: "15 questions. One honest answer on where your club stands.",
+    heroP1:
+      "The assessment measures five areas: common thread, coaching capacity, data and documentation, culture and retention, and leadership and direction. The club's level is set by the weakest link — not by the average.",
+    heroP2: "Answer for how it is today. Not on a good day. It takes about five minutes.",
+    start: "Start the assessment",
+    back: "← Back",
+    milestoneEyebrow: "EIGHT ANSWERS GIVEN",
+    milestoneTitle: "Well past halfway.",
+    milestoneP1a: "So far ",
+    milestoneP1b: " looks like your weakest area. That can still change — seven questions remain.",
+    milestoneP2: "There is no sign-up along the way.",
+    continue: "Continue",
+    gateTitle: "Your result is ready.",
+    gateP: "Enter the email the report should be sent to.",
+    emailPlaceholder: "name@club.com",
+    consent: "Send me the report and follow-up on the assessment. You can unsubscribe at any time.",
+    privacy: "Privacy policy",
+    calculating: "Calculating…",
+    seeResult: "See the result",
+    genericError: "Something went wrong. Please try again in a moment.",
+    blockedBy: (d: string) => `Held back by ${d}.`,
+    ceiling:
+      "The level is set by the weakest link, not by the average. It is not a grade — it is a ceiling.",
+    even: "Your five areas are even — none of them stands out yet. The lift has to come broadly.",
+    strongestLine: (strong: string, weak: string) =>
+      `${strong} is your strongest area — but it only counts for real once the gap in ${weak} is closed.`,
+    distribution: "DISTRIBUTION",
+    level: "Level",
+    gapsTitle: "The three gaps that cost the most",
+    firstStep: "FIRST STEP",
+    closingP1:
+      "The three steps above require no software. They require that someone has the time to do them — and that what gets written down still exists in two years.",
+    closingP2:
+      "That is where most clubs run out. Sportstalent is built to keep the work alive when the driving force gets busy or leaves.",
+    cta: "Book a review of your three gaps",
+    profileTitle: "Optional: tell us a little about you",
+    profileP: "It helps us make the report more precise. You can skip it.",
+    clubName: "Club name",
+    sport: "Sport",
+    chooseRole: "Select role",
+    saveProfile: "Save details",
+    profileSaved: "Thanks — your details are saved",
+    profileFailed: "The details could not be saved. It is optional — your assessment is registered.",
+  },
+} as const;
 
 const GOLD = "#D4AF37";
 const RED = "#E05252";
@@ -39,6 +148,13 @@ const inputStyle: React.CSSProperties = {
 
 export default function Klubanalyse() {
   const navigate = useNavigate();
+  const { locale } = useLanguage();
+  const isEn = locale === "en";
+  const C = isEn ? COPY.en : COPY.da;
+  const DIMENSIONS = isEn ? DIMENSIONS_EN : DIMENSIONS_DA;
+  const QUESTIONS = isEn ? QUESTIONS_EN : QUESTIONS_DA;
+  const LEVELS = isEn ? LEVELS_EN : LEVELS_DA;
+  const ROLES = isEn ? ROLES_EN : ROLES_DA;
   const [stage, setStage] = useState<Stage>("intro");
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>(Array(15).fill(-1));
@@ -124,8 +240,8 @@ export default function Klubanalyse() {
           answers: answers.map((a) => Math.max(0, a)),
           scores,
           level: overall,
-          weakest: DIMENSIONS[weakestIdx].name,
-          strongest: DIMENSIONS[strongestIdx].name,
+          weakest: DIMENSIONS_DA[weakestIdx].name,
+          strongest: DIMENSIONS_DA[strongestIdx].name,
           website,
         },
       });
@@ -135,7 +251,7 @@ export default function Klubanalyse() {
       setStage("result");
       window.scrollTo({ top: 0 });
     } catch {
-      setError("Noget gik galt. Prøv igen om et øjeblik.");
+      setError(C.genericError);
     } finally {
       setSaving(false);
     }
@@ -169,8 +285,8 @@ export default function Klubanalyse() {
   return (
     <LandingLayout>
       <PageMeta
-        title="Klubanalysen — hvor står jeres klub? | Sportstalent"
-        description="15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber."
+        title={C.metaTitle}
+        description={C.metaDesc}
         canonical="https://sportstalent.dk/klubanalyse"
       />
 
@@ -185,23 +301,22 @@ export default function Klubanalyse() {
         {stage === "intro" && (
           <div>
             <div style={{ fontSize: 11, letterSpacing: "0.12em", color: GOLD, fontWeight: 800, marginBottom: 18 }}>
-              KLUBANALYSEN
+              {C.eyebrow}
             </div>
             <h1 style={{ fontSize: "clamp(28px,6vw,44px)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 22px" }}>
-              15 spørgsmål. Ét ærligt svar på, hvor jeres klub står.
+              {C.heroTitle}
             </h1>
             <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.65)", margin: "0 0 16px" }}>
-              Analysen måler fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse
-              samt ledelse og retning. Klubbens niveau sættes af det svageste led — ikke af gennemsnittet.
+              {C.heroP1}
             </p>
             <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.65)", margin: "0 0 32px" }}>
-              Svar på, hvordan det er i dag. Ikke på en god dag. Det tager omkring fem minutter.
+              {C.heroP2}
             </p>
             <button
               onClick={() => { setStage("q"); setIndex(0); }}
               style={{ padding: "15px 34px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
             >
-              Start analysen
+              {C.start}
             </button>
           </div>
         )}
@@ -210,7 +325,7 @@ export default function Klubanalyse() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
               <button onClick={back} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.55)", fontSize: 13, cursor: "pointer", padding: 0 }}>
-                ← Tilbage
+                {C.back}
               </button>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>
                 {index + 1} / 15 · {DIMENSIONS[QUESTIONS[index].dim].name}
@@ -249,27 +364,26 @@ export default function Klubanalyse() {
         {stage === "milestone" && (
           <div>
             <div style={{ fontSize: 11, letterSpacing: "0.12em", color: GOLD, fontWeight: 800, marginBottom: 16 }}>
-              OTTE SVAR AFGIVET
+              {C.milestoneEyebrow}
             </div>
             <h2 style={{ fontSize: "clamp(23px,5vw,34px)", fontWeight: 900, lineHeight: 1.15, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
-              Godt halvvejs.
+              {C.milestoneTitle}
             </h2>
             <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.65)", margin: "0 0 14px" }}>
-              Indtil videre tegner <strong style={{ color: "#fff" }}>{partialWeakest}</strong> sig som det svageste område.
-              Det kan nå at ændre sig — der er syv spørgsmål tilbage.
+              {C.milestoneP1a}<strong style={{ color: "#fff" }}>{partialWeakest}</strong>{C.milestoneP1b}
             </p>
             <p style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.45)", margin: "0 0 32px" }}>
-              Der er ingen tilmelding undervejs.
+              {C.milestoneP2}
             </p>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <button
                 onClick={() => { setStage("q"); setIndex(8); }}
                 style={{ padding: "14px 32px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
-                Fortsæt
+                {C.continue}
               </button>
               <button onClick={back} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", fontSize: 13, cursor: "pointer" }}>
-                ← Tilbage
+                {C.back}
               </button>
             </div>
           </div>
@@ -278,13 +392,13 @@ export default function Klubanalyse() {
         {stage === "gate" && (
           <div>
             <button onClick={back} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.55)", fontSize: 13, cursor: "pointer", padding: 0, marginBottom: 24 }}>
-              ← Tilbage
+              {C.back}
             </button>
             <h2 style={{ fontSize: "clamp(23px,5vw,34px)", fontWeight: 900, lineHeight: 1.15, letterSpacing: "-0.03em", margin: "0 0 16px" }}>
-              Jeres resultat er klar.
+              {C.gateTitle}
             </h2>
             <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.6)", margin: "0 0 28px" }}>
-              Skriv den e-mail, rapporten skal sendes til.
+              {C.gateP}
             </p>
 
             <div style={{ ...card, display: "grid", gap: 16 }}>
@@ -292,7 +406,7 @@ export default function Klubanalyse() {
                 type="email"
                 inputMode="email"
                 autoComplete="email"
-                placeholder="navn@klub.dk"
+                placeholder={C.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={inputStyle}
@@ -314,10 +428,10 @@ export default function Klubanalyse() {
                   onChange={(e) => setConsent(e.target.checked)}
                   style={{ marginTop: 3, width: 18, height: 18, accentColor: GOLD, flexShrink: 0 }}
                 />
-                <span>Send mig rapporten og opfølgning på analysen. Kan afmeldes når som helst.</span>
+                <span>{C.consent}</span>
               </label>
               <a href="/privacy" style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "underline" }}>
-                Privatlivspolitik
+                {C.privacy}
               </a>
               {error && <div style={{ fontSize: 13, color: RED }}>{error}</div>}
               <button
@@ -334,7 +448,7 @@ export default function Klubanalyse() {
                   cursor: !email.trim() || !consent || saving ? "not-allowed" : "pointer",
                 }}
               >
-                {saving ? "Beregner…" : "Se resultatet"}
+                {saving ? C.calculating : C.seeResult}
               </button>
             </div>
           </div>
@@ -356,7 +470,7 @@ export default function Klubanalyse() {
             {/* 2. Dom */}
             <div style={card}>
               <div style={{ fontSize: 17, fontWeight: 800, marginBottom: 10 }}>
-                Bremset af {DIMENSIONS[weakestIdx].name}.
+                {C.blockedBy(DIMENSIONS[weakestIdx].name)}
               </div>
               <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.7)" }}>
                 {LEVELS[overall - 1].verdict}
@@ -402,26 +516,26 @@ export default function Klubanalyse() {
 
               {/* 4. Forklaring */}
               <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "18px 0 0" }}>
-                Niveauet sættes af det svageste led, ikke af gennemsnittet. Det er ikke en karakter — det er et loft.
+                {C.ceiling}
               </p>
               <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
                 {strongestIdx === weakestIdx
-                  ? "Jeres fem områder ligger lige — ingen af dem trækker fra endnu. Løftet skal komme bredt."
-                  : `${DIMENSIONS[strongestIdx].name} står stærkest hos jer — men det tæller først for alvor, når hullet i ${DIMENSIONS[weakestIdx].name} er lukket.`}
+                  ? C.even
+                  : C.strongestLine(DIMENSIONS[strongestIdx].name, DIMENSIONS[weakestIdx].name)}
               </p>
             </div>
 
             {/* 5. Fordeling */}
             <div>
               <h3 style={{ fontSize: 13, letterSpacing: "0.1em", color: "rgba(255,255,255,0.45)", fontWeight: 800, margin: "0 0 14px" }}>
-                FORDELING
+                {C.distribution}
               </h3>
               <div style={{ display: "grid", gap: 10 }}>
                 {DIMENSIONS.map((d, i) => (
                   <div key={d.key}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 6 }}>
                       <span>{d.name}</span>
-                      <span style={{ color: GOLD, fontWeight: 700 }}>Niveau {levels[i]}</span>
+                      <span style={{ color: GOLD, fontWeight: 700 }}>{C.level} {levels[i]}</span>
                     </div>
                     <div style={{ height: 8, borderRadius: 4, background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${(scores[i] / 9) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
@@ -434,7 +548,7 @@ export default function Klubanalyse() {
             {/* 6. Tre huller */}
             <div>
               <h3 style={{ fontSize: "clamp(20px,4.5vw,26px)", fontWeight: 900, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
-                De tre huller, der koster mest
+                {C.gapsTitle}
               </h3>
               <div style={{ display: "grid", gap: 14 }}>
                 {lowestThree.map(({ i }) => (
@@ -444,7 +558,7 @@ export default function Klubanalyse() {
                       {DIMENSIONS[i].consequence}
                     </p>
                     <div style={{ fontSize: 11, letterSpacing: "0.1em", color: GOLD, fontWeight: 800, marginBottom: 6 }}>
-                      FØRSTE SKRIDT
+                      {C.firstStep}
                     </div>
                     <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.8)" }}>
                       {DIMENSIONS[i].firstStep}
@@ -457,32 +571,30 @@ export default function Klubanalyse() {
             {/* 7. Afslutning */}
             <div style={{ ...card, borderColor: "rgba(212,175,55,0.28)", background: "rgba(212,175,55,0.06)" }}>
               <p style={{ margin: "0 0 14px", fontSize: 16, lineHeight: 1.75, color: "rgba(255,255,255,0.8)" }}>
-                De tre skridt ovenfor kræver ingen software. De kræver, at nogen har tid til at gøre dem — og at det,
-                der bliver skrevet, stadig findes om to år.
+                {C.closingP1}
               </p>
               <p style={{ margin: "0 0 20px", fontSize: 16, lineHeight: 1.75, color: "rgba(255,255,255,0.8)" }}>
-                Det er dér, de fleste klubber løber tør. Sportstalent er bygget til at holde arbejdet i live, når
-                ildsjælen får travlt eller stopper.
+                {C.closingP2}
               </p>
               <button
                 onClick={() => navigate("/contact")}
                 style={{ padding: "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
-                Book en gennemgang af jeres tre huller
+                {C.cta}
               </button>
             </div>
 
             {/* 8. Frivillige profilfelter */}
             <div style={card}>
-              <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 6 }}>Frivilligt: fortæl lidt om jer</div>
+              <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 6 }}>{C.profileTitle}</div>
               <p style={{ margin: "0 0 16px", fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
-                Det hjælper os med at gøre rapporten mere præcis. Du kan springe det over.
+                {C.profileP}
               </p>
               <div style={{ display: "grid", gap: 12 }}>
-                <input placeholder="Klubnavn" value={clubName} onChange={(e) => setClubName(e.target.value)} style={inputStyle} />
-                <input placeholder="Sportsgren" value={sport} onChange={(e) => setSport(e.target.value)} style={inputStyle} />
+                <input placeholder={C.clubName} value={clubName} onChange={(e) => setClubName(e.target.value)} style={inputStyle} />
+                <input placeholder={C.sport} value={sport} onChange={(e) => setSport(e.target.value)} style={inputStyle} />
                 <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
-                  <option value="">Vælg rolle</option>
+                  <option value="">{C.chooseRole}</option>
                   {ROLES.map((r) => (
                     <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
                   ))}
@@ -501,11 +613,11 @@ export default function Klubanalyse() {
                     cursor: saving || profileSaved ? "default" : "pointer",
                   }}
                 >
-                  {profileSaved ? "Tak — oplysningerne er gemt" : "Gem oplysninger"}
+                  {profileSaved ? C.profileSaved : C.saveProfile}
                 </button>
                 {profileFailed && !profileSaved && (
                   <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
-                    Oplysningerne kunne ikke gemmes. Det er frivilligt — din analyse er registreret.
+                    {C.profileFailed}
                   </div>
                 )}
 
