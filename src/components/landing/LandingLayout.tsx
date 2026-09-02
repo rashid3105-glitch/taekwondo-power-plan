@@ -160,20 +160,6 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   {l.label}
-                  {hasUpdate && (
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        top: 2,
-                        right: 3,
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        background: "#EF4444",
-                      }}
-                    />
-                  )}
                 </span>
               );
             })}
