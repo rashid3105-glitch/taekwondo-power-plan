@@ -266,7 +266,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             {[
               { label: t("homeFooterPrivacy"), href: "/privacy" },
               { label: t("homeFooterTerms"), href: "/terms" },
-              ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/priser" }]),
+              ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/contact" }]),
               { label: t("navBlog"), href: "/blog" },
             ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>
