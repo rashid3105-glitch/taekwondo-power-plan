@@ -45,7 +45,13 @@ export function CoachLogQueue({ athletes, bare }: Props) {
   const [sending, setSending] = useState(false);
 
   const load = useCallback(async () => {
-    const ids = athletes.map((a) => a.user_id);
+    const clubId = activeClubId ?? primaryClubId ?? null;
+    const staff = await fetchClubStaffIds(clubId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) staff.add(user.id);
+
+    const roster = athletes.filter((a) => !staff.has(a.user_id));
+    const ids = roster.map((a) => a.user_id);
     if (ids.length === 0) { setRows([]); return; }
     const today = new Date().toISOString().slice(0, 10);
 
@@ -61,6 +67,7 @@ export function CoachLogQueue({ athletes, bare }: Props) {
         (e.entry_type === "training" || ((e.entry_types as string[]) || []).includes("training")),
     );
     if (list.length === 0) { setRows([]); return; }
+
 
     const { data: comments } = await supabase
       .from("diary_comments" as any)
