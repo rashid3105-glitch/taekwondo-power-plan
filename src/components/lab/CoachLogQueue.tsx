@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle2, Users, Lock, ShieldAlert, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { effortWordKey } from "@/components/lab/TrainingLogCard";
+import { fetchClubStaffIds } from "@/lib/clubStaff";
+
 
 interface Athlete {
   user_id: string;
@@ -45,7 +47,13 @@ export function CoachLogQueue({ athletes, bare }: Props) {
   const [sending, setSending] = useState(false);
 
   const load = useCallback(async () => {
-    const ids = athletes.map((a) => a.user_id);
+    const clubId = activeClubId ?? primaryClubId ?? null;
+    const staff = await fetchClubStaffIds(clubId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) staff.add(user.id);
+
+    const roster = athletes.filter((a) => !staff.has(a.user_id));
+    const ids = roster.map((a) => a.user_id);
     if (ids.length === 0) { setRows([]); return; }
     const today = new Date().toISOString().slice(0, 10);
 
@@ -61,6 +69,7 @@ export function CoachLogQueue({ athletes, bare }: Props) {
         (e.entry_type === "training" || ((e.entry_types as string[]) || []).includes("training")),
     );
     if (list.length === 0) { setRows([]); return; }
+
 
     const { data: comments } = await supabase
       .from("diary_comments" as any)
@@ -87,7 +96,7 @@ export function CoachLogQueue({ athletes, bare }: Props) {
         handledBy: handled.get(e.id) ?? null,
       };
     }));
-  }, [athletes]);
+  }, [athletes, activeClubId, primaryClubId]);
 
   useEffect(() => { void load(); }, [load]);
 
