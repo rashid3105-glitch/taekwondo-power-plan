@@ -6,6 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle2, Users, Lock, ShieldAlert, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { effortWordKey } from "@/components/lab/TrainingLogCard";
+import { fetchClubStaffIds } from "@/lib/clubStaff";
+
 
 interface Athlete {
   user_id: string;
