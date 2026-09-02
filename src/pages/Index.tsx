@@ -546,7 +546,7 @@ const Index = () => {
         </section>
       )}
 
-      <Chapter n={native ? "07" : "08"} label={t("homeCh8Label")} title={t("homeCh8Title")} />
+      <Chapter n={native ? "06" : "07"} label={t("homeCh8Label")} title={t("homeCh8Title")} />
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 780, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
           <div style={{ textAlign: "center", marginBottom: 36 }}>
