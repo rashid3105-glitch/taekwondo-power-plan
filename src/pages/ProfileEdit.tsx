@@ -34,6 +34,7 @@ export default function ProfileEdit() {
   const [birthDate, setBirthDate] = useState("");
   const [beltLevel, setBeltLevel] = useState("");
   const [weightKg, setWeightKg] = useState<string>("");
+  const [heightCm, setHeightCm] = useState<string>("");
   const [discipline, setDiscipline] = useState("sparring");
   const [goals, setGoals] = useState<string[]>([]);
   const [newGoal, setNewGoal] = useState("");
@@ -62,7 +63,7 @@ export default function ProfileEdit() {
       setUserId(user.id);
       const { data: p } = await supabase
         .from("profiles")
-        .select("display_name, birth_date, belt_level, weight_kg, discipline, goals, avatar_url, roles, license_values, club_id")
+        .select("display_name, birth_date, belt_level, weight_kg, height_cm, discipline, goals, avatar_url, roles, license_values, club_id")
         .eq("user_id", user.id)
         .maybeSingle();
       if (p) {
@@ -70,6 +71,7 @@ export default function ProfileEdit() {
         setBirthDate(p.birth_date ?? "");
         setBeltLevel(p.belt_level ?? "");
         setWeightKg(p.weight_kg != null ? String(p.weight_kg) : "");
+        setHeightCm((p as any).height_cm != null ? String((p as any).height_cm) : "");
         setDiscipline(p.discipline ?? "sparring");
         setGoals(Array.isArray(p.goals) ? (p.goals as string[]).filter(Boolean) : []);
         setAvatarUrl(p.avatar_url ?? null);
@@ -206,6 +208,7 @@ export default function ProfileEdit() {
       // 2. Gem profilen (inkl. avatar_url) via edge function — service role bypasser RLS.
       const cleanGoals = goals.map((g) => g.trim()).filter(Boolean);
       const weight = weightKg ? parseFloat(weightKg) : null;
+      const height = heightCm ? parseFloat(heightCm) : null;
 
       const cleanedLicenseValues: Record<string, LicenseValue> = {};
       for (const f of licenseFields) {
@@ -223,6 +226,7 @@ export default function ProfileEdit() {
         birth_date: birthDate || null,
         belt_level: beltLevel || null,
         weight_kg: weight,
+        height_cm: height,
         discipline,
         goals: cleanGoals,
         license_values: cleanedLicenseValues,
@@ -414,6 +418,16 @@ export default function ProfileEdit() {
               </Field>
               <Field label={gradeLabelFor(sportProfile.slug, t, locale)}>
                 <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder={sportProfile.slug === "taekwondo" ? "e.g. 1. dan" : "—"} />
+              </Field>
+              <Field label={t("profileHeight" as any)}>
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  className={inputCls}
+                  value={heightCm}
+                  onChange={(e) => setHeightCm(e.target.value)}
+                  placeholder="cm"
+                />
               </Field>
               <Field label={t("profileWeight" as any)}>
                 <Input

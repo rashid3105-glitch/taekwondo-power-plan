@@ -46,6 +46,7 @@ interface ProfileData {
   birth_date: string | null;
   belt_level: string | null;
   weight_kg: number | null;
+  height_cm: number | null;
   goals: string[] | null;
   license_values: Record<string, LicenseValue> | null;
   antidoping_course_date: string | null;
@@ -118,7 +119,7 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, height_cm, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       setPushEnabled((prof as any)?.push_enabled !== false);
@@ -159,6 +160,7 @@ export default function Profile() {
         birth_date: p?.birth_date ?? null,
         belt_level: p?.belt_level ?? null,
         weight_kg: p?.weight_kg ?? null,
+        height_cm: (p as any)?.height_cm ?? null,
         goals: p?.goals ?? null,
         license_values: p?.license_values ?? {},
         antidoping_course_date: p?.antidoping_course_date ?? null,
@@ -407,7 +409,7 @@ export default function Profile() {
                   value={data?.birth_date ? `${fmtDate(data.birth_date, locale)}${age != null ? ` (${age})` : ""}` : "—"}
                 />
                 <MetaCell label={gradeLabelFor(sportProfile.slug, t, locale)} value={formatGrade(sportProfile.slug, data?.belt_level, t)} />
-                <MetaCell label={t("profileHeight" as any)} value="—" />
+                <MetaCell label={t("profileHeight" as any)} value={data?.height_cm ? `${data.height_cm} cm` : "—"} />
                 <MetaCell label={t("profileWeight" as any)} value={data?.weight_kg ? `${data.weight_kg} kg` : "—"} />
               </div>
             </div>

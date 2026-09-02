@@ -2730,6 +2730,7 @@ export type Database = {
           goals: string[] | null
           guardian_email: string | null
           has_myfightbook: boolean
+          height_cm: number | null
           id: string
           is_approved: boolean
           is_demo: boolean
@@ -2795,6 +2796,7 @@ export type Database = {
           goals?: string[] | null
           guardian_email?: string | null
           has_myfightbook?: boolean
+          height_cm?: number | null
           id?: string
           is_approved?: boolean
           is_demo?: boolean
@@ -2860,6 +2862,7 @@ export type Database = {
           goals?: string[] | null
           guardian_email?: string | null
           has_myfightbook?: boolean
+          height_cm?: number | null
           id?: string
           is_approved?: boolean
           is_demo?: boolean
