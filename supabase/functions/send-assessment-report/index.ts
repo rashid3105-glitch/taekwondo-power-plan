@@ -347,9 +347,16 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 
-  // Kun betroede server-kaldere (service role) må sende rapporter.
+  // Betroede server-kaldere og platformadmins må sende eller gensende rapporter.
   const bearer = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '')
-  if (!bearer || bearer !== serviceKey) return json({ error: 'unauthorized' }, 401)
+  if (!bearer) return json({ error: 'unauthorized' }, 401)
+  if (bearer !== serviceKey) {
+    const authClient = createClient(supabaseUrl, serviceKey)
+    const { data: { user } } = await authClient.auth.getUser(bearer)
+    if (!user) return json({ error: 'unauthorized' }, 401)
+    const { data: isAdmin } = await authClient.rpc('is_admin', { _user_id: user.id })
+    if (!isAdmin) return json({ error: 'forbidden' }, 403)
+  }
 
   // FEATURE FLAG — slået fra ved deploy. Sæt ASSESSMENT_REPORT_ENABLED=true
   // i Project Settings → Secrets, når SPF/DKIM/DMARC er verificeret.
