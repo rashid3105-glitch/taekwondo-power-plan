@@ -102,3 +102,92 @@ export const LEVEL_CONTENT: { name: string; subtitle: string; verdict: string }[
       "Kulturen overlever udskiftninger. Det er sjældent — og det kræver vedligehold at blive ved med.",
   },
 ];
+
+// ---- English mirror (used when the assessment was completed in English) ----
+export const DIMENSION_CONTENT_EN: DimensionContent[] = [
+  {
+    key: "red_traad",
+    name: "Common thread",
+    shortName: "Thread",
+    consequence:
+      "Every time an athlete moves up an age group, development partly restarts. That typically costs half a season per transition — and it is the half season your competitors use to move ahead.",
+    firstStep:
+      "Write one page per age group: what should an athlete be able to do when leaving it. That is the smallest usable version of a common thread.",
+    boardQuestion:
+      "If we lost our three best coaches tomorrow, which age groups would be left without a plan?",
+  },
+  {
+    key: "traenerkapacitet",
+    name: "Coaching capacity",
+    shortName: "Coaches",
+    consequence:
+      "The club's knowledge lives in individuals. The next coaching change resets what the team has built — and that change will come, however good they are today.",
+    firstStep:
+      "Ask each coach to write ten lines about their group that a stand-in could take over from. In one evening it reveals how much only exists in someone's head.",
+    boardQuestion:
+      "What does it cost us every time we train a new coach from scratch — in hours, not in money?",
+  },
+  {
+    key: "data",
+    name: "Data & documentation",
+    shortName: "Data",
+    consequence:
+      "You cannot see whether an athlete is progressing or heading for overload until it shows up in results. By then the decision has been made for you.",
+    firstStep:
+      "Pick three metrics — not thirty — and track them for one group over eight weeks. The basis for decisions matters more than the volume of data.",
+    boardQuestion:
+      "Which three numbers will we be able to see at the next meeting, and who collects them?",
+  },
+  {
+    key: "kultur",
+    name: "Culture & retention",
+    shortName: "Culture",
+    consequence:
+      "Drop-out is discovered in hindsight. By the time you hear about it, the decision was made weeks ago — by an athlete nobody got to talk to.",
+    firstStep:
+      "Count how many quit in each age group last season. Just the number. Most clubs have never done it, and it changes the boardroom conversation immediately.",
+    boardQuestion:
+      "How many quit last season, and what do we know about why?",
+  },
+  {
+    key: "ledelse",
+    name: "Leadership & direction",
+    shortName: "Leadership",
+    consequence:
+      "Direction depends on who sits on the board. One annual general meeting can reset three years of work, because the direction was never anchored beyond the people.",
+    firstStep:
+      "Write down who makes sporting decisions and who does not. The disagreement in that answer is the actual problem.",
+    boardQuestion:
+      "Who has the mandate to make sporting decisions when we disagree?",
+  },
+];
+
+export const LEVEL_CONTENT_EN: { name: string; subtitle: string; verdict: string }[] = [
+  {
+    name: "Beginner",
+    subtitle: "Ad-hoc operation",
+    verdict: "The club is held up by individuals. It works — until one of them stops.",
+  },
+  {
+    name: "Structured",
+    subtitle: "Fixed frameworks",
+    verdict: "You have frameworks. They are just not yet connected across age groups.",
+  },
+  {
+    name: "Developing",
+    subtitle: "Coherent system",
+    verdict:
+      "The system works when someone maintains it. The question is what happens when that someone isn't there.",
+  },
+  {
+    name: "Elite",
+    subtitle: "Optimised culture",
+    verdict:
+      "You work systematically. From here it is about removing the last manual work — and measuring what you already do well.",
+  },
+  {
+    name: "World class",
+    subtitle: "Sustainable ecosystem",
+    verdict: "The culture survives turnover. That is rare — and staying there takes maintenance.",
+  },
+];
