@@ -363,7 +363,14 @@ const Index = () => {
                 </div>
               ))}
             </div>
+            <button
+              onClick={() => navigate("/funktioner")}
+              style={{ marginTop: 20, background: "transparent", border: "none", padding: 0, color: GOLD, fontSize: 14, fontWeight: 700, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 4 }}
+            >
+              {t("homeSeeAllFeatures")}
+            </button>
           </div>
+
           <div style={{ position: "relative" }}>
             <img src={coachSittingAsset} alt={t("homeSolImgAlt")} loading="lazy" width={1200} height={1200} style={{ width: "100%", height: "auto", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
             <div style={{ position: "absolute", bottom: -14, right: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
