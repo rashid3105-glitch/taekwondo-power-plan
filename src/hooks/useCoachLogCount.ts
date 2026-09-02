@@ -15,18 +15,20 @@ export function useCoachLogCount(enabled: boolean) {
   const load = useCallback(async () => {
     if (!enabled || !clubId) { setCount(0); return; }
     const today = new Date().toISOString().slice(0, 10);
+    const staff = await fetchClubStaffIds(clubId);
     const { data: entries } = await supabase
       .from("diary_entries")
-      .select("id, is_private, entry_type, entry_types")
+      .select("id, user_id, is_private, entry_type, entry_types")
       .eq("entry_date", today)
       .eq("club_id", clubId)
       .limit(500);
 
     const list = ((entries as any[]) || []).filter(
-      (e) => e.is_private !== true &&
+      (e) => e.is_private !== true && !staff.has(e.user_id) &&
         (e.entry_type === "training" || ((e.entry_types as string[]) || []).includes("training")),
     );
     if (list.length === 0) { setCount(0); return; }
+
 
     const { data: comments } = await supabase
       .from("diary_comments" as any)
