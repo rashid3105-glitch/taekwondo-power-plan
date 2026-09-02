@@ -140,8 +140,6 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
           >
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
-              // Red dot marks recently updated sections (new pricing structure).
-              const hasUpdate = l.href === "/priser";
               return (
                 <span
                   key={l.href}
@@ -162,20 +160,6 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   {l.label}
-                  {hasUpdate && (
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        position: "absolute",
-                        top: 2,
-                        right: 3,
-                        width: 6,
-                        height: 6,
-                        borderRadius: "50%",
-                        background: "#EF4444",
-                      }}
-                    />
-                  )}
                 </span>
               );
             })}
@@ -237,12 +221,6 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     minHeight: 88,
                   }}
                 >
-                  {l.href === "/priser" && (
-                    <span
-                      aria-hidden="true"
-                      style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: "50%", background: "#EF4444" }}
-                    />
-                  )}
                   <Icon size={24} strokeWidth={1.8} />
                   <span style={{ fontSize: 11, fontWeight: 600, textAlign: "center", lineHeight: 1.2 }}>
                     {l.label}
@@ -288,7 +266,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             {[
               { label: t("homeFooterPrivacy"), href: "/privacy" },
               { label: t("homeFooterTerms"), href: "/terms" },
-              ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/priser" }]),
+              ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/contact" }]),
               { label: t("navBlog"), href: "/blog" },
             ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
           </div>
