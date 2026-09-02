@@ -260,10 +260,13 @@ const Index = () => {
             </div>
 
             <HUD />
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{t("homeHudDisclaimer")}</div>
           </div>
         </div>
       </section>
+
       <Chapter n="01" label={t("homeCh1Label")} title={t("homeCh1Title")} />
+
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
           <div style={{ textAlign: "center", marginBottom: 44 }}>
