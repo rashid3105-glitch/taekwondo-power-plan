@@ -6,11 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
  */
 export async function fetchClubStaffIds(clubId: string | null): Promise<Set<string>> {
   if (!clubId) return new Set();
-  const { data } = await supabase
+  const { data } = await (supabase as any)
     .from("club_memberships")
     .select("user_id, role, status")
     .eq("club_id", clubId)
     .in("role", ["coach", "admin"]);
+
   return new Set(
     ((data as any[]) || [])
       .filter((m) => m.status !== "removed")
