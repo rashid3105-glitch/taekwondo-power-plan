@@ -1,9 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Lock, Users, MessageSquare } from "lucide-react";
+import { CheckCircle2, Lock, Users, MessageSquare, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useOfflineDiary } from "@/hooks/useOfflineDiary";
 import { cn } from "@/lib/utils";
+
+const SNOOZE_KEY = "st_training_log_snooze";
+
+/** Reads snooze state: returns the timestamp (ms) the card stays hidden until, or 0. */
+function readSnooze(): number {
+  try {
+    const raw = localStorage.getItem(SNOOZE_KEY);
+    if (!raw) return 0;
+    const until = Number(raw);
+    if (!Number.isFinite(until) || until <= Date.now()) return 0;
+    return until;
+  } catch {
+    return 0;
+  }
+}
+
 
 type Status = "done" | "partial" | "skipped";
 type Audience = "coaches" | "me";
@@ -40,6 +56,33 @@ export function TrainingLogCard({ isRestDay, sessionLabel, bare }: Props) {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [replies, setReplies] = useState<{ id: string; content: string }[]>([]);
+  const [snoozedUntil, setSnoozedUntil] = useState<number>(() => readSnooze());
+
+  const endOfDay = () => {
+    const d = new Date();
+    d.setHours(23, 59, 59, 999);
+    return d.getTime();
+  };
+
+  const snooze = (until: number) => {
+    try { localStorage.setItem(SNOOZE_KEY, String(until)); } catch { /* ignore */ }
+    setSnoozedUntil(until);
+  };
+
+  const clearSnooze = () => {
+    try { localStorage.removeItem(SNOOZE_KEY); } catch { /* ignore */ }
+    setSnoozedUntil(0);
+  };
+
+  // Re-show automatically when the snooze window expires.
+  useEffect(() => {
+    if (!snoozedUntil) return;
+    const ms = snoozedUntil - Date.now();
+    if (ms <= 0) { setSnoozedUntil(0); return; }
+    const id = window.setTimeout(() => setSnoozedUntil(0), Math.min(ms, 2147483647));
+    return () => window.clearTimeout(id);
+  }, [snoozedUntil]);
+
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
@@ -120,6 +163,27 @@ export function TrainingLogCard({ isRestDay, sessionLabel, bare }: Props) {
       </>,
     );
   }
+
+  if (snoozedUntil) {
+    const restOfDay = snoozedUntil >= endOfDay();
+    return wrap(
+      <div className="flex items-center gap-2">
+        <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+        <p className="text-xs text-muted-foreground">
+          {restOfDay ? t("labSnoozedToday") : t("labSnoozed")}
+        </p>
+        <button
+          type="button"
+          onClick={clearSnooze}
+          className="ml-auto text-xs font-bold text-primary"
+        >
+          {t("labUndoSnooze")}
+        </button>
+      </div>,
+    );
+  }
+
+
 
   return wrap(
     <>
@@ -211,6 +275,28 @@ export function TrainingLogCard({ isRestDay, sessionLabel, bare }: Props) {
       >
         {saving ? "…" : t("labSend")}
       </button>
+
+      <div className="flex items-center justify-center gap-3 pt-0.5">
+        <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          {t("labLater")}
+        </span>
+        <button
+          type="button"
+          onClick={() => snooze(Date.now() + 2 * 60 * 60 * 1000)}
+          className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          {t("labSnooze2h")}
+        </button>
+        <span className="text-muted-foreground/50">·</span>
+        <button
+          type="button"
+          onClick={() => snooze(endOfDay())}
+          className="text-xs font-semibold text-muted-foreground underline-offset-2 hover:underline"
+        >
+          {t("labHideToday")}
+        </button>
+      </div>
+
     </>,
   );
 }
