@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Zap, CalendarRange, Heart, Video as VideoIcon, Users, Trophy,
   MessageCircle, User as UserIcon, BookOpen, HelpCircle, Repeat, ClipboardList,
+  CalendarCheck, NotebookPen,
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
