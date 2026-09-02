@@ -428,12 +428,9 @@ const Index = () => {
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
           <div style={{ position: "relative", order: isMobile ? 2 : 1 }}>
-            <img src={coachStandingAsset} alt={t("homeWhyImgAlt")} style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
-            <div style={{ position: "absolute", bottom: -14, left: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>67%</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 2 }}>{t("homeWhyStat")}</div>
-            </div>
+            <img src={coachStandingAsset} alt={t("homeWhyImgAlt")} loading="lazy" width={1200} height={800} style={{ width: "100%", height: "auto", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
           </div>
+
           <div style={{ order: isMobile ? 1 : 2 }}>
             <SectionEyebrow>{t("homeWhyEyebrow")}</SectionEyebrow>
             <h2 style={{ fontSize: "clamp(26px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.12, marginBottom: 16 }}>
