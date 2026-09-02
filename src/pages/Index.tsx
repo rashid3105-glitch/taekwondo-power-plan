@@ -462,51 +462,7 @@ const Index = () => {
         </div>
       </section>
 
-      <section style={{ maxWidth: 800, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, textAlign: "center" }}>
-        <SectionEyebrow>{t("homeTestimonialEyebrow")}</SectionEyebrow>
-        <p style={{ fontSize: "clamp(20px,2.6vw,26px)", color: "rgba(255,255,255,0.9)", lineHeight: 1.45, fontWeight: 500, letterSpacing: "-0.01em", margin: "10px 0 24px" }}>
-          <span style={{ color: GOLD, fontFamily: "Georgia, serif", fontSize: 36, lineHeight: 0, position: "relative", top: 8, marginRight: 4 }}>“</span>
-          {t("homeTestimonialQuote")}
-          <span style={{ color: GOLD, fontFamily: "Georgia, serif", fontSize: 36, lineHeight: 0, position: "relative", top: 8, marginLeft: 4 }}>”</span>
-        </p>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: MONO, letterSpacing: "0.12em", textTransform: "uppercase" }}>{t("homeTestimonialAttr")}</div>
-      </section>
-
-      <Chapter n="06" label={t("homeCh6Label")} title={t("homeCh6Title")} />
-      <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "auto 1fr", gap: isMobile ? 28 : 48, alignItems: "start", justifyItems: isMobile ? "center" : "start", textAlign: isMobile ? "center" : "left" }}>
-          <div style={{ position: "relative", flexShrink: 0 }}>
-            <img src="/founder-farooq.jpg" alt="Farooq Rashid" style={{ width: isMobile ? 160 : 200, height: isMobile ? 210 : 260, objectFit: "cover", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
-            <div style={{ position: "absolute", bottom: -12, right: -12, background: BG, border: "0.5px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "10px 14px", fontFamily: MONO }}>
-              <div style={{ fontSize: 20, fontWeight: 900, color: GOLD }}>40+</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 1 }}>{t("homeFounderYears")}</div>
-            </div>
-          </div>
-          <div>
-            <SectionEyebrow>{t("homeFounderEyebrow")}</SectionEyebrow>
-            <h2 style={{ fontSize: "clamp(22px,3.5vw,32px)", fontWeight: 900, letterSpacing: "-0.02em", margin: "0 0 4px" }}>Farooq Rashid</h2>
-            <div style={{ fontSize: 14, color: GOLD, fontWeight: 600, marginBottom: 20, fontFamily: MONO, letterSpacing: "0.02em" }}>{t("homeFounderRole")}</div>
-            <div style={{ borderLeft: isMobile ? "none" : `3px solid ${GOLD}`, paddingLeft: isMobile ? 0 : 18, marginBottom: 16 }}>
-              <p style={{ fontSize: 15, color: "rgba(255,255,255,0.8)", lineHeight: 1.75, fontStyle: "italic", margin: 0 }}>“{t("homeFounderQuote")}”</p>
-            </div>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.7, marginBottom: 22 }}>
-              {t("homeFounderBody")}
-            </p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: isMobile ? "center" : "flex-start" }}>
-              {[t("homeFounderTag1"), t("homeFounderTag2"), t("homeFounderTag3")].map((tag, i) => (
-                <span key={i} style={{ display: "inline-flex", background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.22)", borderRadius: 999, padding: "4px 12px", fontSize: 11, fontWeight: 700, color: GOLD, fontFamily: MONO, letterSpacing: "0.06em" }}>{tag}</span>
-              ))}
-            </div>
-            <button
-              onClick={() => navigate("/about")}
-              style={{ marginTop: 20, background: "transparent", border: "none", padding: 0, color: GOLD, fontSize: 14, fontWeight: 700, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 4 }}
-            >
-              {t("homeFounderReadMore")} →
-            </button>
-
-          </div>
-        </div>
-      </section>
+      {/* TODO: named club testimonial */}
 
       {!native && <Chapter n="06" label={t("homeCh7Label")} title={t("homeCh7Title")} />}
       {!native && (
