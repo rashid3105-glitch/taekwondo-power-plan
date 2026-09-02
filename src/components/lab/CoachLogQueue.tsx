@@ -96,7 +96,7 @@ export function CoachLogQueue({ athletes, bare }: Props) {
         handledBy: handled.get(e.id) ?? null,
       };
     }));
-  }, [athletes]);
+  }, [athletes, activeClubId, primaryClubId]);
 
   useEffect(() => { void load(); }, [load]);
 
