@@ -37,7 +37,7 @@ const Index = () => {
   const w = useWidth();
   const isMobile = w < 720;
   const isTablet = w >= 720 && w < 1024;
-  const [promoOpen, setPromoOpen] = useState(true);
+  const [founderCreditOk, setFounderCreditOk] = useState(true);
   const native = isNativeApp();
 
   useEffect(() => {
@@ -51,10 +51,8 @@ const Index = () => {
 
   const pad = isMobile ? 18 : 32;
 
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+
+
 
   // Cockpit HUD ------------------------------------------------------------
   const HUD = () => (
@@ -74,7 +72,7 @@ const Index = () => {
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#3ADB7C", boxShadow: "0 0 8px #3ADB7C" }} />
           {t("homeHudLive")}
         </span>
-        <span>W 34 · MON</span>
+        <span>{t("homeHudExample")}</span>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: 10, marginBottom: 14 }}>
@@ -182,24 +180,6 @@ const Index = () => {
         canonical="https://sportstalent.dk/"
       />
 
-      {promoOpen && (
-        <div style={{ background: "#101322", borderBottom: "0.5px solid rgba(212,175,55,0.2)" }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", padding: `${isMobile ? 8 : 10}px ${isMobile ? 14 : pad}px`, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, fontSize: isMobile ? 11 : 12, color: "rgba(255,255,255,0.85)", position: "relative", lineHeight: 1 }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, lineHeight: 1 }}>
-              <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: GOLD, boxShadow: `0 0 8px ${GOLD}` }} />
-              <strong style={{ color: GOLD, letterSpacing: "0.08em", fontFamily: MONO, fontSize: isMobile ? 10 : 11, lineHeight: 1 }}>{t("homePromoLabel")}</strong>
-              <span style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1 }}>{t("homePromoText")}</span>
-            </span>
-            {!isMobile && (
-              <button onClick={() => navigate("/contact")} style={{ display: "inline-flex", alignItems: "center", lineHeight: 1, background: "transparent", color: GOLD, border: `1px solid ${GOLD}`, borderRadius: 6, padding: "5px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-                {t("homePromoCta")}
-              </button>
-            )}
-            <button onClick={() => setPromoOpen(false)} aria-label={t("homePromoClose")} style={{ position: "absolute", right: isMobile ? 10 : pad, top: "50%", transform: "translateY(-50%)", display: "inline-flex", alignItems: "center", background: "transparent", border: "none", color: "rgba(255,255,255,0.62)", cursor: "pointer", fontSize: 16, lineHeight: 1 }}>×</button>
-          </div>
-        </div>
-      )}
-
       <section style={{ position: "relative", padding: `${isMobile ? 28 : 72}px ${isMobile ? 16 : 32}px ${isMobile ? 36 : 96}px`, overflow: "hidden" }}>
 
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(212,175,55,0.08), transparent 70%)", pointerEvents: "none" }} />
@@ -236,14 +216,31 @@ const Index = () => {
             </ul>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-              <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaStart")}</button>
-              <button onClick={() => scrollTo("how-it-works")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaHow")}</button>
+              <button onClick={() => navigate("/contact")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaDemo")}</button>
+              <button onClick={() => navigate("/klubanalyse")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaAnalysis")}</button>
             </div>
+
+            {founderCreditOk && (
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <img
+                  src="/founder-farooq.jpg"
+                  alt="Farooq Rashid"
+                  width={40}
+                  height={40}
+                  style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: "0.5px solid rgba(255,255,255,0.12)", display: "block", flexShrink: 0 }}
+                  onError={() => setFounderCreditOk(false)}
+                />
+                <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("homeFounderCredit")}</span>
+              </div>
+            )}
+
             <div style={{ display: "flex", gap: 18, fontSize: 12, color: "rgba(255,255,255,0.62)", flexWrap: "wrap" }}>
               {[t("homeTrust1"), t("homeTrust2"), t("homeTrust3")].map((tt, i) => (
                 <span key={i} style={{ display: "inline-flex", gap: 6 }}><span style={{ color: GOLD }}>✓</span>{tt}</span>
               ))}
             </div>
+            <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.45)", lineHeight: 1.5, maxWidth: 520 }}>{t("homeSportsInline")}</div>
+
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: isMobile ? 12 : 16 }}>
@@ -260,56 +257,13 @@ const Index = () => {
             </div>
 
             <HUD />
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{t("homeHudDisclaimer")}</div>
           </div>
         </div>
       </section>
-
-      {/* ── Any sport ───────────────────────────────────────────── */}
-      <section style={{ borderTop: "0.5px solid rgba(255,255,255,0.07)", background: CARD }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 40 : 64}px ${pad}px` }}>
-          <SectionEyebrow>{t("homeSportsEyebrow")}</SectionEyebrow>
-          <h2 style={{ fontSize: "clamp(22px,3.4vw,34px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.12, margin: "0 0 12px" }}>
-            {t("homeSportsTitle")}
-          </h2>
-          <p style={{ fontSize: isMobile ? 14 : 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.65, maxWidth: 620, margin: "0 0 22px" }}>
-            {t("homeSportsBody")}
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {[
-              { k: "sportTaekwondo", on: true }, { k: "sportKarate", on: true }, { k: "sportKickboxing", on: true }, { k: "sportFitness", on: true },
-              { k: "sportMartialArts", on: false }, { k: "sportHandball", on: false }, { k: "sportFootball", on: false }, { k: "sportSwimming", on: false },
-              { k: "sportAthletics", on: false }, { k: "sportBadminton", on: false }, { k: "sportCycling", on: false }, { k: "sportGymnastics", on: false },
-              { k: "sportVolleyball", on: false }, { k: "sportIceHockey", on: false }, { k: "sportBasketball", on: false },
-            ].map((s) => (
-              <span
-                key={s.k}
-                style={{
-                  padding: isMobile ? "7px 13px" : "8px 16px",
-                  borderRadius: 999,
-                  fontSize: isMobile ? 11 : 12,
-                  fontFamily: MONO,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  border: s.on ? `0.5px solid ${GOLD}` : "0.5px solid rgba(255,255,255,0.14)",
-                  background: s.on ? GOLD : "transparent",
-                  color: s.on ? BG : "rgba(255,255,255,0.7)",
-                  fontWeight: s.on ? 800 : 500,
-                }}
-              >
-                {t(s.k as never)}
-              </span>
-            ))}
-            <span style={{ padding: isMobile ? "7px 13px" : "8px 16px", borderRadius: 999, fontSize: isMobile ? 11 : 12, fontFamily: MONO, letterSpacing: "0.1em", textTransform: "uppercase", border: "0.5px dashed rgba(255,255,255,0.22)", color: "rgba(255,255,255,0.5)" }}>
-              {t("sportYours")}
-            </span>
-          </div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 18 }}>{t("homeSportsFootnote")}</div>
-        </div>
-      </section>
-
-
 
       <Chapter n="01" label={t("homeCh1Label")} title={t("homeCh1Title")} />
+
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
           <div style={{ textAlign: "center", marginBottom: 44 }}>
@@ -337,142 +291,7 @@ const Index = () => {
         </div>
       </section>
 
-      <Chapter n="02" label={t("homeCh2Label")} title={t("homeCh2Title")} />
-      <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
-          <div>
-            <SectionEyebrow>{t("homeSolEyebrow")}</SectionEyebrow>
-            <h2 style={{ fontSize: "clamp(26px,4vw,42px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.1, margin: "0 0 18px" }}>
-              {t("homeSolTitlePre")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeSolTitleEm")}</span>
-            </h2>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: 24 }}>
-              {t("homeSolBody")}
-            </p>
-            <div style={{ display: "grid", gap: 14 }}>
-              {[
-                { h: t("homeSol1H"), d: t("homeSol1D") },
-                { h: t("homeSol2H"), d: t("homeSol2D") },
-                { h: t("homeSol3H"), d: t("homeSol3D") },
-              ].map((s, i) => (
-                <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                  <div style={{ marginTop: 4, width: 24, height: 24, borderRadius: 6, background: "rgba(212,175,55,0.12)", border: `0.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", color: GOLD, fontFamily: MONO, fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{s.h}</div>
-                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ position: "relative" }}>
-            <img src={coachSittingAsset} alt={t("homeSolImgAlt")} style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
-            <div style={{ position: "absolute", bottom: -14, right: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase" }}>{t("homeSolAthletesReady")}</div>
-              <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginTop: 2 }}>18 / 24</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <Chapter n="03" label={t("homeCh3Label")} title={t("homeCh3Title")} />
-      <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <SectionEyebrow>{t("homeFeatEyebrow")}</SectionEyebrow>
-            <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, letterSpacing: "-0.035em", margin: 0 }}>{t("homeFeatTitle")}</h2>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.5)", maxWidth: 500, margin: "16px auto 0" }}>{t("homeFeatSub")}</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>
-            {[
-              { code: "TRAIN.01", title: t("homeFeat1T"), desc: t("homeFeat1D") },
-              { code: "VIDEO.02", title: t("homeFeat2T"), desc: t("homeFeat2D") },
-              { code: "PERF.03", title: t("homeFeat3T"), desc: t("homeFeat3D") },
-              { code: "COMP.04", title: t("homeFeat4T"), desc: t("homeFeat4D") },
-              { code: "MIND.05", title: t("homeFeat5T"), desc: t("homeFeat5D") },
-              { code: "REHAB.06", title: t("homeFeat6T"), desc: t("homeFeat6D") },
-              { code: "CHAT.07", title: t("homeFeat7T"), desc: t("homeFeat7D") },
-              { code: "REPORT.08", title: t("homeFeat8T"), desc: t("homeFeat8D") },
-            ].map((f, i) => (
-              <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: isMobile ? "18px 16px" : "22px 20px" }}>
-                <div style={{ fontFamily: MONO, fontSize: 10, color: GOLD, letterSpacing: "0.12em", marginBottom: 12 }}>{f.code}</div>
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{f.title}</div>
-                <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Chapter n="04" label={t("homeCh4Label")} title={t("homeCh4Title")} />
-      <section id="how-it-works" style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
-        <div style={{ textAlign: "center", marginBottom: 44 }}>
-          <SectionEyebrow>{t("homeHowEyebrow")}</SectionEyebrow>
-          <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, letterSpacing: "-0.035em", margin: 0 }}>{t("homeHowTitle")}</h2>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
-          {[
-            { n: "01", t: t("homeHow1T"), d: t("homeHow1D") },
-            { n: "02", t: t("homeHow2T"), d: t("homeHow2D") },
-            { n: "03", t: t("homeHow3T"), d: t("homeHow3D") },
-          ].map((s, i) => (
-            <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px 22px", position: "relative" }}>
-              <div style={{ fontFamily: MONO, fontSize: 42, fontWeight: 900, color: "rgba(212,175,55,0.3)", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.n}</div>
-              <div style={{ fontSize: 17, fontWeight: 700, marginTop: 8, marginBottom: 8 }}>{s.t}</div>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <Chapter n="05" label={t("homeCh5Label")} title={t("homeCh5Title")} />
-      <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
-          <div style={{ position: "relative", order: isMobile ? 2 : 1 }}>
-            <img src={coachStandingAsset} alt={t("homeWhyImgAlt")} style={{ width: "100%", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
-            <div style={{ position: "absolute", bottom: -14, left: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
-              <div style={{ fontSize: 22, fontWeight: 900, color: GOLD }}>67%</div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase", marginTop: 2 }}>{t("homeWhyStat")}</div>
-            </div>
-          </div>
-          <div style={{ order: isMobile ? 1 : 2 }}>
-            <SectionEyebrow>{t("homeWhyEyebrow")}</SectionEyebrow>
-            <h2 style={{ fontSize: "clamp(26px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.12, marginBottom: 16 }}>
-              {t("homeWhyTitleL1")}<br />{t("homeWhyTitleL2")}
-            </h2>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: 28 }}>
-              {t("homeWhyBody")}
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-              {[
-                { t: t("homeWhy1T"), d: t("homeWhy1D") },
-                { t: t("homeWhy2T"), d: t("homeWhy2D") },
-                { t: t("homeWhy3T"), d: t("homeWhy3D") },
-                { t: t("homeWhy4T"), d: t("homeWhy4D") },
-              ].map((w2, i) => (
-                <div key={i}>
-                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD }} />
-                    {w2.t}
-                  </div>
-                  <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.55 }}>{w2.d}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section style={{ maxWidth: 800, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, textAlign: "center" }}>
-        <SectionEyebrow>{t("homeTestimonialEyebrow")}</SectionEyebrow>
-        <p style={{ fontSize: "clamp(20px,2.6vw,26px)", color: "rgba(255,255,255,0.9)", lineHeight: 1.45, fontWeight: 500, letterSpacing: "-0.01em", margin: "10px 0 24px" }}>
-          <span style={{ color: GOLD, fontFamily: "Georgia, serif", fontSize: 36, lineHeight: 0, position: "relative", top: 8, marginRight: 4 }}>“</span>
-          {t("homeTestimonialQuote")}
-          <span style={{ color: GOLD, fontFamily: "Georgia, serif", fontSize: 36, lineHeight: 0, position: "relative", top: 8, marginLeft: 4 }}>”</span>
-        </p>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontFamily: MONO, letterSpacing: "0.12em", textTransform: "uppercase" }}>{t("homeTestimonialAttr")}</div>
-      </section>
-
-      <Chapter n="06" label={t("homeCh6Label")} title={t("homeCh6Title")} />
+      <Chapter n="02" label={t("homeCh6Label")} title={t("homeCh6Title")} />
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "auto 1fr", gap: isMobile ? 28 : 48, alignItems: "start", justifyItems: isMobile ? "center" : "start", textAlign: isMobile ? "center" : "left" }}>
           <div style={{ position: "relative", flexShrink: 0 }}>
@@ -508,7 +327,110 @@ const Index = () => {
         </div>
       </section>
 
-      {!native && <Chapter n="07" label={t("homeCh7Label")} title={t("homeCh7Title")} />}
+      <Chapter n="03" label={t("homeCh2Label")} title={t("homeCh2Title")} />
+      <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
+          <div>
+            <SectionEyebrow>{t("homeSolEyebrow")}</SectionEyebrow>
+            <h2 style={{ fontSize: "clamp(26px,4vw,42px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.1, margin: "0 0 18px" }}>
+              {t("homeSolTitlePre")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeSolTitleEm")}</span>
+            </h2>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: 24 }}>
+              {t("homeSolBody")}
+            </p>
+            <div style={{ display: "grid", gap: 14 }}>
+              {[
+                { h: t("homeSol1H"), d: t("homeSol1D") },
+                { h: t("homeSol2H"), d: t("homeSol2D") },
+                { h: t("homeSol3H"), d: t("homeSol3D") },
+              ].map((s, i) => (
+                <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  <div style={{ marginTop: 4, width: 24, height: 24, borderRadius: 6, background: "rgba(212,175,55,0.12)", border: `0.5px solid ${GOLD}`, display: "flex", alignItems: "center", justifyContent: "center", color: GOLD, fontFamily: MONO, fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{s.h}</div>
+                    <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => navigate("/funktioner")}
+              style={{ marginTop: 20, background: "transparent", border: "none", padding: 0, color: GOLD, fontSize: 14, fontWeight: 700, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 4 }}
+            >
+              {t("homeSeeAllFeatures")}
+            </button>
+          </div>
+
+          <div style={{ position: "relative" }}>
+            <img src={coachSittingAsset} alt={t("homeSolImgAlt")} loading="lazy" width={1200} height={1200} style={{ width: "100%", height: "auto", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
+            <div style={{ position: "absolute", bottom: -14, right: -14, background: BG, borderRadius: 10, padding: "12px 16px", border: "0.5px solid rgba(255,255,255,0.1)", fontFamily: MONO }}>
+              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.62)", letterSpacing: "0.14em", textTransform: "uppercase" }}>{t("homeExamplePrefix")} {t("homeSolAthletesReady")}</div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: GOLD, marginTop: 2 }}>18 / 24</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <Chapter n="04" label={t("homeCh4Label")} title={t("homeCh4Title")} />
+      <section id="how-it-works" style={{ maxWidth: 1000, margin: "0 auto", padding: `${isMobile ? 56 : 96}px ${pad}px` }}>
+        <div style={{ textAlign: "center", marginBottom: 44 }}>
+          <SectionEyebrow>{t("homeHowEyebrow")}</SectionEyebrow>
+          <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, letterSpacing: "-0.035em", margin: 0 }}>{t("homeHowTitle")}</h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: 16 }}>
+          {[
+            { n: "01", t: t("homeHow1T"), d: t("homeHow1D") },
+            { n: "02", t: t("homeHow2T"), d: t("homeHow2D") },
+            { n: "03", t: t("homeHow3T"), d: t("homeHow3D") },
+          ].map((s, i) => (
+            <div key={i} style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px 22px", position: "relative" }}>
+              <div style={{ fontFamily: MONO, fontSize: 42, fontWeight: 900, color: "rgba(212,175,55,0.3)", letterSpacing: "-0.02em", lineHeight: 1 }}>{s.n}</div>
+              <div style={{ fontSize: 17, fontWeight: 700, marginTop: 8, marginBottom: 8 }}>{s.t}</div>
+              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.6 }}>{s.d}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <Chapter n="05" label={t("homeCh5Label")} title={t("homeCh5Title")} />
+      <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px`, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 56, alignItems: "center" }}>
+          <div style={{ position: "relative", order: isMobile ? 2 : 1 }}>
+            <img src={coachStandingAsset} alt={t("homeWhyImgAlt")} loading="lazy" width={1200} height={800} style={{ width: "100%", height: "auto", borderRadius: 14, border: "0.5px solid rgba(255,255,255,0.08)", display: "block" }} />
+          </div>
+
+          <div style={{ order: isMobile ? 1 : 2 }}>
+            <SectionEyebrow>{t("homeWhyEyebrow")}</SectionEyebrow>
+            <h2 style={{ fontSize: "clamp(26px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.12, marginBottom: 16 }}>
+              {t("homeWhyTitleL1")}<br />{t("homeWhyTitleL2")}
+            </h2>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.7, marginBottom: 28 }}>
+              {t("homeWhyBody")}
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+              {[
+                { t: t("homeWhy1T"), d: t("homeWhy1D") },
+                { t: t("homeWhy2T"), d: t("homeWhy2D") },
+                { t: t("homeWhy3T"), d: t("homeWhy3D") },
+                { t: t("homeWhy4T"), d: t("homeWhy4D") },
+              ].map((w2, i) => (
+                <div key={i}>
+                  <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 5, height: 5, borderRadius: "50%", background: GOLD }} />
+                    {w2.t}
+                  </div>
+                  <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.5)", lineHeight: 1.55 }}>{w2.d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TODO: named club testimonial */}
+
+      {!native && <Chapter n="06" label={t("homeCh7Label")} title={t("homeCh7Title")} />}
       {!native && (
         <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
           <div style={{ textAlign: "center", marginBottom: 40 }}>
@@ -519,20 +441,21 @@ const Index = () => {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2,1fr)", gap: 16, alignItems: "start", maxWidth: 760, margin: "0 auto" }}>
 
             <div style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03))", border: `0.5px solid rgba(212,175,55,0.35)`, borderRadius: 14, padding: "26px", position: "relative", boxShadow: "0 20px 60px rgba(212,175,55,0.08)" }}>
-              <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: GOLD, color: BG, borderRadius: 999, padding: "3px 14px", fontSize: 10, fontWeight: 800, whiteSpace: "nowrap", letterSpacing: "0.1em", fontFamily: MONO }}>{t("homePriceMostPopular")}</div>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: GOLD, textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceClubTier")}</div>
-              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>49<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceClubPeriod")}</span></div>
+              <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1 }}>{t("homePriceClubAmount")}<span style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", fontWeight: 500, marginLeft: 6 }}>{t("homePriceClubPeriod")}</span></div>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 4 }}>{t("homePriceClubSeats")}</div>
+              <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", marginTop: 8 }}>{t("homePriceFamiliesFree")}</div>
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(212,175,55,0.15)", margin: "18px 0" }} />
               {[t("homePriceClub1"), t("homePriceClub2"), t("homePriceClub3"), t("homePriceClub4"), t("homePriceClub5"), t("homePriceClub6"), t("homePriceClub7")].map((f, i) => (
                 <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
               ))}
-              <button onClick={() => navigate("/auth?tab=signup")} style={{ width: "100%", marginTop: 18, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: BG, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("homePriceClubCta")}</button>
+              <button onClick={() => navigate("/contact")} style={{ width: "100%", marginTop: 18, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: BG, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("homePriceClubCta")}</button>
             </div>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px" }}>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceFedTier")}</div>
               <div style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 4 }}>{t("homePriceFedPrice")}</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("homePriceFedNote")}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.55 }}>{t("homePriceFedNote")}</div>
+
               <hr style={{ border: "none", borderTop: "0.5px solid rgba(255,255,255,0.07)", margin: "18px 0" }} />
               {[t("homePriceFed1"), t("homePriceFed2"), t("homePriceFed3"), t("homePriceFed4"), t("homePriceFed5")].map((f, i) => (
                 <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
@@ -546,7 +469,7 @@ const Index = () => {
         </section>
       )}
 
-      <Chapter n={native ? "07" : "08"} label={t("homeCh8Label")} title={t("homeCh8Title")} />
+      <Chapter n={native ? "06" : "07"} label={t("homeCh8Label")} title={t("homeCh8Title")} />
       <section style={{ background: CARD, borderTop: "0.5px solid rgba(255,255,255,0.07)", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
         <div style={{ maxWidth: 780, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
           <div style={{ textAlign: "center", marginBottom: 36 }}>
@@ -588,14 +511,15 @@ const Index = () => {
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 460, margin: "0 auto 32px", lineHeight: 1.65 }}>
             {t("homeCtaBody")}
           </p>
-          <button onClick={() => navigate("/auth?tab=signup")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
+          <button onClick={() => navigate("/contact")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
           <div style={{ marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: MONO, letterSpacing: "0.06em" }}>{t("homeCtaTrust")}</div>
           <div style={{ marginTop: 20, fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
-            Ikke klar til en demo?{" "}
+            {t("homeCtaNotReady")}{" "}
             <button onClick={() => navigate("/klubanalyse")} style={{ background: "none", border: "none", padding: 0, color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>
-              Tag Klubanalysen — 15 spørgsmål om, hvor klubben står
+              {t("homeCtaAnalysisLink")}
             </button>
           </div>
+
         </div>
       </section>
 
