@@ -26,7 +26,10 @@ Proposed source of truth, in this resolution order:
 
 1. `clubs.digital_consent_age` (new `smallint`, nullable) — per-club override a platform admin sets.
 2. `clubs.country` (new `text`, nullable) mapped through a country→age table.
-3. Platform default constant.
+3. The athlete's own `profiles.country` (existing column) through the same table — used when the club has neither an override nor a country.
+4. Platform default constant.
+
+Coverage of `profiles.country` for athletes today: Denmark 24, DK 9, Sweden 4, Norway 2, empty 23. The values are not normalised ("DK" vs "Denmark"), so the lookup table is keyed on a normalised country code and a small alias map handles both spellings. That is 39 of 62 athletes who get a country-derived threshold even before any club is configured.
 
 The country→age mapping lives in the database as `public.digital_consent_ages (country_code, age)`, seeded with the EU member-state Art. 8 ages (13–16) plus DK/NO/SE/DE. A DB table, not a TS file, so client and edge functions read the same rows — this is the fix for the drift you called out.
 
@@ -74,7 +77,7 @@ Say "keep everything" and I will drop the superseded step.
 
 ## 5. What breaks with no club country
 
-`clubs` has no country column today, so on day one **every one of the 16 clubs falls through to the platform default**. Nothing errors: resolution is override → country → default, and the default always answers. The visible effect is that a German club (Art. 8 age 16) would be governed by the default until someone sets its country or override. Mitigation: the club-settings admin screen gets a country selector (reusing `src/data/countries.ts`), the migration backfills country from the modal athlete country per club where one exists (13 of 16 clubs are unambiguous), and `/admin/stats` flags clubs still on the default.
+`clubs` has no country column today, so on day one no club resolves at step 1 or 2 — every athlete falls to step 3, their own `profiles.country`. That covers 39 of 62 athletes (Denmark/DK 33, Sweden 4, Norway 2); the remaining 23 with no country fall to the platform default. Nothing errors: the chain override → club country → athlete country → default always answers. The visible risk is a German club (Art. 8 age 16) being governed by the default until someone sets its country. Mitigation: the club-settings admin screen gets a country selector (reusing `src/data/countries.ts`), the migration backfills club country from the modal athlete country per club where one exists (13 of 16 clubs are unambiguous — Denmark 10, Sweden 2, Norway 1), and `/admin/stats` flags clubs still running on the default.
 
 ## 6. Assumptions I made that you did not specify
 
@@ -82,7 +85,7 @@ Say "keep everything" and I will drop the superseded step.
 2. Grace applies to athletes only. Coaches and parents are not gated, matching today's behaviour.
 3. Dismissal count lives on the profile (server-side), not localStorage — otherwise clearing the browser resets the limit.
 4. The `catch`-block fail-open stays (see section 3). Say the word and it becomes fail-closed too.
-5. The threshold is resolved from the athlete's **club**, not the athlete's own `profiles.country`. Country data on profiles is missing for 23 of 62 athletes, and the club is the data controller.
+5. The club takes precedence over the athlete's own `profiles.country`, because the club is the data controller; the athlete country is a fallback, not an override. An athlete's country is never allowed to *lower* the club's threshold — if both resolve, the club wins even when the athlete's country would be more permissive.
 6. Athletes with no club (9) get the platform default.
 7. `consent-confirm` (the guardian token path) is not age-gated — a guardian granting consent for a 17-year-old under a 15 threshold still succeeds and is recorded.
 
