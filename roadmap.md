@@ -1,1 +1,2 @@
-- Parental consent v2 plan: age config, birth-date backfill, server enforcement, staggered cutover, guardian-email conversion (awaiting approval)
+- Parental consent Release A (birth-date capture, coach set, guardian conversion, funnel, age-field removal) — plan awaiting approval
+- Parental consent Release B (threshold config, server enforcement, staggered grace) — blocked on legal review
