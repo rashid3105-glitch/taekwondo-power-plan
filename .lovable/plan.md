@@ -123,10 +123,11 @@ My proposal, not run until you say so:
 1. Threshold applies to **health-data processing consent only** (`consent_type='health_data_processing'`) — the one consent type in the table today.
 2. Grace applies to athletes only. Coaches and parents are not gated, matching today's behaviour.
 3. Dismissal count lives on the profile (server-side), not localStorage — otherwise clearing the browser resets the limit.
-4. The `catch`-block fail-open stays (see section 3). Say the word and it becomes fail-closed too.
-5. The club takes precedence over the athlete's own `profiles.country`, because the club is the data controller; the athlete country is a fallback, not an override. An athlete's country is never allowed to *lower* the club's threshold — if both resolve, the club wins even when the athlete's country would be more permissive.
-6. Athletes with no club (9) get the platform default.
+4. The `catch`-block stays fail-open — logged in section 3 as **accepted risk**, not as something `consent-self` mitigates.
+5. **ON HOLD pending your legal review.** Whether Art. 8 follows the controller's country or the child's residence is not decided here. Build ships with `consent_age_source = 'controller_first'` as the initial value, changeable by one UPDATE with no redeploy. Nothing in the code assumes club precedence.
+6. Athletes with no club get the platform default (subject to the same source flag — with `residence_first` they resolve from their own country instead).
 7. `consent-confirm` (the guardian token path) is not age-gated — a guardian granting consent for a 17-year-old under a 15 threshold still succeeds and is recorded.
+8. `profiles.age` is retained as a display field but is removed from every consent decision path.
 
 ## 7. Out of scope: diary consent gating
 
@@ -134,14 +135,15 @@ Not touched this round, as instructed. For a later round it would mean: `diary_e
 
 ## Files and tables
 
-**Migrations:** `clubs` (+`digital_consent_age`, +`country`), `profiles` (+`birth_date_prompt_dismissals`), new `digital_consent_ages` table (seeded, public read), new `club_consent_age()` RPC, cutover data migration on `consent_records`.
+**Migrations:** `clubs` (+`digital_consent_age`, +`country`), `profiles` (+`birth_date_prompt_dismissals`), new `digital_consent_ages` table (seeded, public read), new `platform_settings` row `consent_age_source`, new `consent_age_for_athlete()` RPC, staggered cutover data migration on `consent_records`, optional CHECK-constraint change only if you want `'superseded'`.
 
-**Frontend:** `src/lib/age.ts`, `src/lib/consentAge.ts` (new), `src/components/ConsentGate.tsx`, `src/components/BirthDateGate.tsx` (new), `src/components/BirthDatePicker.tsx` (new), `src/App.tsx`, `src/pages/InviteSignup.tsx`, `src/pages/CoachConsents.tsx`, `src/pages/CoachAthleteDetail.tsx`, `src/components/lab/CoachLogQueue.tsx`, `src/components/admin/` club settings, `src/i18n/translations.ts`.
+**Frontend:** `src/lib/age.ts`, `src/lib/consentAge.ts` (new), `src/components/ConsentGate.tsx`, `src/components/BirthDateGate.tsx` (new), `src/components/BirthDatePicker.tsx` (new), `src/App.tsx`, `src/pages/Consent.tsx` (guardian-page rework), `src/pages/InviteSignup.tsx`, `src/pages/CoachConsents.tsx`, `src/pages/CoachAthleteDetail.tsx`, `src/components/coach/CreateAthleteDialog.tsx`, `src/components/lab/CoachLogQueue.tsx`, `src/components/admin/` club settings + `/admin/stats` funnel, `src/i18n/translations.ts`.
 
-**Edge functions:** `_shared/age.ts`, `_shared/consentAge.ts` (new), `consent-self`, `create-athlete`, `consent-coach-actions`, `health-sync-simple`.
+**Edge functions:** `_shared/age.ts`, `_shared/consentAge.ts` (new), `consent-self`, `consent-confirm`, `create-athlete`, `consent-coach-actions`, `health-sync-simple`, plus the `parental-consent-request` email template and a new reminder job (day 3 / day 10 / day 12).
 
 ## Before I build, I need from you
 
 1. The platform default age (my recommendation: 15).
-2. Grace window: 30 days, or another number.
-3. Existing 15–17 pending consents: supersede, or keep.
+2. The staggered windows: 21 / 60 / 45 days as proposed, or your numbers.
+3. The one pending 15–17 consent: leave it `pending` (my recommendation, avoids a constraint change) or alter the CHECK to allow `'superseded'`.
+4. Initial value of `consent_age_source`: `controller_first` until legal review says otherwise?
