@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { CheckCircle2, AlertCircle, Loader2, ShieldCheck } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, ShieldCheck, Clock, HeartOff, Undo2, HelpCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Info = {
@@ -35,6 +35,8 @@ export default function Consent() {
   // GDPR requires unambiguous, active consent — checkbox starts UNCHECKED
   // and the submit button stays disabled until the parent ticks it.
   const [checked, setChecked] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [notMine, setNotMine] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,6 +75,22 @@ export default function Consent() {
     }
   };
 
+  const declineNotMine = async () => {
+    setGranting(true);
+    setError(null);
+    try {
+      const { error } = await supabase.functions.invoke("consent-confirm", {
+        body: { action: "not_my_child", token },
+      });
+      if (error) throw error;
+      setNotMine(true);
+    } catch (e: any) {
+      setError(e.message || "Error");
+    } finally {
+      setGranting(false);
+    }
+  };
+
   const athleteName = info?.athlete_name?.trim() || t("yourChild");
   const clubName = info?.club_name?.trim() || t("privacyConsentYourClub");
   const vars = useMemo(() => ({ athleteName, clubName, name: athleteName }), [athleteName, clubName]);
@@ -101,7 +119,7 @@ export default function Consent() {
           </div>
         )}
 
-        {!loading && !granted && info && !info.valid && (
+        {!loading && !granted && !notMine && info && !info.valid && (
           <div className="flex items-start gap-3 rounded-md bg-amber-50 dark:bg-amber-950/30 p-4">
             <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
             <div className="text-sm">
@@ -115,15 +133,51 @@ export default function Consent() {
           </div>
         )}
 
-        {!loading && !granted && info && info.valid && (
+        {!loading && notMine && (
+          <div className="flex items-start gap-3 rounded-md bg-muted p-4">
+            <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
+            <p className="text-sm">{t("consentNotMyChildDone")}</p>
+          </div>
+        )}
+
+        {!loading && !granted && !notMine && info && info.valid && (
           <>
             <p className="text-sm leading-relaxed">
               {fillPlaceholders(t("privacyConsentParentBody"), vars)}
             </p>
 
-            <div className="rounded-md border border-border p-3 text-sm leading-relaxed bg-muted/30">
-              {fillPlaceholders(t("privacyConsentParentDeclaration"), vars)}
-            </div>
+            <ul className="rounded-md bg-muted/40 p-3 space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>{t("consentQuickWhat")}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Clock className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>{t("consentQuickTime")}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <HeartOff className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>{t("consentQuickIfNothing")}</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <Undo2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <span>{t("consentQuickWithdraw")}</span>
+              </li>
+            </ul>
+
+            <button
+              type="button"
+              onClick={() => setShowDetails((v) => !v)}
+              className="text-xs underline text-muted-foreground"
+            >
+              {t("consentDetailsToggle")}
+            </button>
+
+            {showDetails && (
+              <div className="rounded-md border border-border p-3 text-sm leading-relaxed bg-muted/30">
+                {fillPlaceholders(t("privacyConsentParentDeclaration"), vars)}
+              </div>
+            )}
 
             <p className="text-xs text-muted-foreground leading-relaxed">
               {t("privacyConsentVoluntary")}
@@ -154,6 +208,16 @@ export default function Consent() {
               className="w-full"
             >
               {granting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentGrantBtn")}
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={declineNotMine}
+              disabled={granting}
+              className="w-full text-muted-foreground"
+            >
+              <HelpCircle className="h-4 w-4 mr-2" />
+              {t("consentNotMyChild")}
             </Button>
           </>
         )}

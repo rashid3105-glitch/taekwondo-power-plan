@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { effectiveAge } from "@/lib/age";
+import { isBelowConsentAge } from "@/lib/age";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -94,14 +94,12 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       const grace = (consent as any)?.grace_until as string | null | undefined;
       const inGrace = !!grace && new Date(grace).getTime() > Date.now();
 
-      const age = effectiveAge(
-        (profile as any)?.birth_date ?? null,
-        (profile as any)?.age ?? null,
-      );
-      // Minors need guardian consent before health features open up.
-      // Accounts with no known age must NOT hit the guardian wall — they fall
-      // through to the adult flow, which has a self-service path forward.
-      if (age != null && age < 18) {
+      // Consent decisions use birth_date ONLY — profiles.age is a decaying
+      // static field and must never resolve consent status.
+      // Unknown age (no birth_date) must NOT hit the guardian wall: it falls
+      // through to the adult flow, and BirthDateGate nags for the missing date.
+      const verdict = isBelowConsentAge((profile as any)?.birth_date ?? null);
+      if (verdict === true) {
         if (status === "granted") {
           setState({ kind: "ok" });
           return;

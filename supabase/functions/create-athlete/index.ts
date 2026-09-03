@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { isMinor, POLICY_VERSION } from "../_shared/age.ts";
+import { isBelowConsentAge, ageFromBirthDate, CONSENT_TOKEN_DAYS, POLICY_VERSION } from "../_shared/age.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
@@ -95,7 +95,16 @@ Deno.serve(async (req) => {
       throw new Error("WEAK_PASSWORD");
     }
 
-    const minor = isMinor(birth_date, typeof age === "number" ? age : null);
+    // NEW athletes must have a verifiable birth date (Release A3).
+    if (!birth_date || typeof birth_date !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(birth_date)) {
+      throw new Error("BIRTH_DATE_REQUIRED");
+    }
+    const computedAge = ageFromBirthDate(birth_date);
+    if (computedAge == null || computedAge < 3 || computedAge > 100) {
+      throw new Error("BIRTH_DATE_INVALID");
+    }
+
+    const minor = isBelowConsentAge(birth_date) === true;
 
     if (minor) {
       if (!parent_email || typeof parent_email !== "string" || !EMAIL_RE.test(parent_email.trim())) {
@@ -135,8 +144,8 @@ Deno.serve(async (req) => {
       profileUpdates.weekly_schedule = clubDefault.default_weekly_schedule;
     }
 
-    if (age != null && typeof age === "number" && age >= 5 && age <= 99) profileUpdates.age = age;
-    if (birth_date && typeof birth_date === "string") profileUpdates.birth_date = birth_date;
+    profileUpdates.age = computedAge;
+    profileUpdates.birth_date = birth_date;
     if (belt_level && typeof belt_level === "string") profileUpdates.belt_level = belt_level;
     if (experience_years != null && typeof experience_years === "number" && experience_years >= 0 && experience_years <= 50) profileUpdates.experience_years = experience_years;
     if (discipline && (discipline === "sparring" || discipline === "poomsae")) profileUpdates.discipline = discipline;
@@ -168,7 +177,7 @@ Deno.serve(async (req) => {
     let consentSent = false;
     if (minor) {
       const token = randomToken(32);
-      const expiresAt = new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + CONSENT_TOKEN_DAYS * 24 * 3600 * 1000).toISOString();
 
       // pending consent record
       await adminClient.from("consent_records").upsert({
@@ -179,23 +188,39 @@ Deno.serve(async (req) => {
       }, { onConflict: "athlete_id,consent_type" });
 
       // consent token
-      await adminClient.from("consent_tokens").insert({
+      const { data: tokenRow } = await adminClient.from("consent_tokens").insert({
         token,
         athlete_id: newUser.user!.id,
         parent_email: parent_email.trim(),
         consent_type: "health_data_processing",
         expires_at: expiresAt,
-      });
+      }).select("id").maybeSingle();
+      if (tokenRow?.id) {
+        await adminClient.from("consent_token_events").insert({
+          token_id: tokenRow.id,
+          athlete_id: newUser.user!.id,
+          club_id: targetClubId,
+          event: "sent",
+          meta: { source: "create_athlete" },
+        });
+      }
 
       // Email parent through the managed email API.
       try {
         const consentUrl = `${APP_URL}/consent/${token}`;
+        const { data: clubRow } = await adminClient
+          .from("clubs").select("name").eq("id", targetClubId).maybeSingle();
+        const { data: coachRow } = await adminClient
+          .from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
         const result = await sendTemplateEmail("parental-consent-request", parent_email.trim(), {
           idempotencyKey: `parental-consent-${newUser.user!.id}-${token.slice(0, 8)}`,
           templateData: {
             athleteName: name,
             consentUrl,
-            expiresInDays: 14,
+            expiresInDays: CONSENT_TOKEN_DAYS,
+            clubName: (clubRow as any)?.name || null,
+            coachName: (coachRow as any)?.display_name || null,
+            reminderNumber: 0,
           },
         });
         if (result.sent) consentSent = true;

@@ -12,6 +12,7 @@ import {
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { ConsentFunnelCard } from "@/components/admin/ConsentFunnelCard";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 
 type StatUser = {
@@ -248,6 +249,8 @@ export default function AdminStats() {
             ))}
           </div>
         </section>
+
+        <ConsentFunnelCard />
 
         {/* Signups chart */}
         <section className="rounded-xl border border-border bg-card p-3 sm:p-4">

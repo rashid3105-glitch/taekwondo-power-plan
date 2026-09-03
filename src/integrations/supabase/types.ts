@@ -1165,9 +1165,11 @@ export type Database = {
         Row: {
           accent_color: string | null
           background_color: string | null
+          country: string | null
           created_at: string
           default_weekly_schedule: Json | null
           deleted_at: string | null
+          digital_consent_age: number | null
           id: string
           license_active: boolean
           logo_url: string | null
@@ -1181,9 +1183,11 @@ export type Database = {
         Insert: {
           accent_color?: string | null
           background_color?: string | null
+          country?: string | null
           created_at?: string
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
+          digital_consent_age?: number | null
           id?: string
           license_active?: boolean
           logo_url?: string | null
@@ -1197,9 +1201,11 @@ export type Database = {
         Update: {
           accent_color?: string | null
           background_color?: string | null
+          country?: string | null
           created_at?: string
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
+          digital_consent_age?: number | null
           id?: string
           license_active?: boolean
           logo_url?: string | null
@@ -1726,6 +1732,47 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_token_events: {
+        Row: {
+          athlete_id: string | null
+          club_id: string | null
+          created_at: string
+          event: string
+          id: string
+          meta: Json
+          occurred_at: string
+          token_id: string
+        }
+        Insert: {
+          athlete_id?: string | null
+          club_id?: string | null
+          created_at?: string
+          event: string
+          id?: string
+          meta?: Json
+          occurred_at?: string
+          token_id: string
+        }
+        Update: {
+          athlete_id?: string | null
+          club_id?: string | null
+          created_at?: string
+          event?: string
+          id?: string
+          meta?: Json
+          occurred_at?: string
+          token_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consent_token_events_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "consent_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consent_tokens: {
         Row: {
           athlete_id: string
@@ -1901,6 +1948,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      digital_consent_ages: {
+        Row: {
+          age: number
+          country_code: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          age: number
+          country_code: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          age?: number
+          country_code?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       email_send_log: {
         Row: {
@@ -2701,6 +2769,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      platform_settings: {
+        Row: {
+          created_at: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -4581,6 +4670,10 @@ export type Database = {
         Args: { _user_id: string; _weeks?: number }
         Returns: undefined
       }
+      consent_age_for_athlete: {
+        Args: { _athlete_id: string }
+        Returns: number
+      }
       create_group_thread: {
         Args: { _member_ids: string[]; _title: string }
         Returns: string
@@ -4731,6 +4824,7 @@ export type Database = {
         Args: { _feedback_id: string }
         Returns: undefined
       }
+      normalize_country: { Args: { _country: string }; Returns: string }
       recompute_wearable_summary: {
         Args: { _from: string; _to: string; _user_id: string }
         Returns: undefined
@@ -4742,6 +4836,21 @@ export type Database = {
       rename_chat_group: {
         Args: { _thread: string; _title: string }
         Returns: undefined
+      }
+      review_consent_requirements: {
+        Args: never
+        Returns: {
+          age_known: boolean
+          age_years: number
+          applicable_age: number
+          athlete_id: string
+          birth_date: string
+          club_id: string
+          consent_status: string
+          display_name: string
+          grace_until: string
+          requires_guardian: boolean
+        }[]
       }
       set_club_default_weekly_schedule: {
         Args: { _club_id: string; _schedule: Json }

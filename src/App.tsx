@@ -16,6 +16,7 @@ import { ClubSwitchOverlay } from "@/components/ClubSwitchOverlay";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { ThemeSync } from "@/contexts/ThemeSync";
 import { ConsentGate } from "@/components/ConsentGate";
+import { BirthDateGate } from "@/components/BirthDateGate";
 import { GlobalAppMenu } from "@/components/GlobalAppMenu";
 import { AppBottomNav } from "@/components/AppBottomNav";
 import { BodyPointerEventsGuard } from "@/components/BodyPointerEventsGuard";
@@ -358,6 +359,7 @@ const App = () => {
                     <ConsentGate>
                       <AnimatedRoutes />
                     </ConsentGate>
+                    <BirthDateGate />
                     <GlobalAppMenu />
                     <AppBottomNav />
                     <PoweredBySportstalent />

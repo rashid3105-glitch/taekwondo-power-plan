@@ -11,7 +11,8 @@ export function ageFromBirthDate(birth?: string | null): number | null {
   return age;
 }
 
-// Effective age — prefer birth_date, fall back to a stored numeric age.
+// Effective age — DISPLAY ONLY. `profiles.age` is a static field that decays,
+// so it must never resolve a consent decision. Use `isBelowConsentAge` for that.
 export function effectiveAge(
   birth?: string | null,
   fallbackAge?: number | null,
@@ -22,12 +23,18 @@ export function effectiveAge(
   return null;
 }
 
-// A user is treated as a minor when their effective age is < 18.
-// Unknown age is NOT a minor (callers should validate input separately).
-export function isMinor(
+// Default digital-consent age until the configurable threshold ships (Release B).
+export const DEFAULT_CONSENT_AGE = 18;
+
+export type ConsentAgeVerdict = true | false | "unknown";
+
+// Consent decisions use birth date ONLY. Missing birth date is a genuine third
+// state ("unknown") that every caller must handle explicitly.
+export function isBelowConsentAge(
   birth?: string | null,
-  fallbackAge?: number | null,
-): boolean {
-  const a = effectiveAge(birth, fallbackAge);
-  return a != null && a < 18;
+  threshold: number = DEFAULT_CONSENT_AGE,
+): ConsentAgeVerdict {
+  const a = ageFromBirthDate(birth);
+  if (a == null) return "unknown";
+  return a < threshold;
 }

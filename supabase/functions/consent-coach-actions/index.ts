@@ -7,7 +7,7 @@
 // Returns ONLY names + consent status. Never returns health data.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { isMinor } from "../_shared/age.ts";
+import { isBelowConsentAge, CONSENT_TOKEN_DAYS } from "../_shared/age.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const APP_URL = "https://sportstalent.dk";
@@ -147,8 +147,10 @@ Deno.serve(async (req) => {
         .select("user_id, display_name, birth_date, age, club_id")
         .in("user_id", athleteIds);
 
+      // Include verified minors AND athletes whose age cannot be verified
+      // (missing birth_date) — coaches need to see and fix those too.
       const minorProfiles = (profiles || []).filter((p: any) =>
-        isMinor(p.birth_date, p.age),
+        isBelowConsentAge(p.birth_date) !== false,
       );
       if (minorProfiles.length === 0) return [];
 
@@ -179,6 +181,8 @@ Deno.serve(async (req) => {
         return {
           athlete_id: p.user_id,
           display_name: p.display_name || "",
+          birth_date: p.birth_date || null,
+          age_known: !!p.birth_date,
           club_id: p.club_id,
           status: c?.status || "none",
           grace_until: c?.grace_until || null,
@@ -218,12 +222,14 @@ Deno.serve(async (req) => {
       const inCoachClub = effectiveClubIds.some((cid) => athleteClubs.has(cid));
       if (!inCoachClub) return jsonResponse({ error: "forbidden" }, 403);
 
-      if (!isMinor(athleteRow.birth_date, athleteRow.age)) {
+      // Verified adults cannot get a guardian request. Unknown age is allowed:
+      // asking a guardian is the safe action while the birth date is missing.
+      if (isBelowConsentAge(athleteRow.birth_date) === false) {
         return jsonResponse({ error: "not_a_minor" }, 400);
       }
 
       const tokenValue = randomToken(32);
-      const expiresAt = new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + CONSENT_TOKEN_DAYS * 24 * 3600 * 1000).toISOString();
 
       // Ensure pending consent_records exists.
       await admin.from("consent_records").upsert(
@@ -237,13 +243,29 @@ Deno.serve(async (req) => {
       );
 
       // Insert new token (does not invalidate older ones — most recent wins by created_at).
-      await admin.from("consent_tokens").insert({
+      const { data: tokenRow } = await admin.from("consent_tokens").insert({
         token: tokenValue,
         athlete_id: athleteId,
         parent_email: parentEmail,
         consent_type: "health_data_processing",
         expires_at: expiresAt,
-      });
+      }).select("id").maybeSingle();
+      if (tokenRow?.id) {
+        await admin.from("consent_token_events").insert({
+          token_id: tokenRow.id,
+          athlete_id: athleteId,
+          club_id: athleteRow.club_id,
+          event: "sent",
+          meta: { source: "coach_parent_request" },
+        });
+      }
+
+      const { data: clubRowForEmail } = await admin
+        .from("clubs").select("name").eq("id", athleteRow.club_id).maybeSingle();
+      const { data: coachRowForEmail } = await admin
+        .from("profiles").select("display_name").eq("user_id", coachId).maybeSingle();
+      const clubNameForEmail = (clubRowForEmail as any)?.name || null;
+      const coachNameForEmail = (coachRowForEmail as any)?.display_name || null;
 
       const consentUrl = `${APP_URL}/consent/${tokenValue}`;
       const sendRes = await invokeSendEmail(supabaseUrl, serviceKey, {
@@ -253,7 +275,10 @@ Deno.serve(async (req) => {
         templateData: {
           athleteName: athleteRow.display_name || "your child",
           consentUrl,
-          expiresInDays: 14,
+          expiresInDays: CONSENT_TOKEN_DAYS,
+          clubName: clubNameForEmail,
+          coachName: coachNameForEmail,
+          reminderNumber: 0,
         },
       });
       if (!sendRes.ok) {
@@ -283,9 +308,10 @@ Deno.serve(async (req) => {
       const inCoachClub = effectiveClubIds.some((cid) => athleteClubs.has(cid));
       if (!inCoachClub) return jsonResponse({ error: "forbidden" }, 403);
 
-      if (isMinor(athleteRow.birth_date, athleteRow.age)) {
-        return jsonResponse({ error: "is_a_minor" }, 400);
-      }
+      // Self-consent requires a VERIFIED adult age.
+      const adultVerdict = isBelowConsentAge(athleteRow.birth_date);
+      if (adultVerdict === true) return jsonResponse({ error: "is_a_minor" }, 400);
+      if (adultVerdict === "unknown") return jsonResponse({ error: "birth_date_required" }, 400);
 
       // Get athlete's own email
       const { data: athleteAuth } = await admin.auth.admin.getUserById(athleteId);
@@ -295,7 +321,7 @@ Deno.serve(async (req) => {
       }
 
       const tokenValue = randomToken(32);
-      const expiresAt = new Date(Date.now() + 14 * 24 * 3600 * 1000).toISOString();
+      const expiresAt = new Date(Date.now() + CONSENT_TOKEN_DAYS * 24 * 3600 * 1000).toISOString();
 
       await admin.from("consent_records").upsert(
         {
@@ -323,7 +349,7 @@ Deno.serve(async (req) => {
         templateData: {
           athleteName: athleteRow.display_name || "",
           consentUrl,
-          expiresInDays: 14,
+          expiresInDays: CONSENT_TOKEN_DAYS,
         },
       });
       if (!sendRes.ok) {
@@ -367,6 +393,37 @@ Deno.serve(async (req) => {
         return jsonResponse({ ok: false, queued: false, count: missing.length, error: sendRes.error || `status_${sendRes.status}` }, 502);
       }
       return jsonResponse({ ok: true, queued: true, count: missing.length });
+    }
+
+    // ─── Action: set_birth_date (coach fills in a missing/incorrect birth date) ───
+    if (action === "set_birth_date") {
+      const athleteId: string = body.athlete_id;
+      const birthDate: string = String(body.birth_date || "");
+      if (!athleteId || !/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+        return jsonResponse({ error: "invalid_input" }, 400);
+      }
+      const parsed = new Date(birthDate);
+      const years = (Date.now() - parsed.getTime()) / (365.25 * 24 * 3600 * 1000);
+      if (isNaN(parsed.getTime()) || years < 3 || years > 100) {
+        return jsonResponse({ error: "invalid_birth_date" }, 400);
+      }
+
+      const { data: athleteMemberships } = await admin
+        .from("club_memberships")
+        .select("club_id")
+        .eq("user_id", athleteId)
+        .eq("status", "active");
+      const athleteClubs = new Set((athleteMemberships || []).map((m: any) => m.club_id));
+      if (!effectiveClubIds.some((cid) => athleteClubs.has(cid))) {
+        return jsonResponse({ error: "forbidden" }, 403);
+      }
+
+      const { error: upErr } = await admin
+        .from("profiles")
+        .update({ birth_date: birthDate, age: Math.floor(years) })
+        .eq("user_id", athleteId);
+      if (upErr) return jsonResponse({ error: upErr.message }, 500);
+      return jsonResponse({ ok: true, birth_date: birthDate, age: Math.floor(years) });
     }
 
     return jsonResponse({ error: "unknown_action" }, 400);
