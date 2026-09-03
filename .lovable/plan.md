@@ -26,7 +26,10 @@ Proposed source of truth, in this resolution order:
 
 1. `clubs.digital_consent_age` (new `smallint`, nullable) — per-club override a platform admin sets.
 2. `clubs.country` (new `text`, nullable) mapped through a country→age table.
-3. Platform default constant.
+3. The athlete's own `profiles.country` (existing column) through the same table — used when the club has neither an override nor a country.
+4. Platform default constant.
+
+Coverage of `profiles.country` for athletes today: Denmark 24, DK 9, Sweden 4, Norway 2, empty 23. The values are not normalised ("DK" vs "Denmark"), so the lookup table is keyed on a normalised country code and a small alias map handles both spellings. That is 39 of 62 athletes who get a country-derived threshold even before any club is configured.
 
 The country→age mapping lives in the database as `public.digital_consent_ages (country_code, age)`, seeded with the EU member-state Art. 8 ages (13–16) plus DK/NO/SE/DE. A DB table, not a TS file, so client and edge functions read the same rows — this is the fix for the drift you called out.
 
