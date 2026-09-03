@@ -25,18 +25,22 @@ So **45 of 62 athletes, 35 of them recently active, hit a gate the moment fail-c
 
 Today `18` is hardcoded in `src/lib/age.ts`, `supabase/functions/_shared/age.ts`, plus three ad-hoc copies (`InviteSignup.tsx:48`, `CoachConsents.tsx:136`, `CoachLogQueue.tsx:88`).
 
-Proposed source of truth, in this resolution order:
+Proposed source of truth. Four inputs, and — per your correction 3 — **which of them wins is itself configuration, not baked in**:
 
-1. `clubs.digital_consent_age` (new `smallint`, nullable) — per-club override a platform admin sets.
-2. `clubs.country` (new `text`, nullable) mapped through a country→age table.
-3. The athlete's own `profiles.country` (existing column) through the same table — used when the club has neither an override nor a country.
+1. `clubs.digital_consent_age` (new `smallint`, nullable) — explicit per-club override, always highest precedence.
+2. `clubs.country` (new `text`, nullable) — the controller's country.
+3. `profiles.country` (existing column) — the child's residence.
 4. Platform default constant.
 
-Coverage of `profiles.country` for athletes today: Denmark 24, DK 9, Sweden 4, Norway 2, empty 23. The values are not normalised ("DK" vs "Denmark"), so the lookup table is keyed on a normalised country code and a small alias map handles both spellings. That is 39 of 62 athletes who get a country-derived threshold even before any club is configured.
+A new platform setting `consent_age_source` with values `controller_first` (2 before 3) or `residence_first` (3 before 2) decides the order of inputs 2 and 3. It is a single row in a `platform_settings` table read by the same RPC, so if legal review lands on residence the switch is one UPDATE, no redeploy. Assumption 5 below is recorded as on-hold rather than resolved. A `resolution_source` value (`club_override` / `club_country` / `athlete_country` / `default`) is returned alongside the age so the coach and admin screens can show *why* a threshold applies.
+
+Coverage of `profiles.country` for athletes today: Denmark 24, DK 9, Sweden 4, Norway 2, empty 23. Values are not normalised ("DK" vs "Denmark"), so the lookup table is keyed on ISO-3166 alpha-2 with a small alias map handling both spellings. 39 of 62 athletes resolve from their own country even before any club is configured.
 
 The country→age mapping lives in the database as `public.digital_consent_ages (country_code, age)`, seeded with the EU member-state Art. 8 ages (13–16) plus DK/NO/SE/DE. A DB table, not a TS file, so client and edge functions read the same rows — this is the fix for the drift you called out.
 
-Both age modules become thin: they keep `effectiveAge()` (pure date math, no threshold) and gain `isBelowConsentAge(birth, age, threshold)` which takes the threshold as an argument. Neither file contains a number. The threshold is fetched once via a new security-definer RPC `public.club_consent_age(_club_id uuid)` — usable from the client (ConsentGate, coach screens) and from edge functions with the same result.
+Both age modules become thin: they keep `effectiveAge()` for display only, and gain `isBelowConsentAge(birthDate, threshold)` — **birth date only, no `age` fallback parameter**, so a decayed static field cannot resolve a consent decision. It returns `unknown` (not `false`) when birth date is missing, and callers must handle that third state. Neither file contains a number. Resolution happens in one place: a security-definer RPC `public.consent_age_for_athlete(_athlete_id uuid)` returning `(age, source)`, called from the client and from edge functions.
+
+Follow-on: `create-athlete`, `consent-coach-actions` and `health-sync-simple` currently pass `profiles.age` into `isMinor`. They all move to birth-date-only plus the RPC. `create-athlete` keeps accepting an `age` input for display but stops using it for the guardian-email decision — if a coach creates an athlete with no birth date, the guardian email requirement can no longer be decided, so the dialog makes birth date **required** for new athletes.
 
 **Default value: to be confirmed by you before build.** My recommendation, for you to accept or override: 15 (Danish Art. 8 age, also NO/SE). It applies when the club has no override and no country.
 
