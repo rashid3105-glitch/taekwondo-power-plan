@@ -336,7 +336,7 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
           <Input
             type="text"
             inputMode="decimal"
-            placeholder={t("ptInputPlaceholder")}
+            placeholder={def.inputType === "level" ? "16:1" : t("ptInputPlaceholder")}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             autoFocus
