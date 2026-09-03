@@ -1,149 +1,166 @@
-# Parental consent: configurable age, birth-date backfill, server-side enforcement, cutover
+# Parental consent — Release A (safe) and Release B (legal-dependent)
 
-## Live data (queried, not estimated) — birth_date only
+Split as instructed. Release A ships alone, cannot block anyone, and needs no legal input. Release B ships later and carries all lockout risk.
 
-`profiles.age` is a static field that decays, so it no longer resolves consent status anywhere. Missing `birth_date` = unknown age = BirthDateGate. Re-run on that basis:
+## Corrections applied
 
-62 athlete profiles, 16 clubs.
+**C1 — one clock only.** The dismissal counter is gone: `profiles.birth_date_prompt_dismissals` is dropped from the migration entirely. `BirthDateGate` nags indefinitely and never blocks. `ConsentGate` blocks only when `grace_until` has passed. Grace is the only clock, so mount order in `App.tsx` stops being load-bearing.
+
+**C2 — athletes only.** `BirthDateGate` renders for athlete profiles only; coaches and parents are never prompted and never appear in the grace migration.
+
+**C3 — reclassification is a re-runnable job.** 0/2/5/8 was computed on the 20 athletes who have a birth date, so it will move as the backfill lands. The 15–17 reclassification and the "consents no longer required" report become an idempotent function (`public.review_consent_requirements()`), runnable on demand and on a schedule, not a one-off statement inside a migration.
+
+**C4 — token life 30 days,** reminders rebuilt around it: day 3, day 10, day 21, and an expiry warning at day 27. Nothing references a 14-day life any more.
+
+## Live data (birth_date only; `profiles.age` no longer resolves anything)
+
+62 athletes, 16 clubs.
 
 | Metric | Count |
 |---|---|
-| Athletes with **no birth_date** (unknown age) | 42 — 32 active in last 90 days |
-| Of those, holding granted consent today | 14 (consent stands, age unverifiable) |
-| Athletes with consent granted | 31 |
-| Athletes with no consent row at all | 18 |
-| **Blocked at cutover (no granted consent OR unknown age)** | **45 total — 35 active in last 90 days** |
-| Blocked purely for missing consent (age known) | 31 (22 active) |
-| Real minors by birth date: <13 / <15 / <16 / <18 | 0 / 2 / 5 / 8 |
+| Birth date present | 20 of 62 (32% coverage) |
+| Birth date missing | 42 (32 active in last 90 days) |
+| Of the 20 known: no granted consent | 3 |
+| Of the 42 unknown: no granted consent | 28 |
+| Of the 42 unknown: granted consent, age unverifiable | 14 |
+| Minors among the 20 known (<13/<15/<16/<18) | 0 / 2 / 5 / 8 — unreliable per C3 |
 | Guardian tokens sent / confirmed | 27 / 7 (26%) |
 | Athlete profiles with no country | 23 of 62 |
-| Clubs with no country field | 16 of 16 — `clubs` has **no country column at all** |
+| `clubs` country column | does not exist |
 
-So **45 of 62 athletes, 35 of them recently active, hit a gate the moment fail-closed ships** — the dominant cause is missing birth dates, not missing consent. That ordering drives the cutover: birth-date collection has to lead, and grace has to be staggered rather than a single cliff.
+---
 
-## 1. Age threshold: constant to config
+# RELEASE A — ships first
 
-Today `18` is hardcoded in `src/lib/age.ts`, `supabase/functions/_shared/age.ts`, plus three ad-hoc copies (`InviteSignup.tsx:48`, `CoachConsents.tsx:136`, `CoachLogQueue.tsx:88`).
+## A1. BirthDateGate (athletes only, never blocking)
 
-Proposed source of truth. Four inputs, and — per your correction 3 — **which of them wins is itself configuration, not baked in**:
+A dismissible card mounted in `src/App.tsx` for signed-in athlete profiles with `birth_date is null`, on non-public routes. Dismiss closes it for the session; it returns next session, indefinitely. No counter, no column, no hard state. Date picker is shadcn `Calendar` with year+month dropdowns; display format from `Intl.DateTimeFormat(locale)` so `dd-mm-yyyy` falls out for `da`; Arabic inherits RTL. Stored as ISO `YYYY-MM-DD` via `update-my-profile` (already validates the format). Keys in all 7 languages.
 
-1. `clubs.digital_consent_age` (new `smallint`, nullable) — explicit per-club override, always highest precedence.
-2. `clubs.country` (new `text`, nullable) — the controller's country.
-3. `profiles.country` (existing column) — the child's residence.
-4. Platform default constant.
+## A2. Coach sets an athlete's birth date
 
-A new platform setting `consent_age_source` with values `controller_first` (2 before 3) or `residence_first` (3 before 2) decides the order of inputs 2 and 3. It is a single row in a `platform_settings` table read by the same RPC, so if legal review lands on residence the switch is one UPDATE, no redeploy. Assumption 5 below is recorded as on-hold rather than resolved. A `resolution_source` value (`club_override` / `club_country` / `athlete_country` / `default`) is returned alongside the age so the coach and admin screens can show *why* a threshold applies.
+Field on `src/pages/CoachAthleteDetail.tsx`, writing through a new `set_birth_date` action in `consent-coach-actions`, authorised club-scoped exactly like the existing actions there.
 
-Coverage of `profiles.country` for athletes today: Denmark 24, DK 9, Sweden 4, Norway 2, empty 23. Values are not normalised ("DK" vs "Denmark"), so the lookup table is keyed on ISO-3166 alpha-2 with a small alias map handling both spellings. 39 of 62 athletes resolve from their own country even before any club is configured.
+## A3. Birth date required for new athletes
 
-The country→age mapping lives in the database as `public.digital_consent_ages (country_code, age)`, seeded with the EU member-state Art. 8 ages (13–16) plus DK/NO/SE/DE. A DB table, not a TS file, so client and edge functions read the same rows — this is the fix for the drift you called out.
+`CreateAthleteDialog.tsx` + `create-athlete` require a birth date for newly created athletes. Existing athletes are never retro-required — that is the whole point of A1 being non-blocking.
 
-Both age modules become thin: they keep `effectiveAge()` for display only, and gain `isBelowConsentAge(birthDate, threshold)` — **birth date only, no `age` fallback parameter**, so a decayed static field cannot resolve a consent decision. It returns `unknown` (not `false`) when birth date is missing, and callers must handle that third state. Neither file contains a number. Resolution happens in one place: a security-definer RPC `public.consent_age_for_athlete(_athlete_id uuid)` returning `(age, source)`, called from the client and from edge functions.
+## A4. Guardian conversion rework
 
-Follow-on: `create-athlete`, `consent-coach-actions` and `health-sync-simple` currently pass `profiles.age` into `isMinor`. They all move to birth-date-only plus the RPC. `create-athlete` keeps accepting an `age` input for display but stops using it for the guardian-email decision — if a coach creates an athlete with no birth date, the guardian email requirement can no longer be decided, so the dialog makes birth date **required** for new athletes.
+Nothing here touches the threshold. `parental-consent-request` template:
 
-**Default value: to be confirmed by you before build.** My recommendation, for you to accept or override: 15 (Danish Art. 8 age, also NO/SE). It applies when the club has no override and no country.
+1. Subject names child and club: "Consent needed for {child} at {club}".
+2. Sender display name is the club where available; address stays `noreply@sportstalent.dk`.
+3. First line, above the fold: what happens without action, and by when.
+4. One button. Policy links move below the fold.
+5. Three plain-language bullets on what is collected, instead of a policy link.
+6. Localised to the athlete's profile language (today it is single-language).
+7. Token life **30 days**; reminders at day 3, day 10, day 21; expiry warning day 27. New scheduled job, reusing `enqueue_email`.
 
-## 2. Birth-date backfill
+`src/pages/Consent.tsx` (`/consent/:token`):
 
-- New `BirthDateGate` component mounted next to `ConsentGate` in `src/App.tsx`. Shows for any signed-in athlete/coach profile where `birth_date is null`, on non-public routes.
-- Dismissible **3 times** (counter stored on the profile, not localStorage, so it survives device changes — new `profiles.birth_date_prompt_dismissals smallint default 0`). Fourth appearance is required: no dismiss button, no way past it.
-- Input: shadcn `Calendar`/date-picker with year+month dropdowns (birthdays are far in the past — a plain month-flip calendar is unusable). Display format from `Intl.DateTimeFormat(locale)`, so `dd-mm-yyyy` for da falls out naturally; Arabic inherits RTL from the existing layout. No hardcoded format string.
-- Stored as ISO `YYYY-MM-DD` in the existing `profiles.birth_date` via the existing `update-my-profile` edge function (which already validates that regex). Also clears `profiles.age` ambiguity by leaving `age` alone — `effectiveAge` prefers birth_date.
-- Coach path: a "Set birth date" field on the athlete profile in `src/pages/CoachAthleteDetail.tsx`, writing through a new action in `consent-coach-actions` (coach may only write for athletes in their club).
-- New translation keys in all 7 languages.
+8. Mobile-first single screen — guardians arrive from email on a phone.
+9. Child name, photo and club at the top for instant recognition.
+10. Checkbox and button inside the first viewport; "what this covers" expandable below.
+11. Confirmation screen after granting, plus an emailed receipt of what was consented (none today).
+12. "This isn't my child / I'm not the guardian" link that flags the coach, turning wrong-address cases into data.
+13. Consistent Noir & Gold shell so the page does not read as a phishing form.
 
-## 3. Server-side enforcement
+## A5. Funnel instrumentation
 
-- `supabase/functions/consent-self/index.ts`: before granting, load the caller's `birth_date` and `club_id`, resolve the threshold, and reject with `{ error: "minor_requires_guardian" }` (403) below it, or `{ error: "birth_date_required" }` when birth date is missing. **Scope, stated correctly:** this governs *who may grant consent* — it stops a minor self-granting. It does **not** stop processing of data belonging to someone with no valid consent. That is a separate control surface (per-endpoint consent checks; today only `health-sync-simple` has one).
-- `ConsentGate.tsx`: unknown age becomes fail-closed — it renders an "add your birth date" state handing off to the BirthDateGate flow instead of silently passing.
-- **Accepted risk, not mitigated:** the `catch` block stays fail-open, so any network or RLS error grants full app access regardless of consent state. `consent-self` does not cover this hole — it is a different control. The reason to accept it is availability (a flaky request would otherwise lock out every athlete), and the residual exposure is: unconsented processing continues for the duration of any client-side failure, undetected. Closing it properly means moving the gate server-side (RLS predicates on the processing tables), which is not in this round. Recorded so it is a decision, not an oversight.
-- `health-sync-simple` already gates on consent for minors; it switches to the same resolved threshold and to birth-date-only age.
+Per-token `sent → opened → confirmed` (open via a pixel/redirect on the token link, confirm from `consent_tokens.confirmed_at`), surfaced in `/admin/stats` alongside a birth-date coverage counter and a club-level breakdown.
 
-## 4. Cutover
+## A6. `profiles.age` out of the consent path
 
-Nothing is enforced against a live athlete without a grace window first, and the window is **staggered, not one stamped date**.
+`isBelowConsentAge(birthDate, threshold)` — birth date only, returning `true | false | "unknown"` as a genuine third state that callers must handle. `effectiveAge()` stays for display. Removed from decisions in `src/lib/age.ts`, `supabase/functions/_shared/age.ts`, `InviteSignup.tsx`, `CoachConsents.tsx`, `CoachLogQueue.tsx`, `create-athlete`, `health-sync-simple`. In Release A the threshold argument stays the existing 18 — the value only becomes configurable in B, and behaviour is unchanged except that unknown is no longer silently treated as adult in *display* logic.
 
-Stagger rule, written into the migration per athlete:
+## Confirmation: nothing in Release A can block a user
 
-| Cohort | Grace | Why |
-|---|---|---|
-| Known age, adult, no consent row | 21 days | One click to fix; no third party involved |
-| Known age, minor, guardian pending | 60 days | Depends on a guardian replying; historical rate is 26% |
-| Unknown age (42 athletes) | 45 days, **counted from first sign-in after ship**, not from ship date | An athlete who does not open the app in March must not find themselves already expired in April |
-| Unknown age, dormant >180 days | no grace row created until they return | Do not burn a window on accounts nobody is using |
+- A1 has no blocking state and no counter — worst case is a card the athlete keeps dismissing.
+- A2/A3 affect coach-side creation of *new* athletes only; no existing user meets a new requirement.
+- A4/A5 touch guardian email and a public token page; no authenticated route changes.
+- A6 changes how a value is computed, and in Release A no code path turns `"unknown"` into a block — every caller renders the existing non-blocking banner. `ConsentGate`'s fail-open behaviour is untouched until B4.
+- No RLS policy, no grace stamping, no new required field for existing users.
 
-Implementation: `grace_until` is set at migration time for the first two cohorts; for the unknown-age cohort the migration leaves `grace_until` null and `BirthDateGate` stamps `now() + 45 days` on first appearance. Same column, no new mechanism. A deterministic jitter (`+ (hashtext(athlete_id) % 5) days`) spreads expiries so support does not get 35 lockouts in one morning.
+## Release A exit criteria (to report, not to assume)
 
-- **What the athlete sees during grace:** the existing amber banner (`state.kind === "banner"`) — dismissible per session, full app access. Copy gains the deadline date, and for minors the guardian-invite button that today only appears on the blocking screen.
-- **What the coach sees:** `CoachConsents.tsx` gains a "grace ends" column, sorting by soonest expiry, cohort labels, and a count badge in the coach nav.
-- **At expiry:** the gate falls to `blocking` for adults (self-consent, one checkbox) or `minor` (guardian invite). No data deleted, no account disabled.
+- Birth-date coverage %, measured 30 days after ship from the A5 counter. Today it is 32%; I will report the actual figure, not a projection.
+- Guardian confirmation rate post-rework against the 26% (7/27) baseline, from the A5 funnel.
 
-### Moving the 26% guardian confirmation rate
+## Release A files and tables
 
-In scope now. Seven of 27 tokens confirmed. Changes to the `parental-consent-request` template and `src/pages/Consent.tsx`:
+**Migrations:** none required for the gate itself. One new table `public.consent_token_events (token_id, event, occurred_at)` for the funnel, with GRANTs and RLS (admin read, service_role write). No `profiles` column added. **`birth_date_prompt_dismissals` is not created.**
 
-**Email**
-1. Subject names the child and the club: "Consent needed for {child} at {club}" — today it reads as generic platform mail and looks like spam.
-2. Send from the club's name where available, not a bare platform sender; keep `noreply@sportstalent.dk` as the address.
-3. First line states what happens without action and by when (the staggered date), above the fold.
-4. One button, no competing links. Move the policy links below the fold.
-5. Plain-language "what we collect" list — three bullets, no legal register — instead of a policy link the guardian will not click.
-6. Localise to the athlete's profile language; today the template is sent in one language.
-7. Automatic reminders at day 3 and day 10 (currently reminders are manual from the coach screen), plus expiry-warning at day 12 of the 14-day token life.
-8. Token life goes 14 → 30 days for the guardian cohort so a reminder cannot arrive after the link is dead — a likely cause of the current dropout.
+**Frontend:** `src/components/BirthDateGate.tsx` (new), `src/components/BirthDatePicker.tsx` (new), `src/App.tsx`, `src/lib/age.ts`, `src/pages/CoachAthleteDetail.tsx`, `src/components/coach/CreateAthleteDialog.tsx`, `src/pages/Consent.tsx`, `src/pages/InviteSignup.tsx`, `src/pages/CoachConsents.tsx`, `src/components/lab/CoachLogQueue.tsx`, `src/pages/admin/` stats, `src/i18n/translations.ts`.
 
-**`/consent/:token` page**
-9. Mobile-first single screen: guardians open this on a phone from an email. Today's layout front-loads legal text before the action.
-10. Show the child's name, photo and club at the top so the guardian recognises the request instantly.
-11. Checkbox and button in the first viewport; expandable "what this covers" below rather than a wall.
-12. Explicit confirmation screen after granting, plus a copy of what was consented sent to the guardian's email — no receipt today.
-13. A "this isn't my child / I'm not the guardian" link that notifies the coach, so wrong-address cases become data instead of silence.
+**Edge functions:** `_shared/age.ts`, `consent-coach-actions` (+`set_birth_date`), `create-athlete`, `consent-confirm` (token life + event logging), `health-sync-simple`, the `parental-consent-request` template, and a new `send-consent-reminders` scheduled function.
 
-Measurement: token-level funnel (sent → opened → confirmed) into `/admin/stats`, otherwise the next iteration is guesswork too.
+## Does Release A secretly depend on Release B?
 
-### Existing records — your call, nothing silent
+Three honest couplings, none blocking:
 
-Answering your question: **`consent_records.status` has a CHECK constraint of `('pending','granted','withdrawn')` — `'superseded'` is not accepted.** Using it requires altering the constraint in the migration. And **creating pending rows sends no email**: the only trigger is `update_updated_at_column`, there is no DB webhook, and no cron job touches consent. All guardian mail is sent explicitly by `create-athlete` / `consent-coach-actions`.
+1. **A3's guardian-email decision still uses a threshold.** With B not shipped it uses today's hardcoded 18, so a 16-year-old in a country with a 15 threshold gets a guardian email that will later prove unnecessary. Over-collection, not under-collection — safe direction, and the A4 template does not depend on which number produced it.
+2. **A6's `"unknown"` third state has no consumer until B.** In A it is handled by every caller as "show the banner". That is deliberate dead-ish code, and if B never ships, A leaves behaviour where it is today rather than half-enforced.
+3. **A5's coverage counter is the input to B5's cohort sizing.** B cannot be sized correctly without A having run for a while — which is the argument for this split, not against it.
 
-With a 15 threshold, on birth-date data: four 15–17-year-olds hold guardian-granted consent no longer required, one holds pending guardian consent, two under-15s are granted.
+---
 
-My proposal, not run until you say so:
+# RELEASE B — after legal review
 
-- **Granted (4):** keep as-is, stamp `policy_version` so the report shows the old threshold applied.
-- **Pending (1):** either extend the CHECK constraint to allow `'superseded'`, or leave it `pending` and simply stop chasing it. Given it is one row, my recommendation is now **leave it** and skip the constraint change.
-- **Under-15s (2, both granted):** untouched.
+## B1. Threshold as config
 
-## 5. What breaks with no club country
+`clubs.digital_consent_age` (smallint, nullable override), `clubs.country` (text), `public.digital_consent_ages (country_code, age)` seeded with EU Art. 8 ages 13–16 plus DK/NO/SE/DE, and a security-definer RPC `public.consent_age_for_athlete(_athlete_id uuid)` returning `(age, source)` where source is `club_override | club_country | athlete_country | strictest | default`. Country values normalise to ISO-3166 alpha-2 with an alias map for the existing "DK"/"Denmark" mix.
 
-`clubs` has no country column today, so on day one no club resolves at step 1 or 2 — every athlete falls to step 3, their own `profiles.country`. That covers 39 of 62 athletes (Denmark/DK 33, Sweden 4, Norway 2); the remaining 23 with no country fall to the platform default. Nothing errors: the chain override → club country → athlete country → default always answers. The visible risk is a German club (Art. 8 age 16) being governed by the default until someone sets its country. Mitigation: the club-settings admin screen gets a country selector (reusing `src/data/countries.ts`), the migration backfills club country from the modal athlete country per club where one exists (13 of 16 clubs are unambiguous — Denmark 10, Sweden 2, Norway 1), and `/admin/stats` flags clubs still running on the default.
+## B2. `consent_age_source` — three values
 
-## 6. Assumptions I made that you did not specify
+`controller_first`, `residence_first`, and `strictest`. **Initial value: `strictest`** — the max of the club country's age and the athlete residence's age. Until legal answers, over-collecting consent costs friction and under-collecting costs a finding. Stored as one row in `platform_settings`, changeable by a single UPDATE with no redeploy.
 
-1. Threshold applies to **health-data processing consent only** (`consent_type='health_data_processing'`) — the one consent type in the table today.
-2. Grace applies to athletes only. Coaches and parents are not gated, matching today's behaviour.
-3. Dismissal count lives on the profile (server-side), not localStorage — otherwise clearing the browser resets the limit.
-4. The `catch`-block stays fail-open — logged in section 3 as **accepted risk**, not as something `consent-self` mitigates.
-5. **ON HOLD pending your legal review.** Whether Art. 8 follows the controller's country or the child's residence is not decided here. Build ships with `consent_age_source = 'controller_first'` as the initial value, changeable by one UPDATE with no redeploy. Nothing in the code assumes club precedence.
-6. Athletes with no club get the platform default (subject to the same source flag — with `residence_first` they resolve from their own country instead).
-7. `consent-confirm` (the guardian token path) is not age-gated — a guardian granting consent for a 17-year-old under a 15 threshold still succeeds and is recorded.
-8. `profiles.age` is retained as a display field but is removed from every consent decision path.
+## B3. `consent-self` server-side age check
 
-## 7. Out of scope: diary consent gating
+Rejects with `minor_requires_guardian` (403) below threshold and `birth_date_required` when birth date is missing. Scope stated correctly: this governs **who may grant consent**, not who may be processed without it.
 
-Not touched this round, as instructed. For a later round it would mean: `diary_entries` currently has no consent dependency, so gating it needs (a) a decision on whether diary text counts as health data under Art. 9 — arguably yes for mood/injury entries, (b) an RLS predicate on `diary_entries` referencing a consent-check function, (c) offline handling, since `diaryOfflineDB.ts`/`diarySyncEngine.ts` let entries be written with no server round-trip and a sync would then be rejected server-side, needing a client-side pre-check plus a rejection UI. That third point is the real work; it is a round of its own.
+## B4. `ConsentGate` fail-closed on unknown age
 
-## Files and tables
+Unknown age becomes a blocking "add your birth date" state — but only once that athlete's grace has expired (C1). The `catch` block stays fail-open: **accepted risk, not mitigated** — any network or RLS error grants full access regardless of consent state, and `consent-self` does not cover it. Closing it properly means RLS predicates on the processing tables, a later round.
 
-**Migrations:** `clubs` (+`digital_consent_age`, +`country`), `profiles` (+`birth_date_prompt_dismissals`), new `digital_consent_ages` table (seeded, public read), new `platform_settings` row `consent_age_source`, new `consent_age_for_athlete()` RPC, staggered cutover data migration on `consent_records`, optional CHECK-constraint change only if you want `'superseded'`.
+## B5. Staggered grace
 
-**Frontend:** `src/lib/age.ts`, `src/lib/consentAge.ts` (new), `src/components/ConsentGate.tsx`, `src/components/BirthDateGate.tsx` (new), `src/components/BirthDatePicker.tsx` (new), `src/App.tsx`, `src/pages/Consent.tsx` (guardian-page rework), `src/pages/InviteSignup.tsx`, `src/pages/CoachConsents.tsx`, `src/pages/CoachAthleteDetail.tsx`, `src/components/coach/CreateAthleteDialog.tsx`, `src/components/lab/CoachLogQueue.tsx`, `src/components/admin/` club settings + `/admin/stats` funnel, `src/i18n/translations.ts`.
+Cohorts and jitter as previously planned — adults with no consent row 21 days, guardian-pending minors 60 days, unknown age 45 days counted from first sign-in after ship, dormant >180 days no row until they return, plus `hashtext(athlete_id) % 5` days of jitter. Cohort sizes are recomputed against birth-date coverage at B ship time, not today's numbers.
 
-**Edge functions:** `_shared/age.ts`, `_shared/consentAge.ts` (new), `consent-self`, `consent-confirm`, `create-athlete`, `consent-coach-actions`, `health-sync-simple`, plus the `parental-consent-request` email template and a new reminder job (day 3 / day 10 / day 12).
+## B6. Re-runnable reclassification (C3)
 
-## Before I build, I need from you
+`public.review_consent_requirements()` — idempotent, safe to run repeatedly: recomputes which granted/pending consents are no longer required at the current threshold, writes a report row, and never mutates a `granted` record (a valid consent stays a valid audit record). Scheduled weekly and callable from `/admin/stats`. Also answers the earlier question: `consent_records.status` has a CHECK of `('pending','granted','withdrawn')`, so `'superseded'` needs a constraint change — the job avoids needing one by reporting rather than restatusing.
 
-1. The platform default age (my recommendation: 15).
-2. The staggered windows: 21 / 60 / 45 days as proposed, or your numbers.
-3. The one pending 15–17 consent: leave it `pending` (my recommendation, avoids a constraint change) or alter the CHECK to allow `'superseded'`.
-4. Initial value of `consent_age_source`: `controller_first` until legal review says otherwise?
+## Release B blast radius as a function of birth-date coverage
+
+Baseline from live data: of the 20 athletes with a birth date, 3 (15%) lack granted consent; of the 42 without, 28 lack it and 14 hold consent that cannot be age-verified. Under B4, unknown age gates regardless of consent status.
+
+`gated ≈ 62 × (1 − coverage)  +  62 × coverage × 0.15`
+
+| birth_date coverage | Athletes gated at B ship |
+|---|---|
+| 32% (today) | ~45 (42 unknown + 3 known-unconsented) |
+| 60% | ~30 |
+| 80% | ~20 |
+| 95% | ~12 |
+| 100% | ~9 |
+
+Two caveats: the 15% unconsented rate is measured on 20 profiles and will move; and every gated athlete has grace before any block, so "gated" means "enters a countdown", not "locked out on day one". Release A exists precisely to move this table down before B ships.
+
+## New assumptions in this revision
+
+1. Funnel "opened" is tracked via the token link redirect, which means a tracking hop on a guardian email — acceptable under the existing email policy, tell me if not.
+2. `consent_token_events` is admin-read only; guardians and coaches see aggregate rates, not per-open timestamps.
+3. Release A leaves the threshold at today's 18 rather than shipping an interim number, so nothing changes classification twice.
+4. `review_consent_requirements()` reports only; it never withdraws or restatuses a consent without a separate explicit action.
+5. Reminder days 3/10/21/27 assume the 30-day token; a token regenerated by a coach restarts the schedule.
+6. Dormancy for B5 is `last_seen_at`, the same field used elsewhere in coach screens.
+
+## Still out of scope: diary consent gating
+
+Unchanged: it needs an Art. 9 decision, an RLS predicate on `diary_entries`, and offline pre-gating in `diaryOfflineDB.ts` / `diarySyncEngine.ts` where entries are written with no server round-trip. That third part is a round of its own.
+
+## What I need from you
+
+**For Release A:** approval only — no legal input needed. One optional call: the tracking hop in assumption 1.
+
+**For Release B (later):** platform default age (recommendation 15), confirmation of `strictest` as the initial `consent_age_source`, and the grace numbers.
