@@ -55,32 +55,64 @@ Follow-on: `create-athlete`, `consent-coach-actions` and `health-sync-simple` cu
 
 ## 3. Server-side enforcement
 
-- `supabase/functions/consent-self/index.ts`: before granting, load the caller's `birth_date`/`age`/`club_id`, resolve the club threshold, and reject with `{ error: "minor_requires_guardian" }` (403) when the caller is below it. Also reject when the effective age is unknown (`{ error: "birth_date_required" }`) — self-consent from an ageless account is exactly the hole today.
-- `ConsentGate.tsx`: unknown age becomes fail-closed — it renders a "add your birth date" state that hands off to the BirthDateGate flow instead of silently passing.
-- The `catch` fail-open on network/RLS error stays fail-open. Locking every athlete out of the app because of a flaky request is worse than the risk it mitigates, and the server-side check in consent-self is the real enforcement point.
-- `health-sync-simple` already gates on consent for minors; it switches to the same resolved threshold.
+- `supabase/functions/consent-self/index.ts`: before granting, load the caller's `birth_date` and `club_id`, resolve the threshold, and reject with `{ error: "minor_requires_guardian" }` (403) below it, or `{ error: "birth_date_required" }` when birth date is missing. **Scope, stated correctly:** this governs *who may grant consent* — it stops a minor self-granting. It does **not** stop processing of data belonging to someone with no valid consent. That is a separate control surface (per-endpoint consent checks; today only `health-sync-simple` has one).
+- `ConsentGate.tsx`: unknown age becomes fail-closed — it renders an "add your birth date" state handing off to the BirthDateGate flow instead of silently passing.
+- **Accepted risk, not mitigated:** the `catch` block stays fail-open, so any network or RLS error grants full app access regardless of consent state. `consent-self` does not cover this hole — it is a different control. The reason to accept it is availability (a flaky request would otherwise lock out every athlete), and the residual exposure is: unconsented processing continues for the duration of any client-side failure, undetected. Closing it properly means moving the gate server-side (RLS predicates on the processing tables), which is not in this round. Recorded so it is a decision, not an oversight.
+- `health-sync-simple` already gates on consent for minors; it switches to the same resolved threshold and to birth-date-only age.
 
 ## 4. Cutover
 
-Nothing is enforced against a live athlete without a grace window first.
+Nothing is enforced against a live athlete without a grace window first, and the window is **staggered, not one stamped date**.
 
-- **Length: 30 days** from ship. Long enough for a guardian email round-trip given the 26% confirmation rate, short enough to be a real deadline.
-- **Migration sets `grace_until = now() + 30 days`** on every athlete who is not currently granted — including creating a `consent_records` row with `status='pending'` for the 18 athletes who have none. Uses the existing column, no new mechanism.
-- **What the athlete sees:** the existing amber banner (`state.kind === "banner"`), unchanged in behaviour — dismissible per session, full app access. Copy gains the deadline date and, for minors, the guardian-invite button that today only appears on the blocking screen.
-- **What the coach sees:** `/coach/consents` (`CoachConsents.tsx`) already lists per-athlete consent state; it gains a "grace ends" column, sorting by soonest expiry, and a count badge in the coach nav so it is not something they have to go looking for.
-- **At expiry:** grace lapses naturally (`grace_until < now()`), and the gate falls through to `blocking` for adults (self-consent, one checkbox — recoverable in ten seconds) or `minor` for those below the threshold (guardian invite link). No data is deleted and no account is disabled.
+Stagger rule, written into the migration per athlete:
+
+| Cohort | Grace | Why |
+|---|---|---|
+| Known age, adult, no consent row | 21 days | One click to fix; no third party involved |
+| Known age, minor, guardian pending | 60 days | Depends on a guardian replying; historical rate is 26% |
+| Unknown age (42 athletes) | 45 days, **counted from first sign-in after ship**, not from ship date | An athlete who does not open the app in March must not find themselves already expired in April |
+| Unknown age, dormant >180 days | no grace row created until they return | Do not burn a window on accounts nobody is using |
+
+Implementation: `grace_until` is set at migration time for the first two cohorts; for the unknown-age cohort the migration leaves `grace_until` null and `BirthDateGate` stamps `now() + 45 days` on first appearance. Same column, no new mechanism. A deterministic jitter (`+ (hashtext(athlete_id) % 5) days`) spreads expiries so support does not get 35 lockouts in one morning.
+
+- **What the athlete sees during grace:** the existing amber banner (`state.kind === "banner"`) — dismissible per session, full app access. Copy gains the deadline date, and for minors the guardian-invite button that today only appears on the blocking screen.
+- **What the coach sees:** `CoachConsents.tsx` gains a "grace ends" column, sorting by soonest expiry, cohort labels, and a count badge in the coach nav.
+- **At expiry:** the gate falls to `blocking` for adults (self-consent, one checkbox) or `minor` (guardian invite). No data deleted, no account disabled.
+
+### Moving the 26% guardian confirmation rate
+
+In scope now. Seven of 27 tokens confirmed. Changes to the `parental-consent-request` template and `src/pages/Consent.tsx`:
+
+**Email**
+1. Subject names the child and the club: "Consent needed for {child} at {club}" — today it reads as generic platform mail and looks like spam.
+2. Send from the club's name where available, not a bare platform sender; keep `noreply@sportstalent.dk` as the address.
+3. First line states what happens without action and by when (the staggered date), above the fold.
+4. One button, no competing links. Move the policy links below the fold.
+5. Plain-language "what we collect" list — three bullets, no legal register — instead of a policy link the guardian will not click.
+6. Localise to the athlete's profile language; today the template is sent in one language.
+7. Automatic reminders at day 3 and day 10 (currently reminders are manual from the coach screen), plus expiry-warning at day 12 of the 14-day token life.
+8. Token life goes 14 → 30 days for the guardian cohort so a reminder cannot arrive after the link is dead — a likely cause of the current dropout.
+
+**`/consent/:token` page**
+9. Mobile-first single screen: guardians open this on a phone from an email. Today's layout front-loads legal text before the action.
+10. Show the child's name, photo and club at the top so the guardian recognises the request instantly.
+11. Checkbox and button in the first viewport; expandable "what this covers" below rather than a wall.
+12. Explicit confirmation screen after granting, plus a copy of what was consented sent to the guardian's email — no receipt today.
+13. A "this isn't my child / I'm not the guardian" link that notifies the coach, so wrong-address cases become data instead of silence.
+
+Measurement: token-level funnel (sent → opened → confirmed) into `/admin/stats`, otherwise the next iteration is guesswork too.
 
 ### Existing records — your call, nothing silent
 
-With a threshold of 15 instead of 18, five 15–17-year-olds hold guardian-granted consent that Art. 8 no longer requires, and three hold pending guardian consent.
+Answering your question: **`consent_records.status` has a CHECK constraint of `('pending','granted','withdrawn')` — `'superseded'` is not accepted.** Using it requires altering the constraint in the migration. And **creating pending rows sends no email**: the only trigger is `update_updated_at_column`, there is no DB webhook, and no cron job touches consent. All guardian mail is sent explicitly by `create-athlete` / `consent-coach-actions`.
 
-My proposal, which I will not run until you say so:
+With a 15 threshold, on birth-date data: four 15–17-year-olds hold guardian-granted consent no longer required, one holds pending guardian consent, two under-15s are granted.
 
-- **Granted (5):** keep as-is. A valid consent does not become invalid because it was no longer required; withdrawing it would destroy an audit record. Add `policy_version` stamping so the report shows it was granted under the old threshold.
-- **Pending (3):** mark `status = 'superseded'` with a note, and let those athletes self-consent. Chasing guardians for consent the law no longer requires is user-hostile.
-- **Under-15s (5, 3 already granted):** untouched — they still need guardian consent.
+My proposal, not run until you say so:
 
-Say "keep everything" and I will drop the superseded step.
+- **Granted (4):** keep as-is, stamp `policy_version` so the report shows the old threshold applied.
+- **Pending (1):** either extend the CHECK constraint to allow `'superseded'`, or leave it `pending` and simply stop chasing it. Given it is one row, my recommendation is now **leave it** and skip the constraint change.
+- **Under-15s (2, both granted):** untouched.
 
 ## 5. What breaks with no club country
 
