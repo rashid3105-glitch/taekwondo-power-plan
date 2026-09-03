@@ -85,7 +85,7 @@ Say "keep everything" and I will drop the superseded step.
 2. Grace applies to athletes only. Coaches and parents are not gated, matching today's behaviour.
 3. Dismissal count lives on the profile (server-side), not localStorage — otherwise clearing the browser resets the limit.
 4. The `catch`-block fail-open stays (see section 3). Say the word and it becomes fail-closed too.
-5. The threshold is resolved from the athlete's **club**, not the athlete's own `profiles.country`. Country data on profiles is missing for 23 of 62 athletes, and the club is the data controller.
+5. The club takes precedence over the athlete's own `profiles.country`, because the club is the data controller; the athlete country is a fallback, not an override. An athlete's country is never allowed to *lower* the club's threshold — if both resolve, the club wins even when the athlete's country would be more permissive.
 6. Athletes with no club (9) get the platform default.
 7. `consent-confirm` (the guardian token path) is not age-gated — a guardian granting consent for a 17-year-old under a 15 threshold still succeeds and is recorded.
 
