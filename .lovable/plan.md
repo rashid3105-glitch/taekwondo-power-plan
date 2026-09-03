@@ -1,22 +1,25 @@
 # Parental consent: configurable age, birth-date backfill, server-side enforcement, cutover
 
-## Live data (queried, not estimated)
+## Live data (queried, not estimated) — birth_date only
+
+`profiles.age` is a static field that decays, so it no longer resolves consent status anywhere. Missing `birth_date` = unknown age = BirthDateGate. Re-run on that basis:
 
 62 athlete profiles, 16 clubs.
 
 | Metric | Count |
 |---|---|
-| Athletes with no usable age (no birth_date, no age) | 10 (6 seen in last 90 days) |
+| Athletes with **no birth_date** (unknown age) | 42 — 32 active in last 90 days |
+| Of those, holding granted consent today | 14 (consent stands, age unverifiable) |
 | Athletes with consent granted | 31 |
 | Athletes with no consent row at all | 18 |
-| **Blocked the moment fail-closed ships (no granted consent, no live grace)** | **31 total — 22 active in last 90 days** |
-| Of those, blocked purely because age is unknown | 10 (6 active) |
-| Under 13 / under 15 / under 16 / under 18 | 1 / 5 / 9 / 19 |
+| **Blocked at cutover (no granted consent OR unknown age)** | **45 total — 35 active in last 90 days** |
+| Blocked purely for missing consent (age known) | 31 (22 active) |
+| Real minors by birth date: <13 / <15 / <16 / <18 | 0 / 2 / 5 / 8 |
 | Guardian tokens sent / confirmed | 27 / 7 (26%) |
 | Athlete profiles with no country | 23 of 62 |
 | Clubs with no country field | 16 of 16 — `clubs` has **no country column at all** |
 
-So: **31 athletes are blocked on day one, 22 of them recently active.** That is why the cutover below defaults everyone into grace rather than into the wall.
+So **45 of 62 athletes, 35 of them recently active, hit a gate the moment fail-closed ships** — the dominant cause is missing birth dates, not missing consent. That ordering drives the cutover: birth-date collection has to lead, and grace has to be staggered rather than a single cliff.
 
 ## 1. Age threshold: constant to config
 
