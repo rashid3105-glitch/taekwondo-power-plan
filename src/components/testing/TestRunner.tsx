@@ -37,6 +37,14 @@ function formatSec(ms: number): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}.${cs.toString().padStart(2, "0")}`;
 }
 
+/** Accepts "16:1" (level:shuttle) as well as plain decimals like 16,1 / 16.1 */
+function parseResult(raw: string): number {
+  const cleaned = raw.replace(/\s+/g, "").replace(/,/g, ".");
+  const m = cleaned.match(/^(\d+):(\d+)$/);
+  if (m) return Number(m[1]) + Number(m[2]) / 10;
+  return Number(cleaned);
+}
+
 export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
   const { t, locale } = useLanguage();
   const isGroup = (athletes?.length ?? 0) > 1;
@@ -136,8 +144,7 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
     if (isGroup && athletes) {
       const entries = athletes
         .map((a) => {
-          const raw = (perValues[a.id] ?? "").replace(/\s+/g, "").replace(/,/g, ".");
-          const parsed = Number(raw);
+          const parsed = parseResult(perValues[a.id] ?? "");
           return { athleteId: a.id, value: parsed };
         })
         .filter((e) => Number.isFinite(e.value) && e.value > 0);
@@ -162,8 +169,7 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
       value = Math.round((elapsedMs / 1000) * 100) / 100;
       if (value <= 0) { setError(t("ptEnterFinalResult")); return; }
     } else {
-      const raw = inputValue.replace(/\s+/g, "").replace(/,/g, ".");
-      const parsed = Number(raw);
+      const parsed = parseResult(inputValue);
       if (!Number.isFinite(parsed) || parsed <= 0) {
         setError(t("invalidValue") || "Invalid number");
         return;
@@ -182,8 +188,7 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
 
   const groupHasAny = isGroup
     ? (athletes ?? []).some((a) => {
-        const raw = (perValues[a.id] ?? "").replace(/,/g, ".").trim();
-        const n = Number(raw);
+        const n = parseResult(perValues[a.id] ?? "");
         return Number.isFinite(n) && n > 0;
       })
     : false;
@@ -199,6 +204,9 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
         {t("ptPerAthleteResult")} ({def.unit})
       </div>
+      {def.inputType === "level" && (
+        <p className="text-[11px] text-muted-foreground">{t("ptLevelHint")}</p>
+      )}
       <div className="space-y-1.5 max-h-72 overflow-y-auto">
         {(athletes ?? []).map((a) => (
           <div key={a.id} className="flex items-center gap-2">
@@ -303,6 +311,9 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
           <label className="block text-xs text-muted-foreground mb-1">
             {t("ptEnterFinalResult")} ({def.unit})
           </label>
+          {def.inputType === "level" && (
+            <p className="text-[11px] text-muted-foreground mb-1">{t("ptLevelHint")}</p>
+          )}
           <Input
             type="text"
             inputMode="decimal"
@@ -319,10 +330,13 @@ export function TestRunner({ def, onSave, onCancel, athletes }: Props) {
           <label className="block text-xs text-muted-foreground">
             {t("ptEnterFinalResult")} ({def.unit})
           </label>
+          {def.inputType === "level" && (
+            <p className="text-[11px] text-muted-foreground mb-1">{t("ptLevelHint")}</p>
+          )}
           <Input
             type="text"
             inputMode="decimal"
-            placeholder={t("ptInputPlaceholder")}
+            placeholder={def.inputType === "level" ? "16:1" : t("ptInputPlaceholder")}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             autoFocus
