@@ -1690,6 +1690,8 @@ export type Database = {
           club_id: string | null
           consent_type: string
           created_at: string
+          grace_days: number | null
+          grace_frozen_at: string | null
           grace_until: string | null
           granted_at: string | null
           granted_by_email: string | null
@@ -1705,6 +1707,8 @@ export type Database = {
           club_id?: string | null
           consent_type?: string
           created_at?: string
+          grace_days?: number | null
+          grace_frozen_at?: string | null
           grace_until?: string | null
           granted_at?: string | null
           granted_by_email?: string | null
@@ -1720,6 +1724,8 @@ export type Database = {
           club_id?: string | null
           consent_type?: string
           created_at?: string
+          grace_days?: number | null
+          grace_frozen_at?: string | null
           grace_until?: string | null
           granted_at?: string | null
           granted_by_email?: string | null
@@ -4862,6 +4868,7 @@ export type Database = {
         Args: { _answers: Json; _is_anonymous: boolean; _survey_id: string }
         Returns: string
       }
+      thaw_consent_grace: { Args: never; Returns: number }
       users_share_club: {
         Args: { _first_user_id: string; _second_user_id: string }
         Returns: boolean
