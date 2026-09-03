@@ -77,7 +77,7 @@ Say "keep everything" and I will drop the superseded step.
 
 ## 5. What breaks with no club country
 
-`clubs` has no country column today, so on day one **every one of the 16 clubs falls through to the platform default**. Nothing errors: resolution is override → country → default, and the default always answers. The visible effect is that a German club (Art. 8 age 16) would be governed by the default until someone sets its country or override. Mitigation: the club-settings admin screen gets a country selector (reusing `src/data/countries.ts`), the migration backfills country from the modal athlete country per club where one exists (13 of 16 clubs are unambiguous), and `/admin/stats` flags clubs still on the default.
+`clubs` has no country column today, so on day one no club resolves at step 1 or 2 — every athlete falls to step 3, their own `profiles.country`. That covers 39 of 62 athletes (Denmark/DK 33, Sweden 4, Norway 2); the remaining 23 with no country fall to the platform default. Nothing errors: the chain override → club country → athlete country → default always answers. The visible risk is a German club (Art. 8 age 16) being governed by the default until someone sets its country. Mitigation: the club-settings admin screen gets a country selector (reusing `src/data/countries.ts`), the migration backfills club country from the modal athlete country per club where one exists (13 of 16 clubs are unambiguous — Denmark 10, Sweden 2, Norway 1), and `/admin/stats` flags clubs still running on the default.
 
 ## 6. Assumptions I made that you did not specify
 
