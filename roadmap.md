@@ -1,0 +1,1 @@
+- Parental consent v2 plan: age config, birth-date backfill, server enforcement, staggered cutover, guardian-email conversion (awaiting approval)
