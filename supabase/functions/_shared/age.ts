@@ -1,5 +1,6 @@
 // Shared age helper for edge functions (mirrors src/lib/age.ts).
-// Treats a user as a minor when computed age is < 18.
+// Consent decisions use birth_date ONLY — `profiles.age` is a decaying
+// static field and must never resolve a consent decision.
 
 export function ageFromBirthDate(birth?: string | null): number | null {
   if (!birth) return null;
@@ -12,6 +13,7 @@ export function ageFromBirthDate(birth?: string | null): number | null {
   return age;
 }
 
+// DISPLAY ONLY — may fall back to the stored numeric age.
 export function effectiveAge(
   birth?: string | null,
   fallbackAge?: number | null,
@@ -22,13 +24,24 @@ export function effectiveAge(
   return null;
 }
 
-export function isMinor(
+// Default digital-consent age until the configurable threshold ships (Release B).
+export const DEFAULT_CONSENT_AGE = 18;
+
+export type ConsentAgeVerdict = true | false | "unknown";
+
+export function isBelowConsentAge(
   birth?: string | null,
-  fallbackAge?: number | null,
-): boolean {
-  const a = effectiveAge(birth, fallbackAge);
-  return a != null && a < 18;
+  threshold: number = DEFAULT_CONSENT_AGE,
+): ConsentAgeVerdict {
+  const a = ageFromBirthDate(birth);
+  if (a == null) return "unknown";
+  return a < threshold;
 }
+
+// Guardian-consent token lifetime (days). Reminders are scheduled around this.
+export const CONSENT_TOKEN_DAYS = 30;
+export const CONSENT_REMINDER_DAYS = [3, 10, 21] as const;
+export const CONSENT_EXPIRY_WARNING_DAY = 27;
 
 // Single source of truth for the consent policy version.
 export const POLICY_VERSION = "2026-06-13";

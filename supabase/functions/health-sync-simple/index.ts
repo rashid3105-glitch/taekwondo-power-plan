@@ -1,5 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { isMinor } from "../_shared/age.ts";
+import { isBelowConsentAge } from "../_shared/age.ts";
 
 
 const cors = {
@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
       .select("birth_date, age")
       .eq("user_id", userId)
       .maybeSingle();
-    if (isMinor(prof?.birth_date as any, (prof?.age as any) ?? null)) {
+    if (isBelowConsentAge(prof?.birth_date as any) === true) {
       const { data: consent } = await admin0
         .from("consent_records")
         .select("status, grace_until")

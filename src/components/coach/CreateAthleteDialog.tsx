@@ -23,6 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validatePassword } from "@/lib/passwordValidation";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { BirthDatePicker } from "@/components/BirthDatePicker";
+import { ageFromBirthDate, isBelowConsentAge } from "@/lib/age";
 
 interface Props {
   disabled?: boolean;
@@ -47,7 +49,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [age, setAge] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [belt, setBelt] = useState(() => isTkdBeltSystem(sportProfile.slug) ? "white" : sportProfile.grades[0] || "");
   const [expYears, setExpYears] = useState("");
   const [discipline, setDiscipline] = useState("sparring");
@@ -64,13 +66,15 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
     | null
   >(null);
 
-  const ageNum = age ? parseInt(age) : NaN;
-  const isMinor = Number.isFinite(ageNum) && ageNum < 18;
+  // New athletes must have a birth date — age is derived, never typed.
+  const ageNum = ageFromBirthDate(birthDate);
+  const birthDateValid = ageNum != null && ageNum >= 3 && ageNum <= 100;
+  const isMinor = isBelowConsentAge(birthDate) === true;
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const parentEmailValid = !isMinor || EMAIL_RE.test(parentEmail.trim());
 
   const reset = () => {
-    setName(""); setEmail(""); setPassword(""); setAge("");
+    setName(""); setEmail(""); setPassword(""); setBirthDate("");
     setBelt(isTkd ? "white" : (sportProfile.grades[0] || "")); setExpYears(""); setDiscipline("sparring");
     setParentEmail("");
     setCode("");
@@ -84,6 +88,10 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
       toast({ title: t("error"), description: t("passwordTooWeak"), variant: "destructive" });
       return;
     }
+    if (!birthDateValid) {
+      toast({ title: t("error"), description: t("createAthleteBirthDateRequired"), variant: "destructive" });
+      return;
+    }
     if (isMinor && !parentEmailValid) {
       toast({ title: t("error"), description: t("parentEmailRequiredDesc"), variant: "destructive" });
       return;
@@ -95,7 +103,8 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
           name: name.trim(),
           email: email.trim(),
           password,
-          age: age ? parseInt(age) : null,
+          age: ageNum,
+          birth_date: birthDate,
           belt_level: belt,
           experience_years: expYears ? parseInt(expYears) : null,
           discipline,
@@ -127,6 +136,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
       else if (err.message === "PARENT_EMAIL_REQUIRED") description = t("parentEmailRequiredDesc");
       else if (err.message === "EMAIL_ALREADY_EXISTS") description = t("athleteEmailExistsUseCode");
       else if (err.message === "MAX_ATHLETES_REACHED") description = t("maxAthletesReached");
+      else if (err.message === "BIRTH_DATE_REQUIRED" || err.message === "BIRTH_DATE_INVALID") description = t("createAthleteBirthDateRequired");
 
       toast({ title: t("error"), description, variant: "destructive" });
     } finally {
@@ -286,15 +296,10 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
             <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("athletePassword")} minLength={8} />
             <p className="text-[11px] text-muted-foreground -mt-1">{t("passwordRequirementsHint")}</p>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label className="text-xs">{t("age")}</Label>
-                <Input type="number" inputMode="numeric" min={5} max={99} value={age} onChange={(e) => setAge(e.target.value)} placeholder="—" className="h-9" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">{t("yearsOfExperience")}</Label>
-                <Input type="number" min={0} max={50} value={expYears} onChange={(e) => setExpYears(e.target.value)} placeholder="—" className="h-9" />
-              </div>
+            <BirthDatePicker value={birthDate} onChange={setBirthDate} />
+            <div className="space-y-1">
+              <Label className="text-xs">{t("yearsOfExperience")}</Label>
+              <Input type="number" min={0} max={50} value={expYears} onChange={(e) => setExpYears(e.target.value)} placeholder="—" className="h-9" />
             </div>
 
             {isMinor && (
@@ -331,7 +336,7 @@ export function CreateAthleteDialog({ disabled, onCreated, countLabel, open: ope
               )}
             </div>
 
-            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim() || (isMinor && !parentEmailValid)} className="w-full">
+            <Button onClick={createAthlete} disabled={creating || disabled || !name.trim() || !email.trim() || !password.trim() || !birthDateValid || (isMinor && !parentEmailValid)} className="w-full">
               {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <><UserPlus className="h-4 w-4 mr-1" /> {t("createAccount")}</>}
             </Button>
           </div>

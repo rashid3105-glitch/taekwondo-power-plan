@@ -11,7 +11,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Download, Loader2, Mail, ShieldCheck } from "lucide-react";
-import { effectiveAge } from "@/lib/age";
+import { ageFromBirthDate, isBelowConsentAge } from "@/lib/age";
+import { SetBirthDateDialog } from "@/components/coach/SetBirthDateDialog";
 import { toast } from "sonner";
 
 
@@ -28,6 +29,8 @@ type Row = {
   granted_by_relation: "self" | "parent" | null;
   policy_version: string | null;
   is_minor: boolean;
+  age_known: boolean;
+  birth_date: string | null;
   parent_email_on_token: string | null;
 };
 
@@ -132,8 +135,10 @@ export default function CoachConsents() {
 
       const out: Row[] = memberList.map((m: any) => {
         const c = byId.get(m.user_id);
-        const age = effectiveAge(m.birth_date ?? null, m.age ?? null);
-        const isMinor = age != null && age < 18;
+        // Consent status is resolved from birth_date only — never profiles.age.
+        const age = ageFromBirthDate(m.birth_date ?? null);
+        const verdict = isBelowConsentAge(m.birth_date ?? null);
+        const isMinor = verdict === true;
         let status: Row["status"] = "missing";
         if (c) {
           if (c.status === "granted") status = "granted";
@@ -151,6 +156,8 @@ export default function CoachConsents() {
           granted_by_relation: c?.granted_by_relation ?? null,
           policy_version: c?.policy_version ?? null,
           is_minor: isMinor,
+          age_known: verdict !== "unknown",
+          birth_date: m.birth_date ?? null,
           parent_email_on_token: parentEmailByAthlete.get(m.user_id) ?? null,
         };
       });
@@ -298,7 +305,9 @@ export default function CoachConsents() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {r.is_minor ? t("consentsTypeParent") : t("consentsTypeAdult")}
+                      {!r.age_known ? (
+                        <Badge variant="outline" className="text-xs">{t("coachBirthDateMissing")}</Badge>
+                      ) : r.is_minor ? t("consentsTypeParent") : t("consentsTypeAdult")}
                     </TableCell>
                     <TableCell>
                       {r.granted_by_email ? (
@@ -318,7 +327,22 @@ export default function CoachConsents() {
                     </TableCell>
                     <TableCell><StatusBadge s={r.status} /></TableCell>
                     <TableCell className="text-right">
-                      {r.is_minor ? (
+                      {!r.age_known ? (
+                        <div className="flex items-center gap-2 justify-end">
+                          <SetBirthDateDialog
+                            athleteId={r.athlete_id}
+                            athleteName={r.display_name}
+                            clubId={activeClubId}
+                            currentBirthDate={r.birth_date}
+                            onSaved={(iso, age) =>
+                              setRows((rs) => rs.map((x) =>
+                                x.athlete_id === r.athlete_id
+                                  ? { ...x, birth_date: iso, age, age_known: true, is_minor: age < 18 }
+                                  : x))
+                            }
+                          />
+                        </div>
+                      ) : r.is_minor ? (
                         <div className="flex items-center gap-2 justify-end">
                           <Input
                             type="email"

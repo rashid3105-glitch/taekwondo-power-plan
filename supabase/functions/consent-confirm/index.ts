@@ -2,6 +2,7 @@
 // Actions:
 //   action="get"   → returns minimal info to render the consent page
 //   action="grant" → marks token used + sets consent_records to granted
+//   action="not_my_child" → guardian says this request is not theirs
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { POLICY_VERSION } from "../_shared/age.ts";
 
@@ -56,8 +57,17 @@ Deno.serve(async (req) => {
         athleteName = (p as any)?.display_name || null;
         clubName = (p as any)?.clubs?.name || null;
       }
+      // Funnel instrumentation: guardian opened the link.
+      await admin.from("consent_token_events").insert({
+        token_id: tk.id,
+        athlete_id: tk.athlete_id,
+        event: "opened",
+        meta: {},
+      });
+
       return json({
         valid: !expired && !used,
+        expires_at: tk.expires_at,
         expired,
         used,
         athlete_name: athleteName,
@@ -114,6 +124,27 @@ Deno.serve(async (req) => {
         });
       }
 
+      await admin.from("consent_token_events").insert({
+        token_id: tk.id,
+        athlete_id: tk.athlete_id,
+        event: "confirmed",
+        meta: {},
+      });
+
+      return json({ ok: true });
+    }
+
+    if (action === "not_my_child") {
+      await admin.from("consent_token_events").insert({
+        token_id: tk.id,
+        athlete_id: tk.athlete_id,
+        event: "not_my_child",
+        meta: {},
+      });
+      // Burn the token so it cannot be used later.
+      await admin.from("consent_tokens")
+        .update({ expires_at: new Date().toISOString() })
+        .eq("id", tk.id);
       return json({ ok: true });
     }
 
