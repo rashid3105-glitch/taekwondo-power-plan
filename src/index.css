@@ -593,5 +593,24 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     background: #fff !important;
     color: #000 !important;
   }
+  .print-area *,
+  .print-area h1, .print-area h2, .print-area h3,
+  .print-area p, .print-area li, .print-area span, .print-area div {
+    color: #000 !important;
+    background-color: transparent !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Center the radar chart and give it room */
+  .print-area .recharts-responsive-container {
+    margin: 0 auto !important;
+    width: 460px !important;
+    max-width: 100% !important;
+  }
+  .print-area .recharts-wrapper { margin: 0 auto !important; }
+  .print-area .recharts-polar-grid path,
+  .print-area .recharts-polar-grid line { stroke: #999 !important; }
+  .print-area .recharts-text tspan { fill: #000 !important; }
   .no-print { display: none !important; }
 }
+
