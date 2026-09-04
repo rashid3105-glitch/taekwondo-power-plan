@@ -83,8 +83,6 @@ export default function ProfileEdit() {
   const [licenseValues, setLicenseValues] = useState<Record<string, LicenseValue>>({});
   const [newFieldName, setNewFieldName] = useState("");
 
-  const beltOptions = gradeOptions(sportProfile.slug);
-
   const signedExisting = useAvatarUrl(avatarUrl);
   const displayedAvatar = pendingPreview || signedExisting;
 
@@ -141,6 +139,7 @@ export default function ProfileEdit() {
   }, [navigate]);
 
   const { profile: sportProfile } = useSportProfile(clubId);
+  const beltOptions = gradeOptions(sportProfile.slug);
   const { locale } = useLanguage();
 
   useEffect(() => {
