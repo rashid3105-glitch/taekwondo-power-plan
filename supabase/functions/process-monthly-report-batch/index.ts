@@ -69,7 +69,7 @@ serve(async (req) => {
 
     const list = (jobs as any[]) || [];
     if (list.length === 0) {
-      return new Response(JSON.stringify({ processed: 0, remaining: 0 }), {
+      return new Response(JSON.stringify({ processed: 0, remaining: 0, requeued }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
