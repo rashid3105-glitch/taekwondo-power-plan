@@ -632,6 +632,8 @@ export type Database = {
       }
       club_assessments: {
         Row: {
+          ai_analysis: string | null
+          ai_analysis_at: string | null
           answers: Json | null
           archived_at: string | null
           club_name: string | null
@@ -653,6 +655,8 @@ export type Database = {
           weakest: string | null
         }
         Insert: {
+          ai_analysis?: string | null
+          ai_analysis_at?: string | null
           answers?: Json | null
           archived_at?: string | null
           club_name?: string | null
@@ -674,6 +678,8 @@ export type Database = {
           weakest?: string | null
         }
         Update: {
+          ai_analysis?: string | null
+          ai_analysis_at?: string | null
           answers?: Json | null
           archived_at?: string | null
           club_name?: string | null
