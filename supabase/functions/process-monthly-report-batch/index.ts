@@ -35,6 +35,30 @@ serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
+    // Reaper: return jobs killed mid-flight (gateway timeout) to the queue.
+    const staleCutoff = new Date(Date.now() - STALE_RUNNING_MINUTES * 60_000).toISOString();
+    const { data: reaped, error: reapError } = await admin
+      .from("monthly_report_jobs")
+      .update({
+        status: "pending",
+        last_error: "stale running job requeued",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("status", "running")
+      .lt("updated_at", staleCutoff)
+      .select("id");
+    if (reapError) console.error("reaper failed", reapError);
+    const requeued = (reaped as any[])?.length ?? 0;
+
+    // Jobs that already burned their attempts stay out of the queue.
+    await admin
+      .from("monthly_report_jobs")
+      .update({ status: "error", updated_at: new Date().toISOString() })
+      .eq("status", "pending")
+      .gte("attempts", 3);
+
+
+
     const { data: jobs } = await admin
       .from("monthly_report_jobs")
       .select("id, athlete_user_id, period_year, period_month, attempts")
