@@ -78,8 +78,11 @@ export function BirthDatePicker({ value, onChange, label, minAge = 3, maxAge = 1
     if (ny && nm && nd) {
       const max = new Date(Number(ny), Number(nm), 0).getDate();
       if (Number(nd) > max) nd = pad(max);
+    }
+    setParts({ y: ny, m: nm, d: nd });
+    if (ny && nm && nd) {
       onChange(`${ny}-${nm}-${nd}`);
-    } else {
+    } else if (value) {
       onChange("");
     }
   };
