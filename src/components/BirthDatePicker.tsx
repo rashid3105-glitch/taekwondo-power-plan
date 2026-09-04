@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Label } from "@/components/ui/label";
 import {
@@ -26,10 +26,19 @@ function pad(n: number) {
 export function BirthDatePicker({ value, onChange, label, minAge = 3, maxAge = 100 }: Props) {
   const { t, locale } = useLanguage();
 
-  const [y, m, d] = useMemo(() => {
+  // Keep partial selections locally; the parent only receives a complete ISO date.
+  const parsed = useMemo(() => {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
-    return match ? [match[1], match[2], match[3]] : ["", "", ""];
+    return match ? { y: match[1], m: match[2], d: match[3] } : null;
   }, [value]);
+
+  const [parts, setParts] = useState(() => parsed ?? { y: "", m: "", d: "" });
+
+  useEffect(() => {
+    if (parsed) setParts(parsed);
+  }, [parsed]);
+
+  const { y, m, d } = parts;
 
   const thisYear = new Date().getFullYear();
   const years = useMemo(() => {
@@ -69,8 +78,11 @@ export function BirthDatePicker({ value, onChange, label, minAge = 3, maxAge = 1
     if (ny && nm && nd) {
       const max = new Date(Number(ny), Number(nm), 0).getDate();
       if (Number(nd) > max) nd = pad(max);
+    }
+    setParts({ y: ny, m: nm, d: nd });
+    if (ny && nm && nd) {
       onChange(`${ny}-${nm}-${nd}`);
-    } else {
+    } else if (value) {
       onChange("");
     }
   };

@@ -10,7 +10,12 @@ const corsHeaders = {
 };
 
 
-const BATCH_SIZE = 5;
+// One job per invocation: generate-monthly-report is LLM-backed and slow, so
+// several sequential jobs exceeded the edge wall-clock limit (504) and left
+// jobs stuck in "running" forever.
+const BATCH_SIZE = 1;
+// Jobs left in "running" longer than this are considered killed mid-flight.
+const STALE_RUNNING_MINUTES = 15;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -30,6 +35,30 @@ serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
 
+    // Reaper: return jobs killed mid-flight (gateway timeout) to the queue.
+    const staleCutoff = new Date(Date.now() - STALE_RUNNING_MINUTES * 60_000).toISOString();
+    const { data: reaped, error: reapError } = await admin
+      .from("monthly_report_jobs")
+      .update({
+        status: "pending",
+        last_error: "stale running job requeued",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("status", "running")
+      .lt("updated_at", staleCutoff)
+      .select("id");
+    if (reapError) console.error("reaper failed", reapError);
+    const requeued = (reaped as any[])?.length ?? 0;
+
+    // Jobs that already burned their attempts stay out of the queue.
+    await admin
+      .from("monthly_report_jobs")
+      .update({ status: "error", updated_at: new Date().toISOString() })
+      .eq("status", "pending")
+      .gte("attempts", 3);
+
+
+
     const { data: jobs } = await admin
       .from("monthly_report_jobs")
       .select("id, athlete_user_id, period_year, period_month, attempts")
@@ -40,7 +69,7 @@ serve(async (req) => {
 
     const list = (jobs as any[]) || [];
     if (list.length === 0) {
-      return new Response(JSON.stringify({ processed: 0, remaining: 0 }), {
+      return new Response(JSON.stringify({ processed: 0, remaining: 0, requeued }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -95,7 +124,7 @@ serve(async (req) => {
       .eq("status", "pending");
 
     return new Response(
-      JSON.stringify({ processed: list.length, ok, err, remaining: count ?? null }),
+      JSON.stringify({ processed: list.length, ok, err, requeued, remaining: count ?? null }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
