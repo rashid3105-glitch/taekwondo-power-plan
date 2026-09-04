@@ -3,10 +3,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles } from "lucide-react";
+import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { DIMENSIONS, LEVELS, QUESTIONS } from "@/data/clubAssessment";
+import AnalysisMarkdown from "@/components/admin/AnalysisMarkdown";
+import AssessmentRadar from "@/components/admin/AssessmentRadar";
 
 type Row = {
   id: string;
@@ -238,11 +240,16 @@ export default function AdminKlubanalyser() {
         )}
 
         {selected && (
-          <div className="mt-6 rounded-xl border border-border bg-card p-4">
-            <h2 className="text-lg font-bold text-foreground">
-              {selected.club_name || "Klub ikke oplyst"}{" "}
-              <span className="text-sm font-normal text-muted-foreground">— {selected.email}</span>
-            </h2>
+          <div className="print-area mt-6 rounded-xl border border-border bg-card p-4">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <h2 className="text-lg font-bold text-foreground">
+                {selected.club_name || "Klub ikke oplyst"}{" "}
+                <span className="text-sm font-normal text-muted-foreground">— {selected.email}</span>
+              </h2>
+              <Button variant="outline" size="sm" className="no-print" onClick={() => window.print()}>
+                <Printer className="mr-2 h-4 w-4" /> Udskriv
+              </Button>
+            </div>
             <p className="mt-1 text-sm text-muted-foreground">
               Niveau {selected.level ?? "—"}
               {selected.level ? ` — ${LEVELS[selected.level - 1]?.name ?? ""}` : ""} ·{" "}
@@ -250,6 +257,9 @@ export default function AdminKlubanalyser() {
                 ? `Rapportmail leveret ${format(new Date(selected.report_sent_at), "dd/MM/yyyy HH:mm")}`
                 : "Rapportmail ikke sendt"}
             </p>
+
+            <h3 className="mt-4 text-sm font-semibold text-foreground">Profil</h3>
+            <AssessmentRadar scores={selected.scores} />
 
             <h3 className="mt-4 text-sm font-semibold text-foreground">Dimensioner</h3>
             <ul className="mt-2 space-y-1">
@@ -268,6 +278,7 @@ export default function AdminKlubanalyser() {
                 </h3>
                 <Button
                   size="sm"
+                  className="no-print"
                   disabled={analyzingId === selected.id}
                   onClick={() => runAnalysis(selected)}
                 >
@@ -287,13 +298,13 @@ export default function AdminKlubanalyser() {
                   <p className="mt-2 text-xs text-muted-foreground">
                     Genereret {selected.ai_analysis_at ? format(new Date(selected.ai_analysis_at), "dd/MM/yyyy HH:mm") : "—"}
                   </p>
-                  <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-                    {selected.ai_analysis}
+                  <div className="mt-3">
+                    <AnalysisMarkdown text={selected.ai_analysis} />
                   </div>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="mt-3"
+                    className="no-print mt-3"
                     onClick={() => {
                       navigator.clipboard.writeText(selected.ai_analysis || "");
                       toast.success("Analysen er kopieret");
@@ -309,6 +320,7 @@ export default function AdminKlubanalyser() {
                 </p>
               )}
             </div>
+
 
             {Array.isArray(selected.answers) && selected.answers.length === QUESTIONS.length && (
               <>
