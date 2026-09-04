@@ -17,6 +17,8 @@ import {
   Zap,
   CalendarRange,
   BarChart3,
+  ClipboardList,
+
   Heart,
   Brain,
   BookOpen,
