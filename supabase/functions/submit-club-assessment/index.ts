@@ -1,5 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { signToken, verifyToken } from '../_shared/assessment-token.ts'
+import { sendTemplateEmail } from '../_shared/transactional-email-templates/send-email.ts'
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -88,12 +90,35 @@ Deno.serve(async (req) => {
       })
       .eq('id', id)
       .is('profile_completed_at', null)
-      .select('id')
+      .select('id, email, level, scores')
 
     if (error) return json({ error: 'update_failed' }, 500)
     if (!updated || updated.length === 0) return json({ error: 'token_used' }, 403)
+
+    // Admin-notifikation med klubprofilen. Fejl logges og sluges.
+    try {
+      const row: any = updated[0]
+      await sendTemplateEmail('club-assessment-notification', '', {
+        templateData: {
+          assessmentId: row.id,
+          clubName,
+          email: row.email,
+          sport,
+          role,
+          level: row.level,
+          scores: row.scores,
+          isTest: String(row.email || '').endsWith('@sportstalent.dk'),
+          adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${row.id}`,
+        },
+        idempotencyKey: `club-assessment-notification-profile-${row.id}`,
+      })
+    } catch (e) {
+      console.error('club-assessment profile notification failed', e)
+    }
+
     return json({ success: true })
   }
+
 
   // ---- New submission ----
   const email = String(body.email || '').trim().toLowerCase()
@@ -171,5 +196,28 @@ Deno.serve(async (req) => {
     console.error('send-assessment-report invocation failed', e)
   }
 
+  // Admin-notifikation — helt uafhængig af respondentens rapportmail.
+  // Fejl logges og sluges; må aldrig påvirke svaret til klienten.
+  try {
+    const isTest = email.endsWith('@sportstalent.dk')
+    await sendTemplateEmail('club-assessment-notification', '', {
+      templateData: {
+        assessmentId: data.id,
+        clubName: null,
+        email,
+        sport: null,
+        role: null,
+        level,
+        scores,
+        isTest,
+        adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${data.id}`,
+      },
+      idempotencyKey: `club-assessment-notification-${data.id}`,
+    })
+  } catch (e) {
+    console.error('club-assessment admin notification failed', e)
+  }
+
   return json({ success: true, id: data.id, token: profileToken })
 })
+
