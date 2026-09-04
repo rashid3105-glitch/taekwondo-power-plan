@@ -23,19 +23,50 @@ export const TKD_BELT_KEYS: Record<string, string> = {
   black: "onbBeltBlack",
 };
 
-export const TKD_BELT_ORDER = [
-  "white",
-  "yellow",
-  "green",
-  "blue",
-  "red",
-  "black",
-  "1st dan",
-  "2nd dan",
-  "3rd dan",
-  "4th dan",
-  "5th dan",
+/**
+ * Full taekwondo grade ladder: 10 kup grades (with belt colours, incl. tip
+ * belts) followed by the black-belt dan grades.
+ */
+export interface TkdGrade {
+  /** Stored value in profiles.belt_level */
+  value: string;
+  /** Belt colour keys (two entries = tip belt) */
+  colors: string[];
+  kup?: number;
+  dan?: number;
+}
+
+export const TKD_GRADE_LADDER: TkdGrade[] = [
+  { value: "10th kup", colors: ["white"], kup: 10 },
+  { value: "9th kup", colors: ["white", "yellow"], kup: 9 },
+  { value: "8th kup", colors: ["yellow"], kup: 8 },
+  { value: "7th kup", colors: ["yellow", "green"], kup: 7 },
+  { value: "6th kup", colors: ["green"], kup: 6 },
+  { value: "5th kup", colors: ["green", "blue"], kup: 5 },
+  { value: "4th kup", colors: ["blue"], kup: 4 },
+  { value: "3rd kup", colors: ["blue", "red"], kup: 3 },
+  { value: "2nd kup", colors: ["red"], kup: 2 },
+  { value: "1st kup", colors: ["red", "black"], kup: 1 },
+  { value: "1st dan", colors: ["black"], dan: 1 },
+  { value: "2nd dan", colors: ["black"], dan: 2 },
+  { value: "3rd dan", colors: ["black"], dan: 3 },
+  { value: "4th dan", colors: ["black"], dan: 4 },
+  { value: "5th dan", colors: ["black"], dan: 5 },
 ];
+
+export const TKD_BELT_ORDER = TKD_GRADE_LADDER.map((g) => g.value);
+
+/** Colour-only label, e.g. "Hvidt bælte/Gult bælte". */
+function tkdColorLabel(grade: TkdGrade, t: (key: string) => string): string {
+  return grade.colors.map((c) => t(TKD_BELT_KEYS[c] ?? c)).join(" / ");
+}
+
+/** "Hvidt bælte · 10. kup" / "Sort bælte · 1. dan" */
+export function tkdGradeLabel(grade: TkdGrade, t: (key: string) => string): string {
+  const suffix = grade.dan ? `${grade.dan}. dan` : `${grade.kup}. kup`;
+  return `${tkdColorLabel(grade, t)} · ${suffix}`;
+}
+
 
 /**
  * Returns true if the sport uses the legacy TKD belt system
@@ -78,9 +109,11 @@ export function formatGrade(
   if (!value) return "—";
   const profile = getSportProfile(sportSlug);
   if (profile.slug === "taekwondo") {
+    const grade = TKD_GRADE_LADDER.find((g) => g.value.toLowerCase() === value.toLowerCase());
+    if (grade) return tkdGradeLabel(grade, t);
+    // Legacy colour-only values ("white", "red", ...)
     const key = TKD_BELT_KEYS[value.toLowerCase()];
     if (key) return t(key);
-    // Fallback for non-standard stored values (e.g. "1. dan")
     return value;
   }
   return value;
@@ -109,6 +142,8 @@ export function gradeOptionLabel(
 ): string {
   const profile = getSportProfile(sportSlug);
   if (profile.slug === "taekwondo") {
+    const grade = TKD_GRADE_LADDER.find((g) => g.value.toLowerCase() === option.toLowerCase());
+    if (grade) return tkdGradeLabel(grade, t);
     const key = TKD_BELT_KEYS[option.toLowerCase()];
     if (key) return t(key);
     return option;
