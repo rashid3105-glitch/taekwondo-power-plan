@@ -90,12 +90,35 @@ Deno.serve(async (req) => {
       })
       .eq('id', id)
       .is('profile_completed_at', null)
-      .select('id')
+      .select('id, email, level, scores')
 
     if (error) return json({ error: 'update_failed' }, 500)
     if (!updated || updated.length === 0) return json({ error: 'token_used' }, 403)
+
+    // Admin-notifikation med klubprofilen. Fejl logges og sluges.
+    try {
+      const row: any = updated[0]
+      await sendTemplateEmail('club-assessment-notification', '', {
+        templateData: {
+          assessmentId: row.id,
+          clubName,
+          email: row.email,
+          sport,
+          role,
+          level: row.level,
+          scores: row.scores,
+          isTest: String(row.email || '').endsWith('@sportstalent.dk'),
+          adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${row.id}`,
+        },
+        idempotencyKey: `club-assessment-notification-profile-${row.id}`,
+      })
+    } catch (e) {
+      console.error('club-assessment profile notification failed', e)
+    }
+
     return json({ success: true })
   }
+
 
   // ---- New submission ----
   const email = String(body.email || '').trim().toLowerCase()
