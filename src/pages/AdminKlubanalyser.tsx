@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, ClipboardList, Mail, MailX } from "lucide-react";
+import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore } from "lucide-react";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { DIMENSIONS, LEVELS, QUESTIONS } from "@/data/clubAssessment";
 
@@ -21,6 +22,7 @@ type Row = {
   report_sent_at: string | null;
   profile_completed_at: string | null;
   locale: string | null;
+  archived_at: string | null;
 };
 
 const isTestRow = (r: Row) => (r.email || "").toLowerCase().endsWith("@sportstalent.dk");
@@ -39,12 +41,27 @@ export default function AdminKlubanalyser() {
   const [params, setParams] = useSearchParams();
   const selectedId = params.get("id");
   const navigate = useNavigate();
+  const [showArchived, setShowArchived] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const toggleArchive = async (r: Row) => {
+    setBusyId(r.id);
+    const next = r.archived_at ? null : new Date().toISOString();
+    const { error } = await supabase
+      .from("club_assessments")
+      .update({ archived_at: next } as any)
+      .eq("id", r.id);
+    setBusyId(null);
+    if (error) { toast.error("Kunne ikke arkivere: " + error.message); return; }
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, archived_at: next } : x)));
+    toast.success(next ? "Besvarelsen er arkiveret" : "Besvarelsen er hentet frem igen");
+  };
 
   useEffect(() => {
     (async () => {
       const { data, error } = await supabase
         .from("club_assessments")
-        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale")
+        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at")
         .order("created_at", { ascending: false });
       if (error) setError(error.message);
       setRows((data as any) ?? []);
@@ -56,6 +73,12 @@ export default function AdminKlubanalyser() {
     () => rows.find((r) => r.id === selectedId) ?? null,
     [rows, selectedId]
   );
+
+  const visibleRows = useMemo(
+    () => rows.filter((r) => (showArchived ? true : !r.archived_at)),
+    [rows, showArchived]
+  );
+  const archivedCount = rows.filter((r) => r.archived_at).length;
 
   const variantCounts = useMemo(() => {
     const m: Record<string, number> = {};
@@ -102,11 +125,17 @@ export default function AdminKlubanalyser() {
           </p>
         </div>
 
+        <div className="mt-4 flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowArchived((v) => !v)}>
+            {showArchived ? "Skjul arkiverede" : `Vis arkiverede (${archivedCount})`}
+          </Button>
+        </div>
+
         {loading ? (
           <div className="mt-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
         ) : error ? (
           <p className="mt-10 text-sm text-destructive">Kunne ikke hente besvarelser: {error}</p>
-        ) : rows.length === 0 ? (
+        ) : visibleRows.length === 0 ? (
           <p className="mt-10 text-sm text-muted-foreground">Ingen besvarelser endnu.</p>
         ) : (
           <div className="mt-6 overflow-x-auto rounded-xl border border-border">
@@ -122,10 +151,11 @@ export default function AdminKlubanalyser() {
                   <th className="px-3 py-2 text-left">Svagest</th>
                   <th className="px-3 py-2 text-left">Variant</th>
                   <th className="px-3 py-2 text-left">Rapport</th>
+                  <th className="px-3 py-2 text-right">Arkiv</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r) => {
+                {visibleRows.map((r) => {
                   const w = weakest(r.scores);
                   const test = isTestRow(r);
                   return (
@@ -140,6 +170,7 @@ export default function AdminKlubanalyser() {
                       <td className="px-3 py-2 text-foreground">
                         {r.club_name || <span className="text-muted-foreground">ikke oplyst</span>}
                         {test && <Badge variant="outline" className="ml-2 border-amber-500 text-amber-500">TEST</Badge>}
+                        {r.archived_at && <Badge variant="outline" className="ml-2 text-muted-foreground">ARKIVERET</Badge>}
                       </td>
                       <td className="px-3 py-2 text-muted-foreground">{r.email}</td>
                       <td className="px-3 py-2 text-muted-foreground">{r.sport || "—"}</td>
@@ -158,6 +189,23 @@ export default function AdminKlubanalyser() {
                             <MailX className="h-3.5 w-3.5" /> ikke sendt
                           </span>
                         )}
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={busyId === r.id}
+                          onClick={(e) => { e.stopPropagation(); toggleArchive(r); }}
+                          title={r.archived_at ? "Hent frem igen" : "Arkivér"}
+                        >
+                          {busyId === r.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : r.archived_at ? (
+                            <ArchiveRestore className="h-4 w-4 text-amber-500" />
+                          ) : (
+                            <Archive className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </Button>
                       </td>
                     </tr>
                   );
