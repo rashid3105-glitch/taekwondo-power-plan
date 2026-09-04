@@ -37,4 +37,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'blog-comment-verification': blogCommentVerification,
   'coach-invite-admin-notification': coachInviteAdminNotification,
   'compliance-alert': complianceAlert,
+  'club-assessment-notification': clubAssessmentNotification,
 }
+
