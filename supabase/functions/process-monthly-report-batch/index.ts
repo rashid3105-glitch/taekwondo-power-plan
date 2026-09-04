@@ -10,7 +10,12 @@ const corsHeaders = {
 };
 
 
-const BATCH_SIZE = 5;
+// One job per invocation: generate-monthly-report is LLM-backed and slow, so
+// several sequential jobs exceeded the edge wall-clock limit (504) and left
+// jobs stuck in "running" forever.
+const BATCH_SIZE = 1;
+// Jobs left in "running" longer than this are considered killed mid-flight.
+const STALE_RUNNING_MINUTES = 15;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
