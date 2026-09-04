@@ -10,12 +10,45 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useAvatarUrl } from "@/hooks/useAvatarUrl";
 import { toast } from "sonner";
 import { useSportProfile } from "@/hooks/useSportProfile";
-import { gradeLabelFor } from "@/lib/sportGrade";
+import { gradeLabelFor, gradeOptions, gradeOptionLabel } from "@/lib/sportGrade";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GOAL_OPTIONS } from "@/config/goals";
 
 const cardCls = "rounded-xl bg-white/[0.03] border border-white/10 p-5 sm:p-6";
 const sectionTitleCls = "text-xs uppercase tracking-wider text-white mb-4";
 const inputCls = "bg-white/[0.04] border-white/10 text-white placeholder:text-white/70 focus-visible:ring-white/20";
+
+const heightOptions = Array.from({ length: 121 }, (_, i) => String(100 + i)); // 100-220 cm
+const weightOptions = Array.from({ length: 261 }, (_, i) => String(20 + i * 0.5)); // 20-150 kg
+
+/** Dropdown that keeps an existing (legacy / off-list) value selectable. */
+function SelectField({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  const list = value && !options.some((o) => o.value === value)
+    ? [{ value, label: value }, ...options]
+    : options;
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className={inputCls}>
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent className="max-h-72">
+        {list.map((o) => (
+          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif"];
 
@@ -49,6 +82,8 @@ export default function ProfileEdit() {
   const [licenseFields, setLicenseFields] = useState<LicenseField[]>([]);
   const [licenseValues, setLicenseValues] = useState<Record<string, LicenseValue>>({});
   const [newFieldName, setNewFieldName] = useState("");
+
+  const beltOptions = gradeOptions(sportProfile.slug);
 
   const signedExisting = useAvatarUrl(avatarUrl);
   const displayedAvatar = pendingPreview || signedExisting;
