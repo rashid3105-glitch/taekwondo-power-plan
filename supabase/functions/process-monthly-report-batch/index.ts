@@ -124,7 +124,7 @@ serve(async (req) => {
       .eq("status", "pending");
 
     return new Response(
-      JSON.stringify({ processed: list.length, ok, err, remaining: count ?? null }),
+      JSON.stringify({ processed: list.length, ok, err, requeued, remaining: count ?? null }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
