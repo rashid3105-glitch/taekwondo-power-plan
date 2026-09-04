@@ -633,6 +633,7 @@ export type Database = {
       club_assessments: {
         Row: {
           answers: Json | null
+          archived_at: string | null
           club_name: string | null
           consent: boolean
           created_at: string
@@ -653,6 +654,7 @@ export type Database = {
         }
         Insert: {
           answers?: Json | null
+          archived_at?: string | null
           club_name?: string | null
           consent: boolean
           created_at?: string
@@ -673,6 +675,7 @@ export type Database = {
         }
         Update: {
           answers?: Json | null
+          archived_at?: string | null
           club_name?: string | null
           consent?: boolean
           created_at?: string
