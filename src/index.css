@@ -579,3 +579,19 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   }
 }
 
+
+/* Udskrift: vis kun det markerede område */
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0;
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .no-print { display: none !important; }
+}
