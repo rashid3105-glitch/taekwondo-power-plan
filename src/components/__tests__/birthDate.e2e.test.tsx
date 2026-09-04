@@ -124,6 +124,12 @@ describe("BirthDatePicker end-to-end", () => {
 
     await pickBirthDate(user, dialog, { day: "9", monthName: "maj", year: "2010" });
 
+    // A 2010 birth date is a minor, so a guardian email is required too.
+    await user.type(
+      within(dialog).getByPlaceholderText("parentEmailPlaceholder"),
+      "parent@example.com",
+    );
+
     expect(submit).toBeEnabled();
 
     await user.click(submit);
