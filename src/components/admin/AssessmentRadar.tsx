@@ -8,7 +8,7 @@ export default function AssessmentRadar({ scores }: { scores: number[] | null })
   }));
 
   return (
-    <div className="h-72 w-full">
+    <div className="mx-auto h-72 w-full max-w-[480px]">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="72%">
           <PolarGrid stroke="hsl(var(--border))" />
