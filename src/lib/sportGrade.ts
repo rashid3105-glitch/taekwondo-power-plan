@@ -109,9 +109,11 @@ export function formatGrade(
   if (!value) return "—";
   const profile = getSportProfile(sportSlug);
   if (profile.slug === "taekwondo") {
+    const grade = TKD_GRADE_LADDER.find((g) => g.value.toLowerCase() === value.toLowerCase());
+    if (grade) return tkdGradeLabel(grade, t);
+    // Legacy colour-only values ("white", "red", ...)
     const key = TKD_BELT_KEYS[value.toLowerCase()];
     if (key) return t(key);
-    // Fallback for non-standard stored values (e.g. "1. dan")
     return value;
   }
   return value;
@@ -140,6 +142,8 @@ export function gradeOptionLabel(
 ): string {
   const profile = getSportProfile(sportSlug);
   if (profile.slug === "taekwondo") {
+    const grade = TKD_GRADE_LADDER.find((g) => g.value.toLowerCase() === option.toLowerCase());
+    if (grade) return tkdGradeLabel(grade, t);
     const key = TKD_BELT_KEYS[option.toLowerCase()];
     if (key) return t(key);
     return option;
