@@ -21,6 +21,8 @@ import { template as coachConsentReminder } from './coach-consent-reminder.tsx'
 import { template as blogCommentVerification } from './blog-comment-verification.tsx'
 import { template as coachInviteAdminNotification } from './coach-invite-admin-notification.tsx'
 import { template as complianceAlert } from './compliance-alert.tsx'
+import { template as clubAssessmentNotification } from './club-assessment-notification.tsx'
+
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-user-notification': newUserNotification,
