@@ -417,28 +417,33 @@ export default function ProfileEdit() {
                 <Input type="date" className={inputCls} value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
               </Field>
               <Field label={gradeLabelFor(sportProfile.slug, t, locale)}>
-                <Input className={inputCls} value={beltLevel} onChange={(e) => setBeltLevel(e.target.value)} placeholder={sportProfile.slug === "taekwondo" ? "e.g. 1. dan" : "—"} />
+                <SelectField
+                  value={beltLevel}
+                  onChange={setBeltLevel}
+                  placeholder="—"
+                  options={beltOptions.map((o) => ({
+                    value: o,
+                    label: gradeOptionLabel(sportProfile.slug, o, t),
+                  }))}
+                />
               </Field>
               <Field label={t("profileHeight" as any)}>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  className={inputCls}
+                <SelectField
                   value={heightCm}
-                  onChange={(e) => setHeightCm(e.target.value)}
+                  onChange={setHeightCm}
                   placeholder="cm"
+                  options={heightOptions.map((o) => ({ value: o, label: `${o} cm` }))}
                 />
               </Field>
               <Field label={t("profileWeight" as any)}>
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  className={inputCls}
+                <SelectField
                   value={weightKg}
-                  onChange={(e) => setWeightKg(e.target.value)}
+                  onChange={setWeightKg}
                   placeholder="kg"
+                  options={weightOptions.map((o) => ({ value: o, label: `${o} kg` }))}
                 />
               </Field>
+
             </div>
           </div>
         </div>
