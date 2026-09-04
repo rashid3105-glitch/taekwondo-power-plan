@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore } from "lucide-react";
+import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { DIMENSIONS, LEVELS, QUESTIONS } from "@/data/clubAssessment";
@@ -23,6 +23,8 @@ type Row = {
   profile_completed_at: string | null;
   locale: string | null;
   archived_at: string | null;
+  ai_analysis: string | null;
+  ai_analysis_at: string | null;
 };
 
 const isTestRow = (r: Row) => (r.email || "").toLowerCase().endsWith("@sportstalent.dk");
@@ -43,6 +45,26 @@ export default function AdminKlubanalyser() {
   const navigate = useNavigate();
   const [showArchived, setShowArchived] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+
+  const runAnalysis = async (r: Row) => {
+    setAnalyzingId(r.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-club-assessment", {
+        body: { assessmentId: r.id },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const analysis = (data as any).analysis as string;
+      const at = (data as any).analysis_at as string;
+      setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, ai_analysis: analysis, ai_analysis_at: at } : x)));
+      toast.success("Analysen er klar");
+    } catch (e: any) {
+      toast.error("Kunne ikke lave analysen: " + (e?.message ?? "ukendt fejl"));
+    } finally {
+      setAnalyzingId(null);
+    }
+  };
 
   const toggleArchive = async (r: Row) => {
     setBusyId(r.id);
@@ -61,7 +83,7 @@ export default function AdminKlubanalyser() {
     (async () => {
       const { data, error } = await supabase
         .from("club_assessments")
-        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at")
+        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at, ai_analysis, ai_analysis_at")
         .order("created_at", { ascending: false });
       if (error) setError(error.message);
       setRows((data as any) ?? []);
@@ -238,6 +260,55 @@ export default function AdminKlubanalyser() {
                 </li>
               ))}
             </ul>
+
+            <div className="mt-5 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <Sparkles className="h-4 w-4 text-amber-500" /> Klubanalyse
+                </h3>
+                <Button
+                  size="sm"
+                  disabled={analyzingId === selected.id}
+                  onClick={() => runAnalysis(selected)}
+                >
+                  {analyzingId === selected.id ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyserer…
+                    </>
+                  ) : selected.ai_analysis ? (
+                    "Lav ny analyse"
+                  ) : (
+                    "Lav analyse"
+                  )}
+                </Button>
+              </div>
+              {selected.ai_analysis ? (
+                <>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Genereret {selected.ai_analysis_at ? format(new Date(selected.ai_analysis_at), "dd/MM/yyyy HH:mm") : "—"}
+                  </p>
+                  <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+                    {selected.ai_analysis}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selected.ai_analysis || "");
+                      toast.success("Analysen er kopieret");
+                    }}
+                  >
+                    Kopiér tekst
+                  </Button>
+                </>
+              ) : (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Få en samlet vurdering af klubbens svar med styrker, kritiske huller,
+                  90-dages handlingsplan og spørgsmål til salgssamtalen.
+                </p>
+              )}
+            </div>
 
             {Array.isArray(selected.answers) && selected.answers.length === QUESTIONS.length && (
               <>
