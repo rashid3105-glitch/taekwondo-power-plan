@@ -1,5 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
 import { signToken, verifyToken } from '../_shared/assessment-token.ts'
+import { sendTemplateEmail } from '../_shared/transactional-email-templates/send-email.ts'
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -171,5 +173,28 @@ Deno.serve(async (req) => {
     console.error('send-assessment-report invocation failed', e)
   }
 
+  // Admin-notifikation — helt uafhængig af respondentens rapportmail.
+  // Fejl logges og sluges; må aldrig påvirke svaret til klienten.
+  try {
+    const isTest = email.endsWith('@sportstalent.dk')
+    await sendTemplateEmail('club-assessment-notification', '', {
+      templateData: {
+        assessmentId: data.id,
+        clubName: null,
+        email,
+        sport: null,
+        role: null,
+        level,
+        scores,
+        isTest,
+        adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${data.id}`,
+      },
+      idempotencyKey: `club-assessment-notification-${data.id}`,
+    })
+  } catch (e) {
+    console.error('club-assessment admin notification failed', e)
+  }
+
   return json({ success: true, id: data.id, token: profileToken })
 })
+
