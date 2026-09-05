@@ -423,7 +423,7 @@ export function SquadOverview({
           {t("noMatchingAthletes")}
         </div>
       ) : (
-        <div className={cn("grid gap-3", view === "cards" && "sm:grid-cols-2")}>
+        <div className={cn("grid min-w-0 gap-3 [&>*]:min-w-0", view === "cards" && "sm:grid-cols-2")}>
           {sorted.map((r) => {
             const { status } = rowSeverity(r);
             const days = daysSince(r.last_seen_at);
@@ -446,7 +446,7 @@ export function SquadOverview({
               <div
                 key={r.user_id}
                 className={cn(
-                  "group relative rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-accent/30",
+                  "group relative min-w-0 overflow-hidden rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-accent/30",
                   borderClass,
                 )}
               >
@@ -496,8 +496,8 @@ export function SquadOverview({
                 </div>
 
                 {/* Middle: activity + last seen */}
-                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-3">
-                  <div className="space-y-1.5">
+                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-3 [&>*]:min-w-0">
+                  <div className="min-w-0 space-y-1.5">
                     <div className="flex justify-between text-[10px] font-semibold">
                       <span className="text-muted-foreground uppercase tracking-tight truncate">
                         {t("squadWeeklyActivity")}
@@ -522,8 +522,8 @@ export function SquadOverview({
                 </div>
 
                 {/* Footer: status + actions */}
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
                     {r.has_active_plan ? (
                       <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/20">
                         {t("squadPlanActive")}
