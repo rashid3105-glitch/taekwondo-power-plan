@@ -637,6 +637,7 @@ export type Database = {
           answers: Json | null
           archived_at: string | null
           club_name: string | null
+          coach_range: string | null
           consent: boolean
           created_at: string
           email: string
@@ -644,7 +645,9 @@ export type Database = {
           ip_hash: string | null
           level: number | null
           locale: string
+          member_range: string | null
           profile_completed_at: string | null
+          questions_version: number
           report_sent_at: string | null
           role: string | null
           scores: Json | null
@@ -660,6 +663,7 @@ export type Database = {
           answers?: Json | null
           archived_at?: string | null
           club_name?: string | null
+          coach_range?: string | null
           consent: boolean
           created_at?: string
           email: string
@@ -667,7 +671,9 @@ export type Database = {
           ip_hash?: string | null
           level?: number | null
           locale?: string
+          member_range?: string | null
           profile_completed_at?: string | null
+          questions_version?: number
           report_sent_at?: string | null
           role?: string | null
           scores?: Json | null
@@ -683,6 +689,7 @@ export type Database = {
           answers?: Json | null
           archived_at?: string | null
           club_name?: string | null
+          coach_range?: string | null
           consent?: boolean
           created_at?: string
           email?: string
@@ -690,7 +697,9 @@ export type Database = {
           ip_hash?: string | null
           level?: number | null
           locale?: string
+          member_range?: string | null
           profile_completed_at?: string | null
+          questions_version?: number
           report_sent_at?: string | null
           role?: string | null
           scores?: Json | null
