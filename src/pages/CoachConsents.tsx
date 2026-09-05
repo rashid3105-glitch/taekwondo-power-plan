@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Download, Loader2, Mail, ShieldCheck } from "lucide-react";
-import { ageFromBirthDate, isBelowConsentAge } from "@/lib/age";
+import { ageFromBirthDate, isBelowConsentAge, fetchConsentAges, DEFAULT_CONSENT_AGE } from "@/lib/age";
 import { SetBirthDateDialog } from "@/components/coach/SetBirthDateDialog";
 import { toast } from "sonner";
 
