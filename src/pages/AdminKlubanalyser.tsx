@@ -267,7 +267,7 @@ export default function AdminKlubanalyser() {
             </p>
 
             <h3 className="mt-4 text-sm font-semibold text-foreground">Profil</h3>
-            <AssessmentRadar scores={selected.scores} />
+            <AssessmentRadar scores={selected.scores} max={maxDimFor(selected)} />
 
             <h3 className="mt-4 text-sm font-semibold text-foreground">Dimensioner</h3>
             <ul className="mt-2 space-y-1">
