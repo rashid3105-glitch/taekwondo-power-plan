@@ -446,7 +446,7 @@ export function SquadOverview({
               <div
                 key={r.user_id}
                 className={cn(
-                  "group relative rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-accent/30",
+                  "group relative min-w-0 overflow-hidden rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-accent/30",
                   borderClass,
                 )}
               >
