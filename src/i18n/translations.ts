@@ -26152,6 +26152,8 @@ const translations = {
     adminConsentConfirmed: "Godkjent",
     adminConsentNotMine: "Ikke mitt barn",
     adminBirthDateCoverage: "Dekning av fødselsdato",
+    adminConsentByClub: "Per klubb",
+    adminConsentNoClub: "Ingen klubb",
     consentPageTitle: "Foreldresamtykke",
     consentIntro: "En trener har opprettet en SPORTSTALENT-konto for {name}. Siden vedkommende er under 18, trenger vi samtykket ditt før vi kan behandle helsedata.",
     consentDataItemsTitle: "Data vi behandler",
