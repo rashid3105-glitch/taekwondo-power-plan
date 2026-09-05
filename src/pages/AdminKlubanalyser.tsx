@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { DIMENSIONS, LEVELS, QUESTIONS } from "@/data/clubAssessment";
+import { DIMENSIONS, LEVELS, QUESTIONS, pointsFor } from "@/data/clubAssessment";
 import AnalysisMarkdown from "@/components/admin/AnalysisMarkdown";
 import AssessmentRadar from "@/components/admin/AssessmentRadar";
 
@@ -27,9 +27,14 @@ type Row = {
   archived_at: string | null;
   ai_analysis: string | null;
   ai_analysis_at: string | null;
+  questions_version: number | null;
+  member_range: string | null;
+  coach_range: string | null;
 };
 
 const isTestRow = (r: Row) => (r.email || "").toLowerCase().endsWith("@sportstalent.dk");
+
+const maxDimFor = (r: Row) => ((r.questions_version ?? 1) >= 2 ? 12 : 9);
 
 function weakest(scores: number[] | null) {
   if (!Array.isArray(scores) || scores.length !== 5) return null;
@@ -85,7 +90,7 @@ export default function AdminKlubanalyser() {
     (async () => {
       const { data, error } = await supabase
         .from("club_assessments")
-        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at, ai_analysis, ai_analysis_at")
+        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at, ai_analysis, ai_analysis_at, questions_version, member_range, coach_range")
         .order("created_at", { ascending: false });
       if (error) setError(error.message);
       setRows((data as any) ?? []);
@@ -200,7 +205,7 @@ export default function AdminKlubanalyser() {
                       <td className="px-3 py-2 text-muted-foreground">{r.sport || "—"}</td>
                       <td className="px-3 py-2 text-muted-foreground">{r.role || "—"}</td>
                       <td className="px-3 py-2 text-foreground">{r.level ?? "—"}</td>
-                      <td className="px-3 py-2 text-muted-foreground">{w ? `${w.name} (${w.score}/9)` : "—"}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{w ? `${w.name} (${w.score}/${maxDimFor(r)})` : "—"}</td>
                       <td className="px-3 py-2 text-muted-foreground">{r.subject_variant || "—"}</td>
                       <td className="px-3 py-2">
                         {r.report_sent_at ? (
@@ -253,6 +258,9 @@ export default function AdminKlubanalyser() {
             <p className="mt-1 text-sm text-muted-foreground">
               Niveau {selected.level ?? "—"}
               {selected.level ? ` — ${LEVELS[selected.level - 1]?.name ?? ""}` : ""} ·{" "}
+              {selected.member_range ? `${selected.member_range} medlemmer · ` : ""}
+              {selected.coach_range ? `${selected.coach_range} trænere · ` : ""}
+              {`Spørgsmålsversion ${selected.questions_version ?? 1}`} ·{" "}
               {selected.report_sent_at
                 ? `Rapportmail leveret ${format(new Date(selected.report_sent_at), "dd/MM/yyyy HH:mm")}`
                 : "Rapportmail ikke sendt"}
@@ -266,7 +274,7 @@ export default function AdminKlubanalyser() {
               {DIMENSIONS.map((d, i) => (
                 <li key={d.key} className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">{d.name}</span>
-                  <span className="font-semibold text-foreground">{selected.scores?.[i] ?? "—"}/9</span>
+                  <span className="font-semibold text-foreground">{selected.scores?.[i] ?? "—"}/{maxDimFor(selected)}</span>
                 </li>
               ))}
             </ul>
@@ -322,7 +330,17 @@ export default function AdminKlubanalyser() {
             </div>
 
 
-            {Array.isArray(selected.answers) && selected.answers.length === QUESTIONS.length && (
+            {Array.isArray(selected.answers) && (selected.questions_version ?? 1) < 2 && (
+              <>
+                <h3 className="mt-5 text-sm font-semibold text-foreground">Svar pr. spørgsmål</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Besvarelsen er fra den gamle version med 15 spørgsmål. Spørgsmålsteksterne
+                  gemmes ikke for den version — rå svar: {selected.answers.join(", ")}
+                </p>
+              </>
+            )}
+
+            {Array.isArray(selected.answers) && (selected.questions_version ?? 1) >= 2 && selected.answers.length === QUESTIONS.length && (
               <>
                 <h3 className="mt-5 text-sm font-semibold text-foreground">Svar pr. spørgsmål</h3>
                 <ol className="mt-2 space-y-3">
@@ -330,8 +348,11 @@ export default function AdminKlubanalyser() {
                     <li key={i} className="text-sm">
                       <div className="text-muted-foreground">{i + 1}. {q.text}</div>
                       <div className="text-foreground">
-                        → {q.options[selected.answers![i]] ?? "—"}{" "}
-                        <span className="text-xs text-muted-foreground">({selected.answers![i]}/3 · {DIMENSIONS[q.dim]?.name})</span>
+                        → {selected.answers![i] === -1 ? "Ved ikke" : q.options[selected.answers![i]] ?? "—"}{" "}
+                        <span className="text-xs text-muted-foreground">
+                          ({pointsFor(q, selected.answers![i])}/3 · {DIMENSIONS[q.dim]?.name}
+                          {q.reverse ? " · omvendt" : ""})
+                        </span>
                       </div>
                     </li>
                   ))}
