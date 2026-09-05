@@ -1,6 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { DIMENSION_CONTENT, LEVEL_CONTENT } from "../_shared/club-assessment-content.ts";
+import {
+  DIMENSION_CONTENT,
+  LEVEL_CONTENT,
+  QUESTION_CONTENT_V2,
+  PLATFORM_MODULES,
+  pointsForQuestion,
+} from "../_shared/club-assessment-content.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
