@@ -15,9 +15,30 @@ export type Dimension = DimensionContent;
 
 export const DIMENSIONS: Dimension[] = DIMENSION_CONTENT;
 
-export type Question = { dim: number; text: string; options: [string, string, string, string] };
+/**
+ * Version 2: 20 spørgsmål (4 pr. område), "Ved ikke" som svar og to
+ * omvendt-vendte spørgsmål. Version 1 havde 15 spørgsmål (3 pr. område).
+ * Gemmes på hver besvarelse, så gamle svar stadig kan vises korrekt.
+ */
+export const QUESTIONS_VERSION = 2;
 
-// Rækkefølge Q1…Q15 — roterende mellem dimensionerne.
+export const UNKNOWN = -1;
+
+export type Question = {
+  dim: number;
+  text: string;
+  /** Vises i denne rækkefølge. Ved `reverse` er det BEDSTE svar først. */
+  options: [string, string, string, string];
+  reverse?: boolean;
+};
+
+/** Point (0-3) for et valgt svarindeks. "Ved ikke" giver 0 point. */
+export function pointsFor(q: Question, index: number): number {
+  if (index < 0 || index > 3) return 0;
+  return q.reverse ? 3 - index : index;
+}
+
+// Rækkefølge Q1…Q20 — roterende mellem de fem områder, fire spørgsmål pr. område.
 export const QUESTIONS: Question[] = [
   {
     dim: 0,
@@ -135,8 +156,8 @@ export const QUESTIONS: Question[] = [
     options: [
       "Over halvdelen",
       "Cirka en tredjedel",
-      "Begrænset — men vi har aldrig målt det",
-      "Lidt — og vi ved det, fordi vi har set på det",
+      "Cirka en tiendedel",
+      "Meget lidt — næsten al tiden går til træning",
     ],
   },
   {
@@ -169,24 +190,124 @@ export const QUESTIONS: Question[] = [
       "Alt væsentligt er forankret i organisationen",
     ],
   },
+  {
+    dim: 0,
+    text: "Hvad sker der med sæsonplanen, når sæsonen først er i gang?",
+    options: [
+      "Den bliver ikke taget frem igen",
+      "Den bruges løst som inspiration",
+      "Den følges — men ændringer skrives ikke ned",
+      "Den følges, evalueres og opdateres undervejs",
+    ],
+  },
+  {
+    dim: 1,
+    text: "Hvor mange af jeres trænere har en træneruddannelse eller et aftalt forløb mod en?",
+    options: [
+      "Ingen",
+      "Enkelte",
+      "De fleste",
+      "Alle — og der er en plan for næste trin",
+    ],
+  },
+  {
+    // Omvendt: bedste svar står først.
+    dim: 2,
+    reverse: true,
+    text: "Hvor meget af det, I ved om udøverne, findes kun i private noter, regneark eller beskedtråde?",
+    options: [
+      "Stort set intet — det ligger ét sted, alle relevante kan tilgå",
+      "En mindre del",
+      "Cirka halvdelen",
+      "Næsten det hele",
+    ],
+  },
+  {
+    dim: 3,
+    text: "Hvor godt kender I grunden til, at de udøvere, der stoppede sidste sæson, stoppede?",
+    options: [
+      "Vi ved det ikke",
+      "Vi har hørt et par grunde i krogene",
+      "Vi kender grunden for nogle af dem",
+      "Vi spørger systematisk, når nogen stopper",
+    ],
+  },
+  {
+    // Omvendt: bedste svar står først.
+    dim: 4,
+    reverse: true,
+    text: "Hvor mange sportslige beslutninger træffes reelt af én person alene?",
+    options: [
+      "Stort set ingen — der er en aftalt beslutningsgang",
+      "Enkelte",
+      "Mange",
+      "Næsten alle",
+    ],
+  },
 ];
 
 export const LEVELS = LEVEL_CONTENT;
 
 export const ROLES = ["Formand/bestyrelse", "Sportschef", "Cheftræner", "Træner", "Andet"];
 
+export const MEMBER_RANGES = ["Under 50", "50-149", "150-299", "300-599", "600+"];
+export const COACH_RANGES = ["1-3", "4-7", "8-15", "16+"];
+
+/** Maksimalt antal point pr. område (4 spørgsmål x 3 point). */
+export const MAX_DIM_SCORE = 12;
+
 export function levelForScore(score: number): number {
   if (score <= 1) return 1;
-  if (score <= 3) return 2;
-  if (score <= 5) return 3;
-  if (score <= 7) return 4;
+  if (score <= 4) return 2;
+  if (score <= 6) return 3;
+  if (score <= 9) return 4;
   return 5;
 }
 
 export function computeScores(answers: number[]): number[] {
   const scores = [0, 0, 0, 0, 0];
   QUESTIONS.forEach((q, i) => {
-    scores[q.dim] += answers[i] ?? 0;
+    scores[q.dim] += pointsFor(q, answers[i] ?? UNKNOWN);
   });
   return scores;
+}
+
+/** Antal svar pr. område, hvor klubben har svaret "Ved ikke". */
+export function unknownsPerDim(answers: number[]): number[] {
+  const out = [0, 0, 0, 0, 0];
+  QUESTIONS.forEach((q, i) => {
+    if ((answers[i] ?? UNKNOWN) === UNKNOWN) out[q.dim] += 1;
+  });
+  return out;
+}
+
+/** Antal svar pr. område med 0-1 point ("lave svar"). */
+export function weakAnswersPerDim(answers: number[]): number[] {
+  const out = [0, 0, 0, 0, 0];
+  QUESTIONS.forEach((q, i) => {
+    const a = answers[i] ?? UNKNOWN;
+    if (a === UNKNOWN || pointsFor(q, a) <= 1) out[q.dim] += 1;
+  });
+  return out;
+}
+
+/**
+ * Samlet niveau. Stadig "svageste led", men et område skal have mindst to
+ * lave svar for alene at kunne sætte loftet. Har intet område det, bruges det
+ * næstlaveste områdeniveau, så ét enkelt uheldigt svar ikke trækker hele
+ * klubben ned.
+ */
+export function overallLevel(scores: number[], answers: number[]): number {
+  const levels = scores.map(levelForScore);
+  const weak = weakAnswersPerDim(answers);
+  const qualifying = levels.filter((_, i) => weak[i] >= 2);
+  if (qualifying.length > 0) return Math.min(...qualifying);
+  const sorted = [...levels].sort((a, b) => a - b);
+  return sorted[1] ?? sorted[0];
+}
+
+/** Gennemsnitligt områdeniveau, vist ved siden af det samlede niveau. */
+export function averageLevel(scores: number[]): number {
+  const levels = scores.map(levelForScore);
+  return Math.round((levels.reduce((a, b) => a + b, 0) / levels.length) * 10) / 10;
 }
