@@ -446,7 +446,7 @@ export function SquadOverview({
               <div
                 key={r.user_id}
                 className={cn(
-                  "group relative min-w-0 overflow-hidden rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-accent/30",
+                  "group relative min-w-0 overflow-hidden rounded-lg border bg-card border-l-4 p-4 transition-colors hover:bg-muted/40",
                   borderClass,
                 )}
               >
@@ -544,12 +544,7 @@ export function SquadOverview({
                       {r.latest_mood ?? "—"}/5
                     </span>
                   </div>
-                  <div
-                    className={cn(
-                      "flex items-center gap-0.5 flex-shrink-0 transition-opacity",
-                      isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100",
-                    )}
-                  >
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
                     {onSelectAthlete && (
                       <Tooltip>
                         <TooltipTrigger asChild>
