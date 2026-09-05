@@ -8,14 +8,24 @@ import {
   DIMENSIONS as DIMENSIONS_DA,
   LEVELS as LEVELS_DA,
   ROLES as ROLES_DA,
+  MEMBER_RANGES,
+  COACH_RANGES,
+  QUESTIONS_VERSION,
+  MAX_DIM_SCORE,
+  UNKNOWN,
   computeScores,
   levelForScore,
+  overallLevel,
+  averageLevel,
+  pointsFor,
 } from "@/data/clubAssessment";
 import {
   QUESTIONS_EN,
   DIMENSIONS_EN,
   LEVELS_EN,
   ROLES_EN,
+  MEMBER_RANGES_EN,
+  COACH_RANGES_EN,
 } from "@/data/clubAssessmentEn";
 import { useLanguage } from "@/i18n/LanguageContext";
 
