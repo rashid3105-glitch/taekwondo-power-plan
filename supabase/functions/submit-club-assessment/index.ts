@@ -78,6 +78,8 @@ Deno.serve(async (req) => {
     const clubName = body.club_name ? String(body.club_name).slice(0, 120) : null
     const sport = body.sport ? String(body.sport).slice(0, 80) : null
     const role = body.role ? String(body.role).slice(0, 60) : null
+    const memberRange = body.member_range ? String(body.member_range).slice(0, 20) : null
+    const coachRange = body.coach_range ? String(body.coach_range).slice(0, 20) : null
 
     // Engangsbrug: kun rækker der ikke allerede har fået profildata.
     const { data: updated, error } = await admin
@@ -86,6 +88,8 @@ Deno.serve(async (req) => {
         club_name: clubName,
         sport,
         role,
+        member_range: memberRange,
+        coach_range: coachRange,
         profile_completed_at: new Date().toISOString(),
       })
       .eq('id', id)
