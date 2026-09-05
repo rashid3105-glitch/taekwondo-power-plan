@@ -200,6 +200,17 @@ export default function AdminApproval() {
       athleteCoachMap[link.athlete_id] = link.coach_id;
     }
 
+    // Athletes who signed up via an invite link but are not approved yet have
+    // no coach_athletes row. Fall back to the inviting coach on the profile so
+    // the responsible coach is pre-selected in admin.
+    const pendingCoachMap: Record<string, string> = {};
+    for (const p of ((profilesRes.data ?? []) as any[])) {
+      if (p?.pending_coach_id) pendingCoachMap[p.user_id] = p.pending_coach_id;
+    }
+    for (const p of (profiles as any[])) {
+      if (p?.pending_coach_id) pendingCoachMap[p.user_id] = p.pending_coach_id;
+    }
+
     const coachProfiles = profiles.filter(p => coachSet.has(p.user_id));
     setCoaches(coachProfiles.map(p => ({ user_id: p.user_id, display_name: p.display_name })));
 
