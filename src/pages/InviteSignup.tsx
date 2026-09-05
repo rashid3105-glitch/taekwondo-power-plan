@@ -24,7 +24,7 @@ export default function InviteSignup() {
   const { locale, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("welcome");
-  const [info, setInfo] = useState<{ valid: boolean; coach_name?: string; club_name?: string } | null>(null);
+  const [info, setInfo] = useState<{ valid: boolean; coach_name?: string; club_name?: string; coach_country?: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
