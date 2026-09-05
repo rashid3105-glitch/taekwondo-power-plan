@@ -17254,6 +17254,8 @@ const translations = {
     adminConsentConfirmed: "Zugestimmt",
     adminConsentNotMine: "Nicht mein Kind",
     adminBirthDateCoverage: "Abdeckung Geburtsdatum",
+    adminConsentByClub: "Nach Verein",
+    adminConsentNoClub: "Kein Verein",
     consentPageTitle: "Elterliche Einwilligung",
     consentIntro: "Ein Trainer hat ein SPORTSTALENT-Konto für {name} erstellt. Da er/sie unter 18 ist, benötigen wir Ihre Einwilligung, bevor wir Gesundheitsdaten verarbeiten dürfen.",
     consentDataItemsTitle: "Verarbeitete Daten",
