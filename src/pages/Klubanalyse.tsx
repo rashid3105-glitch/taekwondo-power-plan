@@ -373,7 +373,7 @@ export default function Klubanalyse() {
                 {C.back}
               </button>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>
-                {index + 1} / 15 · {DIMENSIONS[QUESTIONS[index].dim].name}
+                {index + 1} / {TOTAL} · {DIMENSIONS[QUESTIONS[index].dim].name}
               </div>
             </div>
             <h2 style={{ fontSize: "clamp(21px,4.5vw,30px)", fontWeight: 800, lineHeight: 1.25, letterSpacing: "-0.02em", margin: "0 0 28px" }}>
