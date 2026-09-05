@@ -10,7 +10,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useMySportProfile } from "@/hooks/useMySportProfile";
 import { formatGrade, isTkdBeltSystem, TKD_BELT_ORDER, TKD_GRADE_LADDER } from "@/lib/sportGrade";
 import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
