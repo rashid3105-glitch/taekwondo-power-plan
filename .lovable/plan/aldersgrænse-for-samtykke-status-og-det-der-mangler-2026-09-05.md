@@ -3,6 +3,7 @@
 ## Hvad jeg kontrollerede (bekræftet i dag)
 
 **Fødselsdatoer — de tre mekanismer findes:**
+
 - Ikke-blokerende opfordring til atleten (`BirthDateGate`), kan snoozes, kommer igen næste session.
 - Træneren kan sætte datoen (`SetBirthDateDialog`) plus et kort på trænerforsiden med de atleter, der mangler (`MissingBirthDatesCard`).
 - Nye atleter kan ikke oprettes uden gyldig fødselsdato (`create-athlete` afviser med `BIRTH_DATE_REQUIRED`).
@@ -10,6 +11,7 @@
 - Tal lige nu: 72 atleter, 42 uden fødselsdato.
 
 **Landeafhængig grænse — kun halvt på plads:**
+
 - Databasen har det hele: tabel med 28 landegrænser, `consent_age_for_athlete()` (klubland > bopælsland > platformstandard, kilde "strictest") og en rapportfunktion.
 - Men intet i appen bruger det. Både samtykkeporten, trænernes samtykkeoversigt og oprettelsen af nye atleter regner stadig med fast 18 år (`DEFAULT_CONSENT_AGE`). Så konklusionen i teksten holder: der indhentes værgesamtykke for flere end nødvendigt.
 
@@ -24,7 +26,7 @@
 
 ## Juridisk beslutning, der skal træffes først
 
-`consent_age_source` står på "strictest" (den strengeste af klubland/bopælsland). Danmark ligger på 13 i tabellen, men jeres nuværende praksis er 18. Punkt 1-4 ændrer reelt praksis, så I bør bekræfte: skal grænsen følge landet (DK = 13/15), eller skal platformen bevidst ligge højere end loven kræver?
+`consent_age_source` står på "strictest" (den strengeste af klubland/bopælsland). Danmark ligger på 13 i tabellen, men jeres nuværende praksis er 18. Punkt 1-4 ændrer reelt praksis, så I bør bekræfte: skal grænsen følge landet (DK = 13/15), eller skal platformen bevidst ligge højere end loven kræver? Grænsen skal følge landet
 
 ## Teknisk
 
