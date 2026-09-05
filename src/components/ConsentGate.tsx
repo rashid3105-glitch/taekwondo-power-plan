@@ -96,9 +96,13 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
 
       // Consent decisions use birth_date ONLY — profiles.age is a decaying
       // static field and must never resolve consent status.
+      // The threshold is country-aware (GDPR Art. 8) and resolved server side;
+      // it falls back to 18 on any failure.
       // Unknown age (no birth_date) must NOT hit the guardian wall: it falls
       // through to the adult flow, and BirthDateGate nags for the missing date.
-      const verdict = isBelowConsentAge((profile as any)?.birth_date ?? null);
+      const threshold = await fetchConsentAge(uid);
+      const verdict = isBelowConsentAge((profile as any)?.birth_date ?? null, threshold);
+
       if (verdict === true) {
         if (status === "granted") {
           setState({ kind: "ok" });
