@@ -2,7 +2,9 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { fetchConsentAge, isBelowConsentAge } from "@/lib/age";
+import { ageFromBirthDate, clearConsentAgeCache, fetchConsentAge, isBelowConsentAge } from "@/lib/age";
+import { BirthDatePicker } from "@/components/BirthDatePicker";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -32,7 +34,9 @@ type State =
   | { kind: "ok" }
   | { kind: "banner"; graceUntil: string; clubName: string | null }
   | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
-  | { kind: "blocking"; clubName: string | null };
+  | { kind: "blocking"; clubName: string | null }
+  | { kind: "needsBirthDate" }
+  | { kind: "error" };
 
 
 function fillPlaceholders(template: string, vars: Record<string, string>) {
@@ -51,6 +55,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   // and the submit button stays disabled until the user ticks it.
   const [checked, setChecked] = useState(false);
   const [guardianLink, setGuardianLink] = useState<string | null>(null);
+  const [birthDate, setBirthDate] = useState("");
 
 
   const evaluate = useCallback(async () => {
@@ -103,6 +108,14 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       const threshold = await fetchConsentAge(uid);
       const verdict = isBelowConsentAge((profile as any)?.birth_date ?? null, threshold);
 
+      // Unknown age must never fall through to the adult self-consent screen:
+      // a minor without a registered birth date could otherwise consent for
+      // themselves. Ask the athlete for the date first, then re-evaluate.
+      if (verdict === "unknown") {
+        setState({ kind: "needsBirthDate" });
+        return;
+      }
+
       if (verdict === true) {
         if (status === "granted") {
           setState({ kind: "ok" });
@@ -133,9 +146,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       setState({ kind: "blocking", clubName });
 
     } catch (e) {
-      // Fail open — never lock users out on a network/RLS error.
-      console.warn("ConsentGate evaluation failed; failing open:", e);
-      setState({ kind: "ok" });
+      // Fail closed — consent status could not be confirmed, so protected
+      // features stay unavailable until it can be. Public routes are still
+      // rendered untouched below.
+      console.warn("ConsentGate evaluation failed; failing closed:", e);
+      setState({ kind: "error" });
     }
   }, []);
 
@@ -160,6 +175,32 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       setState({ kind: "ok" });
     } catch (e: any) {
       setError(e.message || t("error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const saveBirthDate = async () => {
+    const age = ageFromBirthDate(birthDate);
+    if (!birthDate || age == null || age < 3 || age > 100) {
+      toast.error(t("birthDateInvalid"));
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const { error: fnErr } = await supabase.functions.invoke("update-my-profile", {
+        body: { birth_date: birthDate, age },
+      });
+      if (fnErr) throw fnErr;
+      toast.success(t("birthDateGateSaved"));
+      if (session?.user?.id) clearConsentAgeCache(session.user.id);
+      setBirthDate("");
+      setState({ kind: "loading" });
+      await evaluate();
+    } catch (e: any) {
+      setError(e.message || t("birthDateInvalid"));
     } finally {
       setSubmitting(false);
     }
@@ -295,6 +336,57 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-2">
             <Button onClick={() => { setState({ kind: "loading" }); evaluate(); }} variant="secondary" className="w-full">
               {t("privacyConsentMinorRefresh")}
+            </Button>
+            <Button onClick={logout} variant="ghost" className="w-full">
+              {t("selfConsentLogout")}
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (state.kind === "needsBirthDate") {
+    return (
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">{t("consentNeedBirthDateTitle")}</h1>
+          </div>
+          <p className="text-sm leading-relaxed">{t("consentNeedBirthDateBody")}</p>
+
+          <BirthDatePicker value={birthDate} onChange={setBirthDate} />
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="flex flex-col gap-2">
+            <Button onClick={saveBirthDate} disabled={submitting || !birthDate} className="w-full">
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("consentNeedBirthDateCta")}
+            </Button>
+            <Button onClick={logout} variant="ghost" className="w-full">
+              {t("selfConsentLogout")}
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (state.kind === "error") {
+    return (
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-6 w-6 text-amber-500" />
+            <h1 className="text-xl font-semibold">{t("consentCheckFailedTitle")}</h1>
+          </div>
+          <p className="text-sm leading-relaxed">{t("consentCheckFailedBody")}</p>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => { setState({ kind: "loading" }); evaluate(); }}
+              className="w-full"
+            >
+              {t("consentCheckFailedRetry")}
             </Button>
             <Button onClick={logout} variant="ghost" className="w-full">
               {t("selfConsentLogout")}
