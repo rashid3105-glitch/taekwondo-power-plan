@@ -66,6 +66,10 @@ export default function JoinInvite() {
     );
   }
 
+  if (!info?.valid) {
+    return <InviteErrorState reason={info?.reason} />;
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
@@ -73,17 +77,7 @@ export default function JoinInvite() {
           <LanguageSwitcher />
         </div>
 
-        {!info?.valid && (
-          <div className="text-center space-y-3">
-            <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 mx-auto">
-              <Clock className="h-8 w-8 text-destructive" />
-            </div>
-            <h1 className="text-xl font-extrabold">{t("joinInvalid")}</h1>
-            <Button onClick={() => navigate("/")} variant="outline" className="w-full">
-              {t("backToHome")}
-            </Button>
-          </div>
-        )}
+
 
         {info?.valid && sent && (
           <div className="text-center space-y-3">
