@@ -438,7 +438,7 @@ export default function Klubanalyse() {
             </p>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <button
-                onClick={() => { setStage("q"); setIndex(8); }}
+                onClick={() => { setStage("q"); setIndex(HALF); }}
                 style={{ padding: "14px 32px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
                 {C.continue}
