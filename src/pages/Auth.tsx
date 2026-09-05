@@ -100,9 +100,14 @@ export default function AuthPage() {
       sessionStorage.getItem("pending_invite_code") ||
       localStorage.getItem("pending_invite_code");
     if (pendingInvite) {
+      const { data, error } = await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
+      const result = data as { ok?: boolean; error?: string } | null;
+      if (error || !result?.ok) {
+        console.error("apply invite failed", error ?? result?.error);
+        throw new Error(t("inviteErrInvalidDesc"));
+      }
       sessionStorage.removeItem("pending_invite_code");
       try { localStorage.removeItem("pending_invite_code"); } catch {}
-      try { await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite }); } catch {}
     }
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -517,7 +522,15 @@ export default function AuthPage() {
               }
               setMfaChallengeOpen(false);
               setMfaFactorId(null);
-              await completeLogin();
+              try {
+                await completeLogin();
+              } catch (error) {
+                toast({
+                  title: t("error"),
+                  description: error instanceof Error ? error.message : t("inviteErrInvalidDesc"),
+                  variant: "destructive",
+                });
+              }
             }}
             onCancel={() => {
               setMfaChallengeOpen(false);

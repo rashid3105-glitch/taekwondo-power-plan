@@ -115,10 +115,10 @@ export default function JoinInvite() {
                 </h1>
                 <p className="text-sm text-muted-foreground">{t("joinClubSubtext")}</p>
                 <div className="space-y-2">
-                  <Button onClick={() => navigate(`/auth?tab=signup&invite=${code}`)} className="w-full">
+                  <Button onClick={() => navigate(`/invite/${encodeURIComponent(code || "")}`)} className="w-full">
                     {t("joinSignupCta")}
                   </Button>
-                  <Button onClick={() => navigate(`/auth?tab=signin&invite=${code}`)} variant="outline" className="w-full">
+                  <Button onClick={() => navigate(`/auth?tab=signin&ic=${encodeURIComponent(code || "")}`)} variant="outline" className="w-full">
                     {t("joinLoginCta")}
                   </Button>
                 </div>

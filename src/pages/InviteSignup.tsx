@@ -281,7 +281,9 @@ export default function InviteSignup() {
                     const { error } = await supabase.auth.resend({
                       type: "signup",
                       email,
-                      options: { emailRedirectTo: `${window.location.origin}/auth?tab=signin` },
+                      options: {
+                        emailRedirectTo: `${window.location.origin}/auth?tab=signin${code ? `&ic=${encodeURIComponent(code)}` : ""}`,
+                      },
                     });
                     if (error) throw error;
                     toast({ title: "Mail sendt igen" });
