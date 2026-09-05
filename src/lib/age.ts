@@ -69,10 +69,6 @@ export async function fetchConsentAge(athleteId: string): Promise<number> {
   }
 }
 
-export function clearConsentAgeCache(athleteId?: string) {
-  if (athleteId) cache.delete(athleteId);
-  else cache.clear();
-}
 
 export async function fetchConsentAges(
   athleteIds: string[],
