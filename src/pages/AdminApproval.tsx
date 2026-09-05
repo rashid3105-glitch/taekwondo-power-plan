@@ -1227,16 +1227,16 @@ export default function AdminApproval() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 items-start gap-3">
               <div className="space-y-2">
                 <Label>{t("birthDate") || "Date of birth"}</Label>
-                <p className="text-xs text-muted-foreground">{t("birthDateHint") || "Used to calculate age automatically"}</p>
                 <Input
                   type="date"
                   value={editForm.birth_date || ""}
                   onChange={(e) => setEditForm(f => ({ ...f, birth_date: e.target.value }))}
                   max={new Date().toISOString().split("T")[0]}
                 />
+                <p className="text-xs text-muted-foreground">{t("birthDateHint") || "Used to calculate age automatically"}</p>
                 {editForm.birth_date && calcAge(editForm.birth_date) !== null && (
                   <p className="text-xs text-muted-foreground">
                     {t("profileAge") || "Age"}: <span className="font-semibold text-foreground">{calcAge(editForm.birth_date)} {t("years") || "years"}</span>
@@ -1248,7 +1248,7 @@ export default function AdminApproval() {
                 <Input type="number" inputMode="decimal" value={editForm.weight_kg || ""} onChange={(e) => setEditForm(f => ({ ...f, weight_kg: e.target.value }))} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 items-start gap-3">
               <div className="space-y-2">
                 <Label>{gradeLabelFor(editingUser?.sport, t, locale) || t("beltLevel")}</Label>
                 <Select value={editForm.belt_level || (isTkdBeltSystem(editingUser?.sport) ? "white" : "")} onValueChange={(v) => setEditForm(f => ({ ...f, belt_level: v }))}>
@@ -1262,13 +1262,13 @@ export default function AdminApproval() {
               </div>
               <div className="space-y-2">
                 <Label>{startDateLabel(editingUser?.sport, t, locale)}</Label>
-                <p className="text-xs text-muted-foreground">{t("tkdStartDateHint") || "Used to calculate experience automatically"}</p>
                 <Input
                   type="date"
                   value={editForm.sport_start_date || ""}
                   onChange={(e) => setEditForm(f => ({ ...f, sport_start_date: e.target.value }))}
                   max={new Date().toISOString().split("T")[0]}
                 />
+                <p className="text-xs text-muted-foreground">{t("tkdStartDateHint") || "Used to calculate experience automatically"}</p>
                 {editForm.sport_start_date && calcExperience(editForm.sport_start_date) !== null && (
                   <p className="text-xs text-muted-foreground">
                     {t("profileExperience") || "Experience"}: <span className="font-semibold text-foreground">{calcExperience(editForm.sport_start_date)} {t("years") || "years"}</span>
