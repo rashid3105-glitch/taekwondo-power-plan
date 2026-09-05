@@ -3787,6 +3787,8 @@ const translations = {
     adminConsentConfirmed: "Approved",
     adminConsentNotMine: "Not my child",
     adminBirthDateCoverage: "Date-of-birth coverage",
+    adminConsentByClub: "By club",
+    adminConsentNoClub: "No club",
     consentPageTitle: "Parental consent",
     consentIntro: "A coach has created a SPORTSTALENT account for {name}. Because they are under 18, we need your consent before we may process their health data.",
     consentDataItemsTitle: "Data we process",
