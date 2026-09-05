@@ -67,9 +67,15 @@ export default function Messages() {
     <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
       <PageMeta title="Beskeder" description="Chat med din coach og dit hold" noindex />
       <header className="border-b border-border bg-card sticky top-0 z-10 pt-safe-min md:pt-safe">
-        <div className="container max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
+        <div className="w-full max-w-5xl mx-auto px-3 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} aria-label={t("back")} title={t("back")}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => (active ? closeThread() : navigate("/dashboard"))}
+              aria-label={t("back")}
+              title={t("back")}
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <span className="text-sm sm:text-base font-extrabold text-card-foreground">Beskeder</span>
