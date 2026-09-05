@@ -146,6 +146,14 @@ const Page = ({ children }: { children: React.ReactNode }) => (
   </motion.div>
 );
 
+const LegacyInviteSignupRedirect = () => {
+  const location = useLocation();
+  const code = new URLSearchParams(location.search).get("code");
+  return code
+    ? <Navigate to={`/invite/${encodeURIComponent(code)}`} replace />
+    : <Navigate to="/" replace />;
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -212,6 +220,7 @@ const AnimatedRoutes = () => {
         <Route path="/klubanalyse" element={<Page><PublicSeo path="/klubanalyse" title="Klubanalysen — hvor står jeres klub? | Sportstalent" description="15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber." /><Klubanalyse /></Page>} />
         <Route path="/signup/coach" element={<Page><SignupCoach /></Page>} />
         <Route path="/invite/:code" element={<Page><InviteSignup /></Page>} />
+        <Route path="/invite-signup" element={<LegacyInviteSignupRedirect />} />
         <Route path="/signup" element={<Navigate to="/auth?tab=signup" replace />} />
         <Route path="/login" element={<Navigate to="/auth?tab=signin" replace />} />
         <Route path="/methodology" element={<Page><PublicSeo path="/methodology" title="Metode — sportsvidenskab bag Sportstalent" description="Sådan bygger Sportstalent periodiserede programmer for klubatleter: styrke, hastighed, teknik og restitution baseret på sportsvidenskab." /><Methodology /></Page>} />
