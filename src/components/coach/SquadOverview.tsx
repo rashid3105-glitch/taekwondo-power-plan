@@ -286,6 +286,14 @@ export function SquadOverview({
     return out;
   }, [rows, pulseFilter, beltFilter, search, isTkd, teamFilter, teamMembers]);
 
+  // Ladder grades, plus any legacy colour values still present on profiles.
+  const beltFilterOptions = useMemo(() => {
+    const legacyPresent = LEGACY_BELT_ORDER.filter(
+      (c) => rows.some((r) => r.belt_level === c),
+    );
+    return [...TKD_BELT_ORDER, ...legacyPresent];
+  }, [rows]);
+
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
