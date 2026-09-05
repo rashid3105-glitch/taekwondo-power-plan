@@ -21683,6 +21683,8 @@ const translations = {
     adminConsentConfirmed: "تمت الموافقة",
     adminConsentNotMine: "ليس طفلي",
     adminBirthDateCoverage: "تغطية تاريخ الميلاد",
+    adminConsentByClub: "حسب النادي",
+    adminConsentNoClub: "بدون نادٍ",
     consentPageTitle: "موافقة ولي الأمر",
     consentIntro: "أنشأ مدرّب حسابًا على SPORTSTALENT لـ {name}. نظرًا لأن سنه أقل من 18، نحتاج إلى موافقتك قبل أن نتمكن من معالجة بياناته الصحية.",
     consentDataItemsTitle: "البيانات التي نعالجها",
