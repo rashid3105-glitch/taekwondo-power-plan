@@ -4741,6 +4741,7 @@ export type Database = {
         Returns: number
       }
       can_chat_with: { Args: { _a: string; _b: string }; Returns: boolean }
+      canonical_country_name: { Args: { _country: string }; Returns: string }
       cleanup_archived_survey_templates: { Args: never; Returns: undefined }
       club_athlete_count: { Args: { _club_id: string }; Returns: number }
       club_shares_coach_notes: { Args: { _club_id: string }; Returns: boolean }
