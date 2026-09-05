@@ -34,18 +34,20 @@ const COPY = {
   da: {
     metaTitle: "Klubanalysen — hvor står jeres klub? | Sportstalent",
     metaDesc:
-      "15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber.",
+      "20 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber.",
     eyebrow: "KLUBANALYSEN",
-    heroTitle: "15 spørgsmål. Ét ærligt svar på, hvor jeres klub står.",
+    heroTitle: "20 spørgsmål. Ét ærligt svar på, hvor jeres klub står.",
     heroP1:
       "Analysen måler fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning. Klubbens niveau sættes af det svageste led — ikke af gennemsnittet.",
-    heroP2: "Svar på, hvordan det er i dag. Ikke på en god dag. Det tager omkring fem minutter.",
+    heroP2:
+      "Svar på, hvordan det er i dag. Ikke på en god dag. Er I i tvivl, så vælg \"Ved ikke\" — det er i sig selv et svar. Det tager omkring syv minutter.",
     start: "Start analysen",
     back: "← Tilbage",
-    milestoneEyebrow: "OTTE SVAR AFGIVET",
-    milestoneTitle: "Godt halvvejs.",
+    unknown: "Ved ikke",
+    milestoneEyebrow: "TI SVAR AFGIVET",
+    milestoneTitle: "Halvvejs.",
     milestoneP1a: "Indtil videre tegner ",
-    milestoneP1b: " sig som det svageste område. Det kan nå at ændre sig — der er syv spørgsmål tilbage.",
+    milestoneP1b: " sig som det svageste område. Det kan nå at ændre sig — der er ti spørgsmål tilbage.",
     milestoneP2: "Der er ingen tilmelding undervejs.",
     continue: "Fortsæt",
     gateTitle: "Jeres resultat er klar.",
@@ -58,10 +60,15 @@ const COPY = {
     genericError: "Noget gik galt. Prøv igen om et øjeblik.",
     blockedBy: (d: string) => `Bremset af ${d}.`,
     ceiling:
-      "Niveauet sættes af det svageste led, ikke af gennemsnittet. Det er ikke en karakter — det er et loft.",
+      "Niveauet sættes af det svageste led, ikke af gennemsnittet. Et område skal have mindst to lave svar for alene at sætte loftet. Det er ikke en karakter — det er et loft.",
     even: "Jeres fem områder ligger lige — ingen af dem trækker fra endnu. Løftet skal komme bredt.",
     strongestLine: (strong: string, weak: string) =>
       `${strong} står stærkest hos jer — men det tæller først for alvor, når hullet i ${weak} er lukket.`,
+    average: (n: number) => `Gennemsnit på tværs af de fem områder: niveau ${n}.`,
+    unknownNote: (n: number) =>
+      n === 1
+        ? "I svarede \"Ved ikke\" på ét spørgsmål. Det tæller som nul point — men det er selv et fund: I kan ikke styre efter noget, I ikke ved."
+        : `I svarede "Ved ikke" på ${n} spørgsmål. Det tæller som nul point — men det er selv et fund: I kan ikke styre efter noget, I ikke ved.`,
     distribution: "FORDELING",
     level: "Niveau",
     gapsTitle: "De tre huller, der koster mest",
@@ -76,6 +83,8 @@ const COPY = {
     clubName: "Klubnavn",
     sport: "Sportsgren",
     chooseRole: "Vælg rolle",
+    chooseMembers: "Antal medlemmer",
+    chooseCoaches: "Antal aktive trænere",
     saveProfile: "Gem oplysninger",
     profileSaved: "Tak — oplysningerne er gemt",
     profileFailed: "Oplysningerne kunne ikke gemmes. Det er frivilligt — din analyse er registreret.",
@@ -83,18 +92,20 @@ const COPY = {
   en: {
     metaTitle: "The Club Assessment — where does your club stand? | Sportstalent",
     metaDesc:
-      "15 questions and an honest picture of your club's maturity: common thread, coaching capacity, data, culture and leadership. Free self-assessment for sports clubs.",
+      "20 questions and an honest picture of your club's maturity: common thread, coaching capacity, data, culture and leadership. Free self-assessment for sports clubs.",
     eyebrow: "THE CLUB ASSESSMENT",
-    heroTitle: "15 questions. One honest answer on where your club stands.",
+    heroTitle: "20 questions. One honest answer on where your club stands.",
     heroP1:
       "The assessment measures five areas: common thread, coaching capacity, data and documentation, culture and retention, and leadership and direction. The club's level is set by the weakest link — not by the average.",
-    heroP2: "Answer for how it is today. Not on a good day. It takes about five minutes.",
+    heroP2:
+      "Answer for how it is today. Not on a good day. If you are unsure, choose \"Don't know\" — that is an answer in itself. It takes about seven minutes.",
     start: "Start the assessment",
     back: "← Back",
-    milestoneEyebrow: "EIGHT ANSWERS GIVEN",
-    milestoneTitle: "Well past halfway.",
+    unknown: "Don't know",
+    milestoneEyebrow: "TEN ANSWERS GIVEN",
+    milestoneTitle: "Halfway.",
     milestoneP1a: "So far ",
-    milestoneP1b: " looks like your weakest area. That can still change — seven questions remain.",
+    milestoneP1b: " looks like your weakest area. That can still change — ten questions remain.",
     milestoneP2: "There is no sign-up along the way.",
     continue: "Continue",
     gateTitle: "Your result is ready.",
@@ -107,10 +118,15 @@ const COPY = {
     genericError: "Something went wrong. Please try again in a moment.",
     blockedBy: (d: string) => `Held back by ${d}.`,
     ceiling:
-      "The level is set by the weakest link, not by the average. It is not a grade — it is a ceiling.",
+      "The level is set by the weakest link, not by the average. An area needs at least two low answers to set the ceiling on its own. It is not a grade — it is a ceiling.",
     even: "Your five areas are even — none of them stands out yet. The lift has to come broadly.",
     strongestLine: (strong: string, weak: string) =>
       `${strong} is your strongest area — but it only counts for real once the gap in ${weak} is closed.`,
+    average: (n: number) => `Average across the five areas: level ${n}.`,
+    unknownNote: (n: number) =>
+      n === 1
+        ? "You answered \"Don't know\" to one question. It counts as zero points — but it is a finding in itself: you cannot steer by something you do not know."
+        : `You answered "Don't know" to ${n} questions. It counts as zero points — but it is a finding in itself: you cannot steer by something you do not know.`,
     distribution: "DISTRIBUTION",
     level: "Level",
     gapsTitle: "The three gaps that cost the most",
@@ -125,6 +141,8 @@ const COPY = {
     clubName: "Club name",
     sport: "Sport",
     chooseRole: "Select role",
+    chooseMembers: "Number of members",
+    chooseCoaches: "Number of active coaches",
     saveProfile: "Save details",
     profileSaved: "Thanks — your details are saved",
     profileFailed: "The details could not be saved. It is optional — your assessment is registered.",
