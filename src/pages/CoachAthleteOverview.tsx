@@ -145,7 +145,7 @@ export default function CoachAthleteOverview() {
     const [profileRes, plansRes, rehabRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, athlete_code, age, weight_kg, belt_level, experience_years, goals, sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
+        .select("user_id, display_name, athlete_code, age, birth_date, weight_kg, belt_level, experience_years, goals, sessions_per_week, current_injury, program_weeks, weekly_schedule, avatar_url, discipline, club_id, country, gal_license, gal_license_expires_at, has_myfightbook, myfightbook_expires_at, antidoping_course_date")
         .eq("user_id", athleteId)
         .maybeSingle(),
       plansQ,

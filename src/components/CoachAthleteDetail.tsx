@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
 import { WeightModule } from "@/components/weight/WeightModule";
 import { CollapsiblePanel } from "@/components/coach/CollapsiblePanel";
+import { SetBirthDateDialog } from "@/components/coach/SetBirthDateDialog";
 
 /** High-contrast save button — must stand out everywhere in the system. */
 const SAVE_BTN = "bg-foreground text-background hover:bg-foreground/90 border-transparent font-semibold";
@@ -76,6 +77,7 @@ interface AthleteProfile {
   display_name: string;
   athlete_code: string | null;
   age: number | null;
+  birth_date?: string | null;
   weight_kg: number | null;
   belt_level: string;
   experience_years: number | null;
@@ -150,6 +152,7 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
 
   // Profile fields
   const [age, setAge] = useState<string>(athlete.age?.toString() || "");
+  const [birthDate, setBirthDate] = useState<string>(athlete.birth_date || "");
   const [beltLevel, setBeltLevel] = useState(athlete.belt_level || "white");
   const [experienceYears, setExperienceYears] = useState<string>(athlete.experience_years?.toString() || "");
   const [weightKg, setWeightKg] = useState<string>(athlete.weight_kg?.toString() || "");
@@ -373,6 +376,27 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                   onChange={(e) => setAge(e.target.value)}
                   placeholder="—"
                   className="h-9"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">{t("birthDate")}</Label>
+                <SetBirthDateDialog
+                  athleteId={athlete.user_id}
+                  athleteName={athlete.display_name}
+                  clubId={athlete.club_id}
+                  currentBirthDate={birthDate || null}
+                  onSaved={(iso, newAge) => {
+                    setBirthDate(iso);
+                    setAge(String(newAge));
+                  }}
+                  trigger={
+                    <Button variant="outline" size="sm" className="h-9 w-full justify-start font-normal">
+                      <Calendar className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+                      {birthDate
+                        ? new Intl.DateTimeFormat(locale).format(new Date(`${birthDate}T00:00:00`))
+                        : t("coachSetBirthDate")}
+                    </Button>
+                  }
                 />
               </div>
               <div className="space-y-1">
