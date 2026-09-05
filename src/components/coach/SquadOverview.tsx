@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useMySportProfile } from "@/hooks/useMySportProfile";
-import { formatGrade, isTkdBeltSystem } from "@/lib/sportGrade";
+import { formatGrade, isTkdBeltSystem, TKD_BELT_ORDER, TKD_GRADE_LADDER } from "@/lib/sportGrade";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -70,7 +70,8 @@ interface Props {
   allClubs?: boolean;
 }
 
-const BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
+/** Legacy colour-only values still stored on some profiles. */
+const LEGACY_BELT_ORDER = ["white", "yellow", "green", "blue", "red", "black"];
 
 const BELT_CHIP: Record<string, string> = {
   white: "bg-slate-200 text-slate-700",
@@ -80,6 +81,41 @@ const BELT_CHIP: Record<string, string> = {
   red: "bg-red-500 text-white",
   black: "bg-neutral-900 text-white",
 };
+
+/** Representative ladder index for a legacy colour value. */
+const LEGACY_TO_LADDER: Record<string, string> = {
+  white: "10th kup",
+  yellow: "8th kup",
+  green: "6th kup",
+  blue: "4th kup",
+  red: "2nd kup",
+  black: "1st dan",
+};
+
+/** Sort rank that understands both kup/dan values and legacy colours. */
+function beltRank(value: string | null): number {
+  if (!value) return 999;
+  const direct = TKD_BELT_ORDER.indexOf(value);
+  if (direct >= 0) return direct;
+  const mapped = LEGACY_TO_LADDER[value];
+  return mapped ? TKD_BELT_ORDER.indexOf(mapped) : 999;
+}
+
+/** Chip colour + short label for a belt value (kup/dan or legacy colour). */
+function beltChip(value: string): { cls: string; label: string } {
+  const grade = TKD_GRADE_LADDER.find((g) => g.value === value);
+  if (grade) {
+    const colour = grade.colors[grade.colors.length - 1];
+    return {
+      cls: BELT_CHIP[colour] || "bg-muted text-muted-foreground",
+      label: grade.dan ? `${grade.dan}d` : `${grade.kup}k`,
+    };
+  }
+  return {
+    cls: BELT_CHIP[value] || "bg-muted text-muted-foreground",
+    label: (value || "?").charAt(0),
+  };
+}
 
 
 function daysSince(date: string | null): number | null {
@@ -229,7 +265,11 @@ export function SquadOverview({
         return d !== null && d >= 7;
       });
     }
-    if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
+    if (isTkd && beltFilter !== "all") {
+      out = out.filter(
+        (r) => r.belt_level === beltFilter || LEGACY_TO_LADDER[r.belt_level] === beltFilter,
+      );
+    }
     if (teamFilter !== "all" && teams.some((tm) => tm.id === teamFilter)) {
       const ids = new Set(teamMembers[teamFilter] ?? []);
       out = out.filter((r) => ids.has(r.user_id));
@@ -246,6 +286,14 @@ export function SquadOverview({
     return out;
   }, [rows, pulseFilter, beltFilter, search, isTkd, teamFilter, teamMembers]);
 
+  // Ladder grades, plus any legacy colour values still present on profiles.
+  const beltFilterOptions = useMemo(() => {
+    const legacyPresent = LEGACY_BELT_ORDER.filter(
+      (c) => rows.some((r) => r.belt_level === c),
+    );
+    return [...TKD_BELT_ORDER, ...legacyPresent];
+  }, [rows]);
+
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -255,7 +303,7 @@ export function SquadOverview({
         return firstA.localeCompare(firstB, undefined, { sensitivity: "base" });
       }
       if (sort === "belt") {
-        if (isTkd) return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
+        if (isTkd) return beltRank(a.belt_level) - beltRank(b.belt_level);
         return sportProfile.grades.indexOf(a.belt_level) - sportProfile.grades.indexOf(b.belt_level);
       }
       if (sort === "lastActive") {
@@ -330,8 +378,10 @@ export function SquadOverview({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("allBelts")}</SelectItem>
-                {BELT_ORDER.map((b) => (
-                  <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                {beltFilterOptions.map((b) => (
+                  <SelectItem key={b} value={b}>
+                    {LEGACY_BELT_ORDER.includes(b) ? t(b) : formatGrade(sportProfile.slug, b, t)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -414,13 +464,13 @@ export function SquadOverview({
                           className={cn(
                             "absolute -bottom-1 -right-1 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
                             isTkd
-                              ? cn("h-4 w-4", BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground")
+                              ? cn("h-4 min-w-4 px-0.5", beltChip(r.belt_level).cls)
                               : "h-5 px-1 bg-primary/20 text-primary",
                           )}
                           title={formatGrade(sportProfile.slug, r.belt_level, t)}
                         >
                           {isTkd
-                            ? (r.belt_level || "?").charAt(0)
+                            ? beltChip(r.belt_level).label
                             : (r.belt_level || "").slice(0, 3)}
                         </span>
                       )}

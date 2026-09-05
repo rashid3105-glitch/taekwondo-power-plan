@@ -587,8 +587,11 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
     height: auto !important;
     overflow: visible !important;
   }
-  body * { visibility: hidden !important; }
-  .print-area, .print-area * { visibility: visible !important; }
+  /* Only isolate a print area on pages that actually define one, so other
+     print flows (season calendar etc.) keep printing their full page. */
+  body:has(.print-area) * { visibility: hidden !important; }
+  body:has(.print-area) .print-area,
+  body:has(.print-area) .print-area * { visibility: visible !important; }
   .print-area {
     position: absolute !important;
     left: 0;
