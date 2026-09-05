@@ -183,9 +183,13 @@ export default function Klubanalyse() {
   const QUESTIONS = isEn ? QUESTIONS_EN : QUESTIONS_DA;
   const LEVELS = isEn ? LEVELS_EN : LEVELS_DA;
   const ROLES = isEn ? ROLES_EN : ROLES_DA;
+  const MEMBERS = isEn ? MEMBER_RANGES_EN : MEMBER_RANGES;
+  const COACHES = isEn ? COACH_RANGES_EN : COACH_RANGES;
+  const TOTAL = QUESTIONS_DA.length;
+  const HALF = Math.floor(TOTAL / 2); // milepæl efter 10 svar
   const [stage, setStage] = useState<Stage>("intro");
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<number[]>(Array(15).fill(-1));
+  const [answers, setAnswers] = useState<number[]>(Array(TOTAL).fill(UNKNOWN));
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState(""); // honeypot
@@ -199,11 +203,15 @@ export default function Klubanalyse() {
   const [clubName, setClubName] = useState("");
   const [sport, setSport] = useState("");
   const [role, setRole] = useState("");
+  const [memberRange, setMemberRange] = useState("");
+  const [coachRange, setCoachRange] = useState("");
   const [profileSaved, setProfileSaved] = useState(false);
 
-  const scores = useMemo(() => computeScores(answers.map((a) => (a < 0 ? 0 : a))), [answers]);
+  const scores = useMemo(() => computeScores(answers), [answers]);
   const levels = scores.map(levelForScore);
-  const overall = Math.min(...levels);
+  const overall = useMemo(() => overallLevel(scores, answers), [scores, answers]);
+  const avgLevel = useMemo(() => averageLevel(scores), [scores]);
+  const unknownCount = answers.filter((a) => a === UNKNOWN).length;
   const weakestIdx = scores.indexOf(Math.min(...scores));
   const strongestIdx = scores.indexOf(Math.max(...scores));
   const lowestThree = scores
@@ -213,28 +221,27 @@ export default function Klubanalyse() {
 
   const partialWeakest = useMemo(() => {
     const partial = [0, 0, 0, 0, 0];
-    QUESTIONS.slice(0, 8).forEach((q, i) => {
-      partial[q.dim] += Math.max(0, answers[i]);
+    QUESTIONS_DA.slice(0, HALF).forEach((q, i) => {
+      partial[q.dim] += pointsFor(q, answers[i] ?? UNKNOWN);
     });
-    // Kun dimensioner der har fået mindst ét svar
-    const answeredDims = new Set(QUESTIONS.slice(0, 8).map((q) => q.dim));
+    const answeredDims = new Set(QUESTIONS_DA.slice(0, HALF).map((q) => q.dim));
     let best = -1;
     partial.forEach((v, i) => {
       if (!answeredDims.has(i)) return;
       if (best < 0 || v < partial[best]) best = i;
     });
     return DIMENSIONS[best < 0 ? 0 : best].name;
-  }, [answers]);
+  }, [answers, DIMENSIONS, HALF]);
 
-  const progress = stage === "q" ? ((index + 1) / 15) * 100 : stage === "intro" ? 0 : 100;
+  const progress = stage === "q" ? ((index + 1) / TOTAL) * 100 : stage === "intro" ? 0 : 100;
 
   const answer = (value: number) => {
     const next = [...answers];
     next[index] = value;
     setAnswers(next);
-    if (index === 7) {
+    if (index === HALF - 1) {
       setStage("milestone");
-    } else if (index === 14) {
+    } else if (index === TOTAL - 1) {
       setStage("gate");
     } else {
       setIndex(index + 1);
@@ -245,12 +252,12 @@ export default function Klubanalyse() {
     setError(null);
     if (stage === "gate") {
       setStage("q");
-      setIndex(14);
+      setIndex(TOTAL - 1);
     } else if (stage === "milestone") {
       setStage("q");
-      setIndex(7);
+      setIndex(HALF - 1);
     } else if (stage === "q") {
-      if (index === 8) setStage("milestone");
+      if (index === HALF) setStage("milestone");
       else if (index === 0) setStage("intro");
       else setIndex(index - 1);
     }
@@ -265,12 +272,13 @@ export default function Klubanalyse() {
           action: "submit",
           email: email.trim(),
           consent,
-          answers: answers.map((a) => Math.max(0, a)),
+          answers,
           scores,
           level: overall,
           weakest: DIMENSIONS_DA[weakestIdx].name,
           strongest: DIMENSIONS_DA[strongestIdx].name,
           locale: isEn ? "en" : "da",
+          questions_version: QUESTIONS_VERSION,
           website,
         },
       });
@@ -295,7 +303,15 @@ export default function Klubanalyse() {
     setProfileFailed(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke("submit-club-assessment", {
-        body: { action: "profile", token: profileToken, club_name: clubName, sport, role },
+        body: {
+          action: "profile",
+          token: profileToken,
+          club_name: clubName,
+          sport,
+          role,
+          member_range: memberRange,
+          coach_range: coachRange,
+        },
       });
       if (fnError || (data as any)?.error) {
         // Felterne er frivillige — fejl stille, der er intet at redde.
