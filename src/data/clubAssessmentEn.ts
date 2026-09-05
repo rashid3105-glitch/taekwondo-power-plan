@@ -211,8 +211,8 @@ export const QUESTIONS_EN: Question[] = [
     options: [
       "More than half",
       "About a third",
-      "Limited — but we have never measured it",
-      "Little — and we know, because we looked at it",
+      "About a tenth",
+      "Very little — almost all the time goes to coaching",
     ],
   },
   {
