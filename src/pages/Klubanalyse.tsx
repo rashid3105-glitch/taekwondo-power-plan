@@ -402,6 +402,22 @@ export default function Klubanalyse() {
                   </button>
                 );
               })}
+              <button
+                onClick={() => answer(UNKNOWN)}
+                style={{
+                  textAlign: "left",
+                  padding: "14px 18px",
+                  borderRadius: 12,
+                  border: `0.5px dashed ${answers[index] === UNKNOWN && index < 0 ? GOLD : "rgba(255,255,255,0.18)"}`,
+                  background: "transparent",
+                  color: "rgba(255,255,255,0.55)",
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  cursor: "pointer",
+                }}
+              >
+                {C.unknown}
+              </button>
             </div>
           </div>
         )}
