@@ -177,6 +177,7 @@ Deno.serve(async (req) => {
       weakest,
       strongest,
       locale,
+      questions_version: questionsVersion,
       ip_hash: ipHash,
     })
     .select('id')
