@@ -242,7 +242,7 @@ const ParentalConsentEmail = ({
       <Body style={main}>
         <Container style={container}>
           <Section style={headerSection}>
-            <Text style={eyebrow}>{club} \u00b7 {SITE_NAME}</Text>
+            <Text style={eyebrow}>{club} {"\u00b7"} {SITE_NAME}</Text>
             <Heading style={h1}>
               {isReminder ? s.reminderHeading(child) : s.heading(child, club)}
             </Heading>
@@ -280,7 +280,7 @@ const ParentalConsentEmail = ({
             {'  \u00b7  '}
             <Link href={`${APP_URL}/terms`} style={linkStyle}>{s.termsLink}</Link>
           </Text>
-          <Text style={footer}>\u2014 {s.signOff}</Text>
+          <Text style={footer}>{"\u2014"} {s.signOff}</Text>
         </Container>
       </Body>
     </Html>

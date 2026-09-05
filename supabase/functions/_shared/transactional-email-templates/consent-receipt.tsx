@@ -172,7 +172,7 @@ const ConsentReceiptEmail = ({ athleteName, clubName, grantedAt, policyVersion, 
       <Body style={main}>
         <Container style={container}>
           <Section style={headerSection}>
-            <Text style={eyebrow}>{club} \u00b7 {SITE_NAME}</Text>
+            <Text style={eyebrow}>{club} {"\u00b7"} {SITE_NAME}</Text>
             <Heading style={h1}>{s.heading}</Heading>
           </Section>
 
@@ -194,7 +194,7 @@ const ConsentReceiptEmail = ({ athleteName, clubName, grantedAt, policyVersion, 
           <Text style={small}>
             <Link href={`${APP_URL}/privacy`} style={linkStyle}>{s.policyLink}</Link>
           </Text>
-          <Text style={footer}>\u2014 {s.signOff}</Text>
+          <Text style={footer}>{"\u2014"} {s.signOff}</Text>
         </Container>
       </Body>
     </Html>
