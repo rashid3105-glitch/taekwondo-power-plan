@@ -668,6 +668,18 @@ export default function Klubanalyse() {
                     <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
                   ))}
                 </select>
+                <select value={memberRange} onChange={(e) => setMemberRange(e.target.value)} style={inputStyle}>
+                  <option value="">{C.chooseMembers}</option>
+                  {MEMBERS.map((r) => (
+                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                  ))}
+                </select>
+                <select value={coachRange} onChange={(e) => setCoachRange(e.target.value)} style={inputStyle}>
+                  <option value="">{C.chooseCoaches}</option>
+                  {COACHES.map((r) => (
+                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                  ))}
+                </select>
                 <button
                   disabled={saving || profileSaved || !assessmentId}
                   onClick={saveProfile}
