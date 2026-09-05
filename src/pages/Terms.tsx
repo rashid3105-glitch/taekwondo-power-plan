@@ -35,7 +35,8 @@ const Terms = () => {
 
         <Section title="1. Aftalens omfang">
           Disse vilkår regulerer din brug af Sportstalent-platformen (sportstalent.dk), drevet
-          af Sportstalent, CVR 33685815, København, Danmark. Ved at oprette en konto eller bruge
+          af SportstalentDK, CVR 33685815, c/o Farooq Rashid, Gammel Køge Landevej 22 L, 3. 8, 2500 Valby,
+          Danmark. Ved at oprette en konto eller bruge
           platformen accepterer du disse vilkår.
         </Section>
 
@@ -51,9 +52,10 @@ const Terms = () => {
         </Section>
 
         <Section title="4. Abonnement og betaling">
-          Betalte abonnementer faktureres via Stripe. Priser, faktureringsinterval og opsigelsesvilkår
-          fremgår af prisplanen. Du kan til enhver tid opsige dit abonnement; adgangen ophører ved
-          udgangen af den betalte periode.
+          Adgang til platformen sker gennem en licensaftale mellem klubben og SportstalentDK. Licensen
+          faktureres direkte til klubben, årligt forud, med 14 dages betalingsfrist. Pris, aftaleperiode
+          og opsigelsesvilkår fremgår af den licensaftale, klubben underskriver. Der foretages ingen
+          betaling gennem app-butikkerne, og enkelte atleter eller forældre betaler ikke for adgang.
         </Section>
 
         <Section title="5. Indhold og data">
@@ -94,7 +96,7 @@ const Terms = () => {
         </Section>
 
         <Section title="9. Kontakt">
-          Spørgsmål til vilkårene kan sendes via vores{" "}
+          Spørgsmål til vilkårene kan sendes til Farooq@Sportstalent.dk eller via vores{" "}
           <span onClick={() => navigate("/priser")} style={{ color: GOLD, cursor: "pointer", textDecoration: "underline" }}>
             kontaktformular
           </span>
