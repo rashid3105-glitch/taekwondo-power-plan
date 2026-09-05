@@ -607,7 +607,7 @@ export default function Klubanalyse() {
                       <span style={{ color: GOLD, fontWeight: 700 }}>{C.level} {levels[i]}</span>
                     </div>
                     <div style={{ height: 8, borderRadius: 4, background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${(scores[i] / 9) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
+                      <div style={{ height: "100%", width: `${(scores[i] / MAX_DIM_SCORE) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
                     </div>
                   </div>
                 ))}
