@@ -101,7 +101,7 @@ const T = {
       `${w} sets the ceiling for your talent work — here are the three steps in the order they should be taken.`,
     heldBackBy: (club: string, w: string) => `${club} is held back by ${w}`,
     intro: (role: string) =>
-      `${role} completed the Club Assessment: 15 questions on common thread, coaching capacity, data, culture and leadership. The level is set by the weakest of the five areas — not by the average. A club is not halfway there because it is strong in one place and absent in another. It is vulnerable.`,
+      `${role} completed the Club Assessment: 20 questions on common thread, coaching capacity, data, culture and leadership. The level is set by the weakest of the five areas — not by the average. A club is not halfway there because it is strong in one place and absent in another. It is vulnerable.`,
     distribution: 'Distribution',
     levelWord: 'Level',
     stepsTitle: 'The three steps — in the order they should be taken',
@@ -140,6 +140,7 @@ type Row = {
   email: string
   level: number
   scores: number[]
+  questions_version?: number | null
   weakest: string
   strongest: string
   club_name: string | null
@@ -151,6 +152,7 @@ type Row = {
 function buildHtml(row: Row, unsubUrl: string, loc: Loc) {
   const t = T[loc]
   const scores = row.scores || [0, 0, 0, 0, 0]
+  const maxDim = Number(row.questions_version ?? 1) >= 2 ? 12 : 9
   const min = Math.min(...scores)
   const max = Math.max(...scores)
   const weakestIdx = scores.indexOf(min)
@@ -169,7 +171,7 @@ function buildHtml(row: Row, unsubUrl: string, loc: Loc) {
   const preheader = t.preheader(weakestName)
 
   const bar = (i: number) => {
-    const pct = Math.max(2, Math.round((scores[i] / 9) * 100))
+    const pct = Math.max(2, Math.round((scores[i] / maxDim) * 100))
     const color = i === weakestIdx ? WEAK : i === strongestIdx && strongestIdx !== weakestIdx ? STRONG : NEUTRAL
     return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;"><tr>
       <td width="${pct}%" style="background-color:${color};height:8px;line-height:8px;font-size:0;border-radius:4px 0 0 4px;">&nbsp;</td>
@@ -177,7 +179,10 @@ function buildHtml(row: Row, unsubUrl: string, loc: Loc) {
     </tr></table>`
   }
 
-  const levelOf = (s: number) => (s <= 1 ? 1 : s <= 3 ? 2 : s <= 5 ? 3 : s <= 7 ? 4 : 5)
+  const levelOf = (s: number) =>
+    maxDim >= 12
+      ? (s <= 1 ? 1 : s <= 4 ? 2 : s <= 6 ? 3 : s <= 9 ? 4 : 5)
+      : (s <= 1 ? 1 : s <= 3 ? 2 : s <= 5 ? 3 : s <= 7 ? 4 : 5)
 
   const distributionRows = dims
     .map(
@@ -289,6 +294,7 @@ function buildHtml(row: Row, unsubUrl: string, loc: Loc) {
 function buildText(row: Row, unsubUrl: string, loc: Loc) {
   const t = T[loc]
   const scores = row.scores || [0, 0, 0, 0, 0]
+  const maxDim = Number(row.questions_version ?? 1) >= 2 ? 12 : 9
   const weakestIdx = scores.indexOf(Math.min(...scores))
   const dims = loc === 'en' ? DIMENSION_CONTENT_EN : DIMENSION_CONTENT
   const level = Math.min(5, Math.max(1, row.level || 1))
@@ -318,7 +324,7 @@ ${t.intro(roleName)}
 ${lvl.verdict}
 
 ${t.distribution.toUpperCase()}
-${dims.map((d, i) => `- ${d.name}: ${scores[i]}/9`).join('\n')}
+${dims.map((d, i) => `- ${d.name}: ${scores[i]}/${maxDim}`).join('\n')}
 
 ${t.stepsTitle.toUpperCase()}
 ${t.stepsIntro}
@@ -385,7 +391,7 @@ Deno.serve(async (req) => {
   const admin = createClient(supabaseUrl, serviceKey)
   const { data: row, error } = await admin
     .from('club_assessments')
-    .select('id,email,level,scores,weakest,strongest,club_name,role,created_at,report_sent_at,unsubscribed_at,locale')
+    .select('id,email,level,scores,weakest,strongest,club_name,role,created_at,report_sent_at,unsubscribed_at,locale,questions_version')
     .eq('id', id)
     .maybeSingle()
 
