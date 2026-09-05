@@ -212,8 +212,11 @@ Deno.serve(async (req) => {
           .from("clubs").select("name").eq("id", targetClubId).maybeSingle();
         const { data: coachRow } = await adminClient
           .from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+        const { data: athProf } = await adminClient
+          .from("profiles").select("default_locale").eq("user_id", newUser.user!.id).maybeSingle();
         const result = await sendTemplateEmail("parental-consent-request", parent_email.trim(), {
           idempotencyKey: `parental-consent-${newUser.user!.id}-${token.slice(0, 8)}`,
+          fromName: (clubRow as any)?.name || undefined,
           templateData: {
             athleteName: name,
             consentUrl,
@@ -221,6 +224,7 @@ Deno.serve(async (req) => {
             clubName: (clubRow as any)?.name || null,
             coachName: (coachRow as any)?.display_name || null,
             reminderNumber: 0,
+            locale: (athProf as any)?.default_locale || "da",
           },
         });
         if (result.sent) consentSent = true;
