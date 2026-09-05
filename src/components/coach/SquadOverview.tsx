@@ -423,7 +423,7 @@ export function SquadOverview({
           {t("noMatchingAthletes")}
         </div>
       ) : (
-        <div className={cn("grid gap-3", view === "cards" && "sm:grid-cols-2")}>
+        <div className={cn("grid min-w-0 gap-3 [&>*]:min-w-0", view === "cards" && "sm:grid-cols-2")}>
           {sorted.map((r) => {
             const { status } = rowSeverity(r);
             const days = daysSince(r.last_seen_at);
