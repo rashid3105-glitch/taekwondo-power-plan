@@ -1,6 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { DIMENSION_CONTENT, LEVEL_CONTENT } from "../_shared/club-assessment-content.ts";
+import {
+  DIMENSION_CONTENT,
+  LEVEL_CONTENT,
+  QUESTION_CONTENT_V2,
+  PLATFORM_MODULES,
+  pointsForQuestion,
+} from "../_shared/club-assessment-content.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,7 +46,9 @@ serve(async (req) => {
 
     const { data: row, error: rowError } = await supabase
       .from("club_assessments")
-      .select("id, created_at, email, club_name, sport, role, level, scores, answers")
+      .select(
+        "id, created_at, email, club_name, sport, role, level, scores, answers, questions_version, member_range, coach_range",
+      )
       .eq("id", assessmentId)
       .maybeSingle();
     if (rowError) return json({ error: rowError.message }, 400);
@@ -48,10 +56,27 @@ serve(async (req) => {
 
     const scores: number[] = Array.isArray(row.scores) ? row.scores : [];
     const answers: number[] = Array.isArray(row.answers) ? row.answers : [];
+    const version = Number(row.questions_version ?? 1);
+    const maxDim = version >= 2 ? 12 : 9;
+    const hasQuestionText = version >= 2 && answers.length === QUESTION_CONTENT_V2.length;
 
     const dimensionLines = DIMENSION_CONTENT.map(
-      (d, i) => `- ${d.name}: ${scores[i] ?? "?"}/9. Konsekvens ved lav score: ${d.consequence}`,
+      (d, i) => `- ${d.name}: ${scores[i] ?? "?"}/${maxDim}. Konsekvens ved lav score: ${d.consequence}`,
     ).join("\n");
+
+    // Spørgsmål + klubbens faktiske valgte svar, ordret. Det er dét analysen skal citere.
+    const answerBlock = hasQuestionText
+      ? QUESTION_CONTENT_V2.map((q, i) => {
+          const a = answers[i];
+          const chosen = a === -1 || a === undefined ? "Ved ikke" : q.options[a] ?? "ukendt";
+          const p = pointsForQuestion(q, a ?? -1);
+          return `${i + 1}. [${DIMENSION_CONTENT[q.dim]?.name}] ${q.text}\n   Klubbens svar: "${chosen}" (${p}/3)`;
+        }).join("\n")
+      : `Denne besvarelse er fra en ældre version af spørgsmålene, hvor spørgsmålsteksterne ikke er gemt. Rå svar (0-3 pr. spørgsmål, 0 = svagest): ${answers.join(", ")}`;
+
+    const unknownCount = hasQuestionText ? answers.filter((a) => a === -1).length : 0;
+
+    const moduleLines = PLATFORM_MODULES.map((m) => `- ${m.name}: ${m.what}`).join("\n");
 
     const levelName = row.level ? LEVEL_CONTENT[row.level - 1]?.name ?? "" : "ukendt";
 
@@ -65,29 +90,42 @@ KLUB
 Navn: ${row.club_name ?? "ikke oplyst"}
 Sport: ${row.sport ?? "ikke oplyst"}
 Respondentens rolle: ${row.role ?? "ikke oplyst"}
+Antal medlemmer: ${row.member_range ?? "ikke oplyst"}
+Antal aktive trænere: ${row.coach_range ?? "ikke oplyst"}
 Samlet modenhedsniveau: ${row.level ?? "?"} (${levelName})
+Spørgsmålsversion: ${version}
 
-DIMENSIONSSCORER (0-9)
+DIMENSIONSSCORER (0-${maxDim})
 ${dimensionLines}
 
-RÅ SVAR (indeks 0-3 pr. spørgsmål, 0 = svagest)
-${answers.join(", ")}
+KLUBBENS SVAR, SPØRGSMÅL FOR SPØRGSMÅL
+${answerBlock}
+${unknownCount > 0 ? `\nKlubben svarede "Ved ikke" på ${unknownCount} spørgsmål. Behandl det som manglende overblik, ikke som en lav score.` : ""}
+
+MODULER DER FAKTISK FINDES I SPORTSTALENT
+${moduleLines}
+
+REGLER
+- Byg hvert punkt på klubbens egne svar. I "Kritiske huller" SKAL hvert punkt citere klubbens valgte svar ordret i anførselstegn.
+- Nævn kun moduler fra listen ovenfor. Lov aldrig funktioner, der ikke står der.
+- Én respondent har svaret. Skriv "ifølge respondenten", når noget er en vurdering, ikke et faktum.
+- Tag hensyn til klubbens størrelse og trænerantal, når du foreslår handlinger.
 
 Skriv i markdown med disse afsnit:
 ## Samlet billede
 2-4 sætninger, ærligt og uden smiger.
 ## Styrker
-2-3 punkter forankret i de højeste scorer.
+2-3 punkter forankret i de højeste scorer og de konkrete svar.
 ## Kritiske huller
-2-3 punkter forankret i de laveste scorer, med den konkrete konsekvens for klubben.
+2-3 punkter, hver med et ordret citat af klubbens svar og den konkrete konsekvens.
 ## Handlingsplan 90 dage
 3-5 punkter, hver med hvem der gør hvad og hvornår.
 ## Sådan hjælper Sportstalent
-2-3 punkter der kobler klubbens huller til platformens moduler (rød tråd/sæsonplan, trænerkapacitet, data og tests, kultur og dagbog, ledelse og rapporter).
+2-3 punkter der kobler klubbens huller til navngivne moduler fra listen.
 ## Spørgsmål til salgssamtalen
 3 spørgsmål jeg kan stille klubben.
 
-Hold det under 600 ord. Ingen floskler, ingen omtale af kunstig intelligens.`;
+Hold det under 700 ord. Ingen floskler, ingen omtale af kunstig intelligens.`;
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
       method: "POST",

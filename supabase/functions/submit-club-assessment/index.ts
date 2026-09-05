@@ -78,6 +78,8 @@ Deno.serve(async (req) => {
     const clubName = body.club_name ? String(body.club_name).slice(0, 120) : null
     const sport = body.sport ? String(body.sport).slice(0, 80) : null
     const role = body.role ? String(body.role).slice(0, 60) : null
+    const memberRange = body.member_range ? String(body.member_range).slice(0, 20) : null
+    const coachRange = body.coach_range ? String(body.coach_range).slice(0, 20) : null
 
     // Engangsbrug: kun rækker der ikke allerede har fået profildata.
     const { data: updated, error } = await admin
@@ -86,6 +88,8 @@ Deno.serve(async (req) => {
         club_name: clubName,
         sport,
         role,
+        member_range: memberRange,
+        coach_range: coachRange,
         profile_completed_at: new Date().toISOString(),
       })
       .eq('id', id)
@@ -130,14 +134,22 @@ Deno.serve(async (req) => {
   const strongest = String(body.strongest || '').slice(0, 60)
   const locale = String(body.locale || 'da').toLowerCase() === 'en' ? 'en' : 'da'
 
+  const questionsVersion = Number.isInteger(body.questions_version) ? Number(body.questions_version) : 1
+  // Version 1: 15 spørgsmål, maks 9 point pr. område. Version 2: 20 spørgsmål,
+  // maks 12 point pr. område og -1 ("Ved ikke") som gyldigt svar.
+  const expectedAnswers = questionsVersion >= 2 ? 20 : 15
+  const maxDimScore = questionsVersion >= 2 ? 12 : 9
+  const minAnswer = questionsVersion >= 2 ? -1 : 0
+
   if (!EMAIL_RE.test(email) || email.length > 254) return json({ error: 'invalid_email' }, 400)
   if (!consent) return json({ error: 'consent_required' }, 400)
-  if (!Array.isArray(answers) || answers.length !== 15 ||
-      answers.some((a: unknown) => !Number.isInteger(a) || (a as number) < 0 || (a as number) > 3)) {
+  if (questionsVersion < 1 || questionsVersion > 2) return json({ error: 'invalid_version' }, 400)
+  if (!Array.isArray(answers) || answers.length !== expectedAnswers ||
+      answers.some((a: unknown) => !Number.isInteger(a) || (a as number) < minAnswer || (a as number) > 3)) {
     return json({ error: 'invalid_answers' }, 400)
   }
   if (!Array.isArray(scores) || scores.length !== 5 ||
-      scores.some((s: unknown) => !Number.isInteger(s) || (s as number) < 0 || (s as number) > 9)) {
+      scores.some((s: unknown) => !Number.isInteger(s) || (s as number) < 0 || (s as number) > maxDimScore)) {
     return json({ error: 'invalid_scores' }, 400)
   }
   if (!Number.isInteger(level) || level < 1 || level > 5) return json({ error: 'invalid_level' }, 400)
@@ -165,6 +177,7 @@ Deno.serve(async (req) => {
       weakest,
       strongest,
       locale,
+      questions_version: questionsVersion,
       ip_hash: ipHash,
     })
     .select('id')

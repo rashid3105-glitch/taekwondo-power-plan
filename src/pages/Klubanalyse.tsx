@@ -8,14 +8,24 @@ import {
   DIMENSIONS as DIMENSIONS_DA,
   LEVELS as LEVELS_DA,
   ROLES as ROLES_DA,
+  MEMBER_RANGES,
+  COACH_RANGES,
+  QUESTIONS_VERSION,
+  MAX_DIM_SCORE,
+  UNKNOWN,
   computeScores,
   levelForScore,
+  overallLevel,
+  averageLevel,
+  pointsFor,
 } from "@/data/clubAssessment";
 import {
   QUESTIONS_EN,
   DIMENSIONS_EN,
   LEVELS_EN,
   ROLES_EN,
+  MEMBER_RANGES_EN,
+  COACH_RANGES_EN,
 } from "@/data/clubAssessmentEn";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -24,18 +34,20 @@ const COPY = {
   da: {
     metaTitle: "Klubanalysen — hvor står jeres klub? | Sportstalent",
     metaDesc:
-      "15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber.",
+      "20 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber.",
     eyebrow: "KLUBANALYSEN",
-    heroTitle: "15 spørgsmål. Ét ærligt svar på, hvor jeres klub står.",
+    heroTitle: "20 spørgsmål. Ét ærligt svar på, hvor jeres klub står.",
     heroP1:
       "Analysen måler fem områder: rød tråd, trænerkapacitet, data og dokumentation, kultur og fastholdelse samt ledelse og retning. Klubbens niveau sættes af det svageste led — ikke af gennemsnittet.",
-    heroP2: "Svar på, hvordan det er i dag. Ikke på en god dag. Det tager omkring fem minutter.",
+    heroP2:
+      "Svar på, hvordan det er i dag. Ikke på en god dag. Er I i tvivl, så vælg \"Ved ikke\" — det er i sig selv et svar. Det tager omkring syv minutter.",
     start: "Start analysen",
     back: "← Tilbage",
-    milestoneEyebrow: "OTTE SVAR AFGIVET",
-    milestoneTitle: "Godt halvvejs.",
+    unknown: "Ved ikke",
+    milestoneEyebrow: "TI SVAR AFGIVET",
+    milestoneTitle: "Halvvejs.",
     milestoneP1a: "Indtil videre tegner ",
-    milestoneP1b: " sig som det svageste område. Det kan nå at ændre sig — der er syv spørgsmål tilbage.",
+    milestoneP1b: " sig som det svageste område. Det kan nå at ændre sig — der er ti spørgsmål tilbage.",
     milestoneP2: "Der er ingen tilmelding undervejs.",
     continue: "Fortsæt",
     gateTitle: "Jeres resultat er klar.",
@@ -48,10 +60,15 @@ const COPY = {
     genericError: "Noget gik galt. Prøv igen om et øjeblik.",
     blockedBy: (d: string) => `Bremset af ${d}.`,
     ceiling:
-      "Niveauet sættes af det svageste led, ikke af gennemsnittet. Det er ikke en karakter — det er et loft.",
+      "Niveauet sættes af det svageste led, ikke af gennemsnittet. Et område skal have mindst to lave svar for alene at sætte loftet. Det er ikke en karakter — det er et loft.",
     even: "Jeres fem områder ligger lige — ingen af dem trækker fra endnu. Løftet skal komme bredt.",
     strongestLine: (strong: string, weak: string) =>
       `${strong} står stærkest hos jer — men det tæller først for alvor, når hullet i ${weak} er lukket.`,
+    average: (n: number) => `Gennemsnit på tværs af de fem områder: niveau ${n}.`,
+    unknownNote: (n: number) =>
+      n === 1
+        ? "I svarede \"Ved ikke\" på ét spørgsmål. Det tæller som nul point — men det er selv et fund: I kan ikke styre efter noget, I ikke ved."
+        : `I svarede "Ved ikke" på ${n} spørgsmål. Det tæller som nul point — men det er selv et fund: I kan ikke styre efter noget, I ikke ved.`,
     distribution: "FORDELING",
     level: "Niveau",
     gapsTitle: "De tre huller, der koster mest",
@@ -66,6 +83,8 @@ const COPY = {
     clubName: "Klubnavn",
     sport: "Sportsgren",
     chooseRole: "Vælg rolle",
+    chooseMembers: "Antal medlemmer",
+    chooseCoaches: "Antal aktive trænere",
     saveProfile: "Gem oplysninger",
     profileSaved: "Tak — oplysningerne er gemt",
     profileFailed: "Oplysningerne kunne ikke gemmes. Det er frivilligt — din analyse er registreret.",
@@ -73,18 +92,20 @@ const COPY = {
   en: {
     metaTitle: "The Club Assessment — where does your club stand? | Sportstalent",
     metaDesc:
-      "15 questions and an honest picture of your club's maturity: common thread, coaching capacity, data, culture and leadership. Free self-assessment for sports clubs.",
+      "20 questions and an honest picture of your club's maturity: common thread, coaching capacity, data, culture and leadership. Free self-assessment for sports clubs.",
     eyebrow: "THE CLUB ASSESSMENT",
-    heroTitle: "15 questions. One honest answer on where your club stands.",
+    heroTitle: "20 questions. One honest answer on where your club stands.",
     heroP1:
       "The assessment measures five areas: common thread, coaching capacity, data and documentation, culture and retention, and leadership and direction. The club's level is set by the weakest link — not by the average.",
-    heroP2: "Answer for how it is today. Not on a good day. It takes about five minutes.",
+    heroP2:
+      "Answer for how it is today. Not on a good day. If you are unsure, choose \"Don't know\" — that is an answer in itself. It takes about seven minutes.",
     start: "Start the assessment",
     back: "← Back",
-    milestoneEyebrow: "EIGHT ANSWERS GIVEN",
-    milestoneTitle: "Well past halfway.",
+    unknown: "Don't know",
+    milestoneEyebrow: "TEN ANSWERS GIVEN",
+    milestoneTitle: "Halfway.",
     milestoneP1a: "So far ",
-    milestoneP1b: " looks like your weakest area. That can still change — seven questions remain.",
+    milestoneP1b: " looks like your weakest area. That can still change — ten questions remain.",
     milestoneP2: "There is no sign-up along the way.",
     continue: "Continue",
     gateTitle: "Your result is ready.",
@@ -97,10 +118,15 @@ const COPY = {
     genericError: "Something went wrong. Please try again in a moment.",
     blockedBy: (d: string) => `Held back by ${d}.`,
     ceiling:
-      "The level is set by the weakest link, not by the average. It is not a grade — it is a ceiling.",
+      "The level is set by the weakest link, not by the average. An area needs at least two low answers to set the ceiling on its own. It is not a grade — it is a ceiling.",
     even: "Your five areas are even — none of them stands out yet. The lift has to come broadly.",
     strongestLine: (strong: string, weak: string) =>
       `${strong} is your strongest area — but it only counts for real once the gap in ${weak} is closed.`,
+    average: (n: number) => `Average across the five areas: level ${n}.`,
+    unknownNote: (n: number) =>
+      n === 1
+        ? "You answered \"Don't know\" to one question. It counts as zero points — but it is a finding in itself: you cannot steer by something you do not know."
+        : `You answered "Don't know" to ${n} questions. It counts as zero points — but it is a finding in itself: you cannot steer by something you do not know.`,
     distribution: "DISTRIBUTION",
     level: "Level",
     gapsTitle: "The three gaps that cost the most",
@@ -115,6 +141,8 @@ const COPY = {
     clubName: "Club name",
     sport: "Sport",
     chooseRole: "Select role",
+    chooseMembers: "Number of members",
+    chooseCoaches: "Number of active coaches",
     saveProfile: "Save details",
     profileSaved: "Thanks — your details are saved",
     profileFailed: "The details could not be saved. It is optional — your assessment is registered.",
@@ -155,9 +183,13 @@ export default function Klubanalyse() {
   const QUESTIONS = isEn ? QUESTIONS_EN : QUESTIONS_DA;
   const LEVELS = isEn ? LEVELS_EN : LEVELS_DA;
   const ROLES = isEn ? ROLES_EN : ROLES_DA;
+  const MEMBERS = isEn ? MEMBER_RANGES_EN : MEMBER_RANGES;
+  const COACHES = isEn ? COACH_RANGES_EN : COACH_RANGES;
+  const TOTAL = QUESTIONS_DA.length;
+  const HALF = Math.floor(TOTAL / 2); // milepæl efter 10 svar
   const [stage, setStage] = useState<Stage>("intro");
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<number[]>(Array(15).fill(-1));
+  const [answers, setAnswers] = useState<number[]>(Array(TOTAL).fill(UNKNOWN));
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [website, setWebsite] = useState(""); // honeypot
@@ -171,11 +203,15 @@ export default function Klubanalyse() {
   const [clubName, setClubName] = useState("");
   const [sport, setSport] = useState("");
   const [role, setRole] = useState("");
+  const [memberRange, setMemberRange] = useState("");
+  const [coachRange, setCoachRange] = useState("");
   const [profileSaved, setProfileSaved] = useState(false);
 
-  const scores = useMemo(() => computeScores(answers.map((a) => (a < 0 ? 0 : a))), [answers]);
+  const scores = useMemo(() => computeScores(answers), [answers]);
   const levels = scores.map(levelForScore);
-  const overall = Math.min(...levels);
+  const overall = useMemo(() => overallLevel(scores, answers), [scores, answers]);
+  const avgLevel = useMemo(() => averageLevel(scores), [scores]);
+  const unknownCount = answers.filter((a) => a === UNKNOWN).length;
   const weakestIdx = scores.indexOf(Math.min(...scores));
   const strongestIdx = scores.indexOf(Math.max(...scores));
   const lowestThree = scores
@@ -185,28 +221,27 @@ export default function Klubanalyse() {
 
   const partialWeakest = useMemo(() => {
     const partial = [0, 0, 0, 0, 0];
-    QUESTIONS.slice(0, 8).forEach((q, i) => {
-      partial[q.dim] += Math.max(0, answers[i]);
+    QUESTIONS_DA.slice(0, HALF).forEach((q, i) => {
+      partial[q.dim] += pointsFor(q, answers[i] ?? UNKNOWN);
     });
-    // Kun dimensioner der har fået mindst ét svar
-    const answeredDims = new Set(QUESTIONS.slice(0, 8).map((q) => q.dim));
+    const answeredDims = new Set(QUESTIONS_DA.slice(0, HALF).map((q) => q.dim));
     let best = -1;
     partial.forEach((v, i) => {
       if (!answeredDims.has(i)) return;
       if (best < 0 || v < partial[best]) best = i;
     });
     return DIMENSIONS[best < 0 ? 0 : best].name;
-  }, [answers]);
+  }, [answers, DIMENSIONS, HALF]);
 
-  const progress = stage === "q" ? ((index + 1) / 15) * 100 : stage === "intro" ? 0 : 100;
+  const progress = stage === "q" ? ((index + 1) / TOTAL) * 100 : stage === "intro" ? 0 : 100;
 
   const answer = (value: number) => {
     const next = [...answers];
     next[index] = value;
     setAnswers(next);
-    if (index === 7) {
+    if (index === HALF - 1) {
       setStage("milestone");
-    } else if (index === 14) {
+    } else if (index === TOTAL - 1) {
       setStage("gate");
     } else {
       setIndex(index + 1);
@@ -217,12 +252,12 @@ export default function Klubanalyse() {
     setError(null);
     if (stage === "gate") {
       setStage("q");
-      setIndex(14);
+      setIndex(TOTAL - 1);
     } else if (stage === "milestone") {
       setStage("q");
-      setIndex(7);
+      setIndex(HALF - 1);
     } else if (stage === "q") {
-      if (index === 8) setStage("milestone");
+      if (index === HALF) setStage("milestone");
       else if (index === 0) setStage("intro");
       else setIndex(index - 1);
     }
@@ -237,12 +272,13 @@ export default function Klubanalyse() {
           action: "submit",
           email: email.trim(),
           consent,
-          answers: answers.map((a) => Math.max(0, a)),
+          answers,
           scores,
           level: overall,
           weakest: DIMENSIONS_DA[weakestIdx].name,
           strongest: DIMENSIONS_DA[strongestIdx].name,
           locale: isEn ? "en" : "da",
+          questions_version: QUESTIONS_VERSION,
           website,
         },
       });
@@ -267,7 +303,15 @@ export default function Klubanalyse() {
     setProfileFailed(false);
     try {
       const { data, error: fnError } = await supabase.functions.invoke("submit-club-assessment", {
-        body: { action: "profile", token: profileToken, club_name: clubName, sport, role },
+        body: {
+          action: "profile",
+          token: profileToken,
+          club_name: clubName,
+          sport,
+          role,
+          member_range: memberRange,
+          coach_range: coachRange,
+        },
       });
       if (fnError || (data as any)?.error) {
         // Felterne er frivillige — fejl stille, der er intet at redde.
@@ -329,7 +373,7 @@ export default function Klubanalyse() {
                 {C.back}
               </button>
               <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>
-                {index + 1} / 15 · {DIMENSIONS[QUESTIONS[index].dim].name}
+                {index + 1} / {TOTAL} · {DIMENSIONS[QUESTIONS[index].dim].name}
               </div>
             </div>
             <h2 style={{ fontSize: "clamp(21px,4.5vw,30px)", fontWeight: 800, lineHeight: 1.25, letterSpacing: "-0.02em", margin: "0 0 28px" }}>
@@ -358,6 +402,22 @@ export default function Klubanalyse() {
                   </button>
                 );
               })}
+              <button
+                onClick={() => answer(UNKNOWN)}
+                style={{
+                  textAlign: "left",
+                  padding: "14px 18px",
+                  borderRadius: 12,
+                  border: `0.5px dashed ${answers[index] === UNKNOWN && index < 0 ? GOLD : "rgba(255,255,255,0.18)"}`,
+                  background: "transparent",
+                  color: "rgba(255,255,255,0.55)",
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  cursor: "pointer",
+                }}
+              >
+                {C.unknown}
+              </button>
             </div>
           </div>
         )}
@@ -378,7 +438,7 @@ export default function Klubanalyse() {
             </p>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <button
-                onClick={() => { setStage("q"); setIndex(8); }}
+                onClick={() => { setStage("q"); setIndex(HALF); }}
                 style={{ padding: "14px 32px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
                 {C.continue}
@@ -484,7 +544,7 @@ export default function Klubanalyse() {
                 {DIMENSIONS.map((d, i) => {
                   const isWeak = i === weakestIdx;
                   const isStrong = i === strongestIdx && strongestIdx !== weakestIdx;
-                  const fill = Math.round((scores[i] / 9) * 100);
+                  const fill = Math.round((scores[i] / MAX_DIM_SCORE) * 100);
                   return (
                     <div key={d.key} style={{ flex: 1, textAlign: "center" }}>
                       <div
@@ -520,6 +580,14 @@ export default function Klubanalyse() {
                 {C.ceiling}
               </p>
               <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+                {C.average(avgLevel)}
+              </p>
+              {unknownCount > 0 && (
+                <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+                  {C.unknownNote(unknownCount)}
+                </p>
+              )}
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
                 {strongestIdx === weakestIdx
                   ? C.even
                   : C.strongestLine(DIMENSIONS[strongestIdx].name, DIMENSIONS[weakestIdx].name)}
@@ -539,7 +607,7 @@ export default function Klubanalyse() {
                       <span style={{ color: GOLD, fontWeight: 700 }}>{C.level} {levels[i]}</span>
                     </div>
                     <div style={{ height: 8, borderRadius: 4, background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${(scores[i] / 9) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
+                      <div style={{ height: "100%", width: `${(scores[i] / MAX_DIM_SCORE) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
                     </div>
                   </div>
                 ))}
@@ -597,6 +665,18 @@ export default function Klubanalyse() {
                 <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
                   <option value="">{C.chooseRole}</option>
                   {ROLES.map((r) => (
+                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                  ))}
+                </select>
+                <select value={memberRange} onChange={(e) => setMemberRange(e.target.value)} style={inputStyle}>
+                  <option value="">{C.chooseMembers}</option>
+                  {MEMBERS.map((r) => (
+                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                  ))}
+                </select>
+                <select value={coachRange} onChange={(e) => setCoachRange(e.target.value)} style={inputStyle}>
+                  <option value="">{C.chooseCoaches}</option>
+                  {COACHES.map((r) => (
                     <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
                   ))}
                 </select>

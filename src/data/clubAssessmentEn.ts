@@ -211,8 +211,8 @@ export const QUESTIONS_EN: Question[] = [
     options: [
       "More than half",
       "About a third",
-      "Limited — but we have never measured it",
-      "Little — and we know, because we looked at it",
+      "About a tenth",
+      "Very little — almost all the time goes to coaching",
     ],
   },
   {
@@ -245,6 +245,63 @@ export const QUESTIONS_EN: Question[] = [
       "Everything essential is anchored in the organisation",
     ],
   },
+  {
+    dim: 0,
+    text: "What happens to the season plan once the season is under way?",
+    options: [
+      "It is never opened again",
+      "It is used loosely as inspiration",
+      "It is followed — but changes are not written down",
+      "It is followed, reviewed and updated along the way",
+    ],
+  },
+  {
+    dim: 1,
+    text: "How many of your coaches hold a coaching qualification, or have an agreed path towards one?",
+    options: [
+      "None",
+      "A few",
+      "Most",
+      "All — and there is a plan for the next step",
+    ],
+  },
+  {
+    // Reverse-coded: the best answer comes first.
+    dim: 2,
+    reverse: true,
+    text: "How much of what you know about your athletes exists only in private notes, spreadsheets or message threads?",
+    options: [
+      "Almost none — it sits in one place everyone relevant can reach",
+      "A smaller part",
+      "About half",
+      "Almost all of it",
+    ],
+  },
+  {
+    dim: 3,
+    text: "How well do you know why the athletes who quit last season actually quit?",
+    options: [
+      "We do not know",
+      "We heard a couple of reasons in passing",
+      "We know the reason for some of them",
+      "We ask systematically whenever someone quits",
+    ],
+  },
+  {
+    // Reverse-coded: the best answer comes first.
+    dim: 4,
+    reverse: true,
+    text: "How many sporting decisions are in practice made by one person alone?",
+    options: [
+      "Almost none — there is an agreed decision process",
+      "A few",
+      "Many",
+      "Almost all",
+    ],
+  },
 ];
 
 export const ROLES_EN = ["Chair/board", "Sporting director", "Head coach", "Coach", "Other"];
+
+export const MEMBER_RANGES_EN = ["Under 50", "50-149", "150-299", "300-599", "600+"];
+export const COACH_RANGES_EN = ["1-3", "4-7", "8-15", "16+"];
