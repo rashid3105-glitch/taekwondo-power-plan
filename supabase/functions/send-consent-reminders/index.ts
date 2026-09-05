@@ -46,6 +46,23 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Audit row for this run, so operators can verify the daily schedule works.
+  const { data: runRow } = await admin
+    .from("scheduled_job_runs")
+    .insert({ job_name: "send-consent-reminders", status: "running" })
+    .select("id")
+    .maybeSingle();
+  const runId = (runRow as { id?: string } | null)?.id ?? null;
+
+  const finishRun = async (fields: Record<string, unknown>) => {
+    if (!runId) return;
+    const { error } = await admin
+      .from("scheduled_job_runs")
+      .update({ finished_at: new Date().toISOString(), ...fields })
+      .eq("id", runId);
+    if (error) console.error("scheduled_job_runs update failed", error.message);
+  };
+
   try {
     const cutoff = new Date(Date.now() - CONSENT_TOKEN_DAYS * 24 * 3600 * 1000).toISOString();
 
@@ -59,6 +76,8 @@ Deno.serve(async (req) => {
 
     let sent = 0;
     let skipped = 0;
+    const failures: { token_id: string; reason: string }[] = [];
+    const byDay: Record<string, number> = {};
 
     for (const tk of tokens || []) {
       const age = daysSince(tk.created_at);
@@ -103,6 +122,7 @@ Deno.serve(async (req) => {
 
       if (result.sent) {
         sent++;
+        byDay[String(step)] = (byDay[String(step)] || 0) + 1;
         await admin.from("consent_token_events").insert({
           token_id: tk.id,
           athlete_id: tk.athlete_id,
@@ -112,13 +132,24 @@ Deno.serve(async (req) => {
         });
       } else {
         skipped++;
+        failures.push({ token_id: tk.id, reason: String(result.reason ?? "unknown") });
         console.warn("reminder not sent", result.reason);
       }
     }
 
-    return json({ ok: true, considered: (tokens || []).length, sent, skipped });
+    await finishRun({
+      status: failures.length > 0 ? "error" : "ok",
+      considered: (tokens || []).length,
+      sent,
+      skipped,
+      error: failures.length > 0 ? `${failures.length} reminder(s) not sent` : null,
+      meta: { by_day: byDay, failures: failures.slice(0, 20) },
+    });
+
+    return json({ ok: true, considered: (tokens || []).length, sent, skipped, failures: failures.length });
   } catch (e) {
     console.error("send-consent-reminders error", e);
+    await finishRun({ status: "error", error: String((e as Error)?.message || e) });
     return json({ error: String((e as Error)?.message || e) }, 500);
   }
 });

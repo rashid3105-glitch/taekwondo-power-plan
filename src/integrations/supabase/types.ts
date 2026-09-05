@@ -3241,6 +3241,48 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_job_runs: {
+        Row: {
+          considered: number
+          created_at: string
+          error: string | null
+          finished_at: string | null
+          id: string
+          job_name: string
+          meta: Json
+          sent: number
+          skipped: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          considered?: number
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          job_name: string
+          meta?: Json
+          sent?: number
+          skipped?: number
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          considered?: number
+          created_at?: string
+          error?: string | null
+          finished_at?: string | null
+          id?: string
+          job_name?: string
+          meta?: Json
+          sent?: number
+          skipped?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       season_plans: {
         Row: {
           club_id: string | null
