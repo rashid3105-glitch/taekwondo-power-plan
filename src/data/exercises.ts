@@ -77,6 +77,7 @@ import { exercisesAdditional } from "./exercisesAdditional";
 import { exercisesExpansion } from "./exercisesExpansion";
 import { exercisesMobilityPack } from "./exercisesMobilityPack";
 import { exercisesResetPack } from "./exercisesResetPack";
+import { exercisesGymPack } from "./exercisesGymPack";
 
 const exercisesDataBase: Record<string, ExerciseBase> = {
   trapBarDeadlift: {
@@ -3102,7 +3103,7 @@ function resolveExercise(base: ExerciseBase, locale: Locale): Exercise {
   };
 }
 
-const exercisesData: Record<string, ExerciseBase> = { ...exercisesDataBase, ...(exercisesAdditional as Record<string, ExerciseBase>), ...(exercisesExpansion as Record<string, ExerciseBase>), ...(exercisesMobilityPack as Record<string, ExerciseBase>), ...(exercisesResetPack as Record<string, ExerciseBase>) };
+const exercisesData: Record<string, ExerciseBase> = { ...exercisesDataBase, ...(exercisesAdditional as Record<string, ExerciseBase>), ...(exercisesExpansion as Record<string, ExerciseBase>), ...(exercisesMobilityPack as Record<string, ExerciseBase>), ...(exercisesResetPack as Record<string, ExerciseBase>), ...(exercisesGymPack as Record<string, ExerciseBase>) };
 
 let currentLocale: Locale = "en";
 
