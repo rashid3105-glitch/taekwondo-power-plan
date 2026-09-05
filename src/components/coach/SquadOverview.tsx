@@ -158,7 +158,7 @@ export function SquadOverview({
   const { profile: sportProfile } = useMySportProfile();
   const isTkd = isTkdBeltSystem(sportProfile.slug);
   const { activeClubId } = useActiveClub();
-  const isMobile = useIsMobile();
+  
   const [rows, setRows] = useState<SquadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("name");
