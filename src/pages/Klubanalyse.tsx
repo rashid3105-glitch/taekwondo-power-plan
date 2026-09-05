@@ -544,7 +544,7 @@ export default function Klubanalyse() {
                 {DIMENSIONS.map((d, i) => {
                   const isWeak = i === weakestIdx;
                   const isStrong = i === strongestIdx && strongestIdx !== weakestIdx;
-                  const fill = Math.round((scores[i] / 9) * 100);
+                  const fill = Math.round((scores[i] / MAX_DIM_SCORE) * 100);
                   return (
                     <div key={d.key} style={{ flex: 1, textAlign: "center" }}>
                       <div
