@@ -72,7 +72,7 @@ const T = {
       `${w} sætter loftet for jeres talentarbejde — her er de tre skridt i den rækkefølge, de skal tages.`,
     heldBackBy: (club: string, w: string) => `${club} er bremset af ${w}`,
     intro: (role: string) =>
-      `${role} har gennemført Klubanalysen: 15 spørgsmål om rød tråd, trænerkapacitet, data, kultur og ledelse. Niveauet sættes af det svageste af de fem områder — ikke af gennemsnittet. En klub er ikke halvvejs, fordi den er stærk ét sted og fraværende et andet. Den er sårbar.`,
+      `${role} har gennemført Klubanalysen: 20 spørgsmål om rød tråd, trænerkapacitet, data, kultur og ledelse. Niveauet sættes af det svageste af de fem områder — ikke af gennemsnittet. En klub er ikke halvvejs, fordi den er stærk ét sted og fraværende et andet. Den er sårbar.`,
     distribution: 'Fordeling',
     levelWord: 'Niveau',
     stepsTitle: 'De tre skridt — i den rækkefølge, de skal tages',
