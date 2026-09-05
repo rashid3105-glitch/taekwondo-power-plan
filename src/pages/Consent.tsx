@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { CheckCircle2, AlertCircle, Loader2, ShieldCheck, Clock, HeartOff, Undo2, HelpCircle } from "lucide-react";
+import {
+  CheckCircle2, AlertCircle, Loader2, ShieldCheck, HeartPulse, Moon, Brain,
+  ChevronDown, Clock, Undo2, Lock,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Info = {
@@ -13,6 +15,7 @@ type Info = {
   used?: boolean;
   athlete_name?: string | null;
   club_name?: string | null;
+  athlete_avatar_url?: string | null;
   consent_type?: string;
   data_items?: string[];
   policy_version?: string;
@@ -22,6 +25,15 @@ type Info = {
 // translated string. Falls back to safe defaults if a value is missing.
 function fillPlaceholders(template: string, vars: Record<string, string>) {
   return template.replace(/\{(\w+)\}/g, (_m, key) => vars[key] ?? `{${key}}`);
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 export default function Consent() {
@@ -93,102 +105,106 @@ export default function Consent() {
 
   const athleteName = info?.athlete_name?.trim() || t("yourChild");
   const clubName = info?.club_name?.trim() || t("privacyConsentYourClub");
-  const vars = useMemo(() => ({ athleteName, clubName, name: athleteName }), [athleteName, clubName]);
+  const vars = useMemo(
+    () => ({ athleteName, clubName, name: athleteName }),
+    [athleteName, clubName],
+  );
+
+  const bullets = [
+    { icon: HeartPulse, text: t("consentBulletHeart") },
+    { icon: Moon, text: t("consentBulletSleepSteps") },
+    { icon: Brain, text: t("consentBulletMental") },
+  ];
 
   return (
-    <div className="min-h-dvh bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg p-6 space-y-5">
-        <div className="flex items-center gap-3">
-          <ShieldCheck className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-semibold">{t("privacyConsentParentTitle")}</h1>
+    <div className="dark min-h-dvh bg-background text-foreground">
+      <div className="mx-auto w-full max-w-md px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-10">
+        {/* Brand bar — makes the page recognisable, not phishing-like */}
+        <div className="flex items-center justify-between py-3">
+          <span className="text-sm font-black tracking-tight">
+            SPORTS<span className="text-primary">TALENT</span>
+          </span>
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Lock className="h-3 w-3" /> sportstalent.dk
+          </span>
         </div>
 
         {loading && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 py-16 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> {t("loading")}
           </div>
         )}
 
         {!loading && granted && (
-          <div className="flex items-start gap-3 rounded-md bg-green-50 dark:bg-green-950/30 p-4">
-            <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-            <div className="text-sm">
-              <div className="font-medium">{t("consentGrantedTitle")}</div>
-              <p className="text-muted-foreground mt-1">{t("consentGrantedDesc")}</p>
-            </div>
+          <div className="mt-6 rounded-2xl border border-primary/30 bg-card p-6 text-center">
+            <CheckCircle2 className="mx-auto h-12 w-12 text-primary" />
+            <h1 className="mt-4 text-xl font-bold">{t("consentGrantedTitle")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("consentGrantedDesc")}</p>
+            <p className="mt-4 text-sm text-muted-foreground">{t("consentReceiptSent")}</p>
+            <ul className="mt-5 space-y-2 rounded-xl bg-muted/30 p-4 text-left text-sm">
+              {bullets.map(({ icon: Icon, text }) => (
+                <li key={text} className="flex items-start gap-2">
+                  <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>{text}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 text-xs text-muted-foreground">{t("consentQuickWithdraw")}</p>
+          </div>
+        )}
+
+        {!loading && notMine && (
+          <div className="mt-6 rounded-2xl border border-border bg-card p-6 text-center">
+            <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
+            <p className="mt-3 text-sm">{t("consentNotMyChildDone")}</p>
           </div>
         )}
 
         {!loading && !granted && !notMine && info && !info.valid && (
-          <div className="flex items-start gap-3 rounded-md bg-amber-50 dark:bg-amber-950/30 p-4">
-            <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+          <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border bg-card p-5">
+            <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />
             <div className="text-sm">
-              <div className="font-medium">
+              <div className="font-semibold">
                 {info.used ? t("consentAlreadyUsedTitle") : info.expired ? t("consentExpiredTitle") : t("consentInvalidTitle")}
               </div>
-              <p className="text-muted-foreground mt-1">
+              <p className="mt-1 text-muted-foreground">
                 {info.used ? t("consentAlreadyUsedDesc") : info.expired ? t("consentExpiredDesc") : t("consentInvalidDesc")}
               </p>
             </div>
           </div>
         )}
 
-        {!loading && notMine && (
-          <div className="flex items-start gap-3 rounded-md bg-muted p-4">
-            <CheckCircle2 className="h-5 w-5 text-primary mt-0.5" />
-            <p className="text-sm">{t("consentNotMyChildDone")}</p>
-          </div>
-        )}
-
         {!loading && !granted && !notMine && info && info.valid && (
           <>
-            <p className="text-sm leading-relaxed">
-              {fillPlaceholders(t("privacyConsentParentBody"), vars)}
-            </p>
-
-            <ul className="rounded-md bg-muted/40 p-3 space-y-2 text-sm">
-              <li className="flex items-start gap-2">
-                <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <span>{t("consentQuickWhat")}</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Clock className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <span>{t("consentQuickTime")}</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <HeartOff className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <span>{t("consentQuickIfNothing")}</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Undo2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <span>{t("consentQuickWithdraw")}</span>
-              </li>
-            </ul>
-
-            <button
-              type="button"
-              onClick={() => setShowDetails((v) => !v)}
-              className="text-xs underline text-muted-foreground"
-            >
-              {t("consentDetailsToggle")}
-            </button>
-
-            {showDetails && (
-              <div className="rounded-md border border-border p-3 text-sm leading-relaxed bg-muted/30">
-                {fillPlaceholders(t("privacyConsentParentDeclaration"), vars)}
+            {/* 1. Instant recognition: photo, child, club */}
+            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
+              {info.athlete_avatar_url ? (
+                <img
+                  src={info.athlete_avatar_url}
+                  alt={athleteName}
+                  className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-primary/50"
+                />
+              ) : (
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/15 text-lg font-bold text-primary ring-2 ring-primary/40">
+                  {initials(athleteName)}
+                </div>
+              )}
+              <div className="min-w-0">
+                <div className="truncate text-lg font-bold leading-tight">{athleteName}</div>
+                <div className="truncate text-sm text-muted-foreground">{clubName}</div>
               </div>
-            )}
+            </div>
 
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              {t("privacyConsentVoluntary")}
+            {/* 2. What happens without action */}
+            <h1 className="mt-5 text-xl font-bold leading-snug">
+              {t("privacyConsentParentTitle")}
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {fillPlaceholders(t("consentDeadlineNotice"), vars)}
             </p>
 
-            <p className="text-xs text-muted-foreground">
-              <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
-              {info.policy_version ? <> · {t("consentPolicyVersion")}: {info.policy_version}</> : null}
-            </p>
-
-            <label className="flex items-start gap-3 rounded-md border border-border p-3 cursor-pointer">
+            {/* 3. Checkbox + button inside the first viewport */}
+            <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4">
               <Checkbox
                 checked={checked}
                 onCheckedChange={(v) => setChecked(v === true)}
@@ -200,32 +216,79 @@ export default function Consent() {
               </span>
             </label>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
             <Button
               onClick={grant}
               disabled={granting || !checked}
-              className="w-full"
+              className="mt-3 h-12 w-full text-base font-semibold"
             >
               {granting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentGrantBtn")}
             </Button>
 
-            <Button
-              variant="ghost"
+            <p className="mt-2 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" /> {t("consentQuickTime")}
+            </p>
+
+            {/* Below the fold */}
+            <button
+              type="button"
+              onClick={() => setShowDetails((v) => !v)}
+              aria-expanded={showDetails}
+              className="mt-6 flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium"
+            >
+              <span className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                {t("consentWhatCoversTitle")}
+              </span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${showDetails ? "rotate-180" : ""}`} />
+            </button>
+
+            {showDetails && (
+              <div className="mt-2 space-y-4 rounded-xl border border-border bg-card p-4 text-sm leading-relaxed">
+                <ul className="space-y-2">
+                  {bullets.map(({ icon: Icon, text }) => (
+                    <li key={text} className="flex items-start gap-2">
+                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>{text}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-muted-foreground">
+                  {fillPlaceholders(t("privacyConsentParentBody"), vars)}
+                </p>
+                <p className="text-muted-foreground">
+                  {fillPlaceholders(t("privacyConsentParentDeclaration"), vars)}
+                </p>
+                <p className="flex items-start gap-2 text-muted-foreground">
+                  <Undo2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  {t("consentQuickWithdraw")}
+                </p>
+                <p className="text-xs text-muted-foreground">{t("privacyConsentVoluntary")}</p>
+                <p className="text-xs text-muted-foreground">
+                  <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
+                  {info.policy_version ? <> · {t("consentPolicyVersion")}: {info.policy_version}</> : null}
+                </p>
+              </div>
+            )}
+
+            <button
+              type="button"
               onClick={declineNotMine}
               disabled={granting}
-              className="w-full text-muted-foreground"
+              className="mt-6 w-full text-center text-sm text-muted-foreground underline underline-offset-4"
             >
-              <HelpCircle className="h-4 w-4 mr-2" />
               {t("consentNotMyChild")}
-            </Button>
+            </button>
+
+            <p className="mt-6 text-center text-[11px] text-muted-foreground">
+              {t("consentSecureNote")}
+            </p>
           </>
         )}
 
-        {error && !info && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
-      </Card>
+        {error && !info && <p className="mt-6 text-sm text-destructive">{error}</p>}
+      </div>
     </div>
   );
 }
