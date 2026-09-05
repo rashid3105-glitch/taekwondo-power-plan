@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Users, Clock } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
+import { InviteErrorState } from "@/components/InviteErrorState";
+
 
 interface InviteInfo {
   valid: boolean;
