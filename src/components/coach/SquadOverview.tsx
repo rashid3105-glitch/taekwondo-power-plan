@@ -291,7 +291,7 @@ export function SquadOverview({
         return firstA.localeCompare(firstB, undefined, { sensitivity: "base" });
       }
       if (sort === "belt") {
-        if (isTkd) return BELT_ORDER.indexOf(a.belt_level) - BELT_ORDER.indexOf(b.belt_level);
+        if (isTkd) return beltRank(a.belt_level) - beltRank(b.belt_level);
         return sportProfile.grades.indexOf(a.belt_level) - sportProfile.grades.indexOf(b.belt_level);
       }
       if (sort === "lastActive") {
@@ -366,8 +366,10 @@ export function SquadOverview({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("allBelts")}</SelectItem>
-                {BELT_ORDER.map((b) => (
-                  <SelectItem key={b} value={b}>{t(b)}</SelectItem>
+                {beltFilterOptions.map((b) => (
+                  <SelectItem key={b} value={b}>
+                    {LEGACY_BELT_ORDER.includes(b) ? t(b) : formatGrade(sportProfile.slug, b, t)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -450,13 +452,13 @@ export function SquadOverview({
                           className={cn(
                             "absolute -bottom-1 -right-1 rounded-full border-2 border-card flex items-center justify-center text-[8px] font-bold uppercase",
                             isTkd
-                              ? cn("h-4 w-4", BELT_CHIP[r.belt_level] || "bg-muted text-muted-foreground")
+                              ? cn("h-4 min-w-4 px-0.5", beltChip(r.belt_level).cls)
                               : "h-5 px-1 bg-primary/20 text-primary",
                           )}
                           title={formatGrade(sportProfile.slug, r.belt_level, t)}
                         >
                           {isTkd
-                            ? (r.belt_level || "?").charAt(0)
+                            ? beltChip(r.belt_level).label
                             : (r.belt_level || "").slice(0, 3)}
                         </span>
                       )}
