@@ -39,7 +39,8 @@ async function call(action: string, token: string) {
 
 type Funnel = { sent: number; opened: number; confirmed: number; notMine: number };
 
-async function funnel(admin: ReturnType<typeof createClient>): Promise<Funnel> {
+// deno-lint-ignore no-explicit-any
+async function funnel(admin: any): Promise<Funnel> {
   const { data, error } = await admin
     .from("consent_token_events")
     .select("event");
