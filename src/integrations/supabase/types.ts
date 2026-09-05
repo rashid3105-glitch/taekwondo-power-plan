@@ -4752,6 +4752,7 @@ export type Database = {
         Args: { _athlete_id: string }
         Returns: number
       }
+      consent_age_for_club: { Args: { _club_id: string }; Returns: number }
       consent_ages_for_athletes: {
         Args: { _ids: string[] }
         Returns: {
