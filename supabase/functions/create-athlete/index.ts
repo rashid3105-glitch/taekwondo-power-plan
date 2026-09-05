@@ -104,7 +104,22 @@ Deno.serve(async (req) => {
       throw new Error("BIRTH_DATE_INVALID");
     }
 
-    const minor = isBelowConsentAge(birth_date) === true;
+    // Country-aware consent threshold (GDPR Art. 8), resolved in the database
+    // from the club's own setting / the club's country. Falls back to 18.
+    let consentAge = 18;
+    try {
+      const { data: ageData, error: ageErr } = await adminClient.rpc("consent_age_for_club", {
+        _club_id: targetClubId,
+      });
+      if (!ageErr && typeof ageData === "number" && ageData >= 1 && ageData <= 25) {
+        consentAge = ageData;
+      }
+    } catch (e) {
+      console.warn("consent_age_for_club failed, using default 18:", e);
+    }
+
+    const minor = isBelowConsentAge(birth_date, consentAge) === true;
+
 
     if (minor) {
       if (!parent_email || typeof parent_email !== "string" || !EMAIL_RE.test(parent_email.trim())) {
