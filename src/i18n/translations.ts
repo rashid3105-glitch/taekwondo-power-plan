@@ -28980,6 +28980,8 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   adminConsentConfirmed: "Aprobados",
   adminConsentNotMine: "No es mi hijo/a",
   adminBirthDateCoverage: "Cobertura de fecha de nacimiento",
+  adminConsentByClub: "Por club",
+  adminConsentNoClub: "Sin club",
   consentPageTitle: "Consentimiento parental",
   consentIntro: "Un entrenador ha creado una cuenta de SPORTSTALENT para {name}. Como es menor de 18, necesitamos tu consentimiento antes de procesar sus datos de salud.",
   consentDataItemsTitle: "Datos que procesamos",
