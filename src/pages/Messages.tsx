@@ -93,7 +93,7 @@ export default function Messages() {
         </div>
       </header>
 
-      <main className="container max-w-5xl mx-auto flex-1 w-full min-h-0">
+      <main className="w-full max-w-5xl mx-auto flex-1 min-h-0">
         {/* Mobile: enten trådliste ELLER samtale (aldrig i Sheet — undgår stuck overlay på Android WebView) */}
         {isMobileView ? (
           <div className="h-full min-h-0">
