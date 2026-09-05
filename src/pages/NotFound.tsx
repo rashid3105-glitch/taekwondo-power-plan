@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { PageMeta } from "@/components/PageMeta";
+import { InviteErrorState } from "@/components/InviteErrorState";
 
 const NotFound = () => {
   const location = useLocation();
@@ -10,6 +11,17 @@ const NotFound = () => {
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
+
+  // A mistyped or truncated invite link should not look like a dead end.
+  const looksLikeInvite = /^\/(join|invite|i)(\/|$)/i.test(location.pathname);
+  if (looksLikeInvite) {
+    return (
+      <>
+        <PageMeta title="Invitation" noindex />
+        <InviteErrorState />
+      </>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
