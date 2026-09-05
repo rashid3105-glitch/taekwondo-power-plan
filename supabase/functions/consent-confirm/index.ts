@@ -5,6 +5,7 @@
 //   action="not_my_child" → guardian says this request is not theirs
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { POLICY_VERSION } from "../_shared/age.ts";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -48,14 +49,18 @@ Deno.serve(async (req) => {
       // consent. No health-data values are returned — only metadata.
       let athleteName: string | null = null;
       let clubName: string | null = null;
+      let avatarUrl: string | null = null;
+      let locale: string | null = null;
       if (tk.athlete_id) {
         const { data: p } = await admin
           .from("profiles")
-          .select("display_name, club_id, clubs:club_id(name)")
+          .select("display_name, avatar_url, default_locale, club_id, clubs:club_id(name)")
           .eq("user_id", tk.athlete_id)
           .maybeSingle();
         athleteName = (p as any)?.display_name || null;
         clubName = (p as any)?.clubs?.name || null;
+        locale = (p as any)?.default_locale || null;
+        avatarUrl = await signedAvatar(admin, (p as any)?.avatar_url || null);
       }
       // Funnel instrumentation: guardian opened the link.
       await admin.from("consent_token_events").insert({
@@ -72,6 +77,8 @@ Deno.serve(async (req) => {
         used,
         athlete_name: athleteName,
         club_name: clubName,
+        athlete_avatar_url: avatarUrl,
+        locale,
         consent_type: tk.consent_type,
         data_items: HEALTH_DATA_ITEMS,
         policy_version: POLICY_VERSION,
@@ -131,6 +138,31 @@ Deno.serve(async (req) => {
         meta: {},
       });
 
+      // Emailed receipt of what was consented to (best effort — never blocks).
+      try {
+        const { data: rp } = await admin
+          .from("profiles")
+          .select("display_name, default_locale, club_id, clubs:club_id(name)")
+          .eq("user_id", tk.athlete_id)
+          .maybeSingle();
+        const receiptClub = (rp as any)?.clubs?.name || null;
+        if (tk.parent_email) {
+          await sendTemplateEmail("consent-receipt", tk.parent_email, {
+            idempotencyKey: `consent-receipt-${tk.id}`,
+            fromName: receiptClub || undefined,
+            templateData: {
+              athleteName: (rp as any)?.display_name || null,
+              clubName: receiptClub,
+              grantedAt: now,
+              policyVersion: POLICY_VERSION,
+              locale: (rp as any)?.default_locale || "da",
+            },
+          });
+        }
+      } catch (e) {
+        console.warn("consent receipt not sent", e);
+      }
+
       return json({ ok: true });
     }
 
@@ -154,6 +186,23 @@ Deno.serve(async (req) => {
     return json({ error: "server_error" }, 500);
   }
 });
+
+// Avatars live in a public bucket path; sign it so the guardian page can show
+// the child's photo without exposing anything else.
+async function signedAvatar(admin: any, raw: string | null): Promise<string | null> {
+  if (!raw) return null;
+  try {
+    const marker = "/object/public/avatars/";
+    let path = raw;
+    const idx = path.indexOf(marker);
+    if (idx !== -1) path = path.substring(idx + marker.length);
+    path = path.split("?")[0];
+    const { data } = await admin.storage.from("avatars").createSignedUrl(path, 3600);
+    return data?.signedUrl ?? null;
+  } catch {
+    return null;
+  }
+}
 
 function json(o: unknown, status = 200) {
   return new Response(JSON.stringify(o), {

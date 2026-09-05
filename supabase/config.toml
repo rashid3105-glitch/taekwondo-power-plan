@@ -26,6 +26,8 @@ project_id = "zklwergsziidgyxewbkw"
     verify_jwt = false
   [functions.consent-self]
     verify_jwt = true
+  [functions.send-consent-reminders]
+    verify_jwt = false
   [functions.delete-my-account]
     verify_jwt = true
   [functions.export-my-data]

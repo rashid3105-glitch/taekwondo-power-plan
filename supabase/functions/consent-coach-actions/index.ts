@@ -38,6 +38,7 @@ async function invokeSendEmail(
       {
         idempotencyKey: payload.idempotencyKey as string | undefined,
         templateData: (payload.templateData ?? {}) as Record<string, unknown>,
+        fromName: payload.fromName as string | undefined,
       },
     );
     if (!result.sent) {
@@ -208,7 +209,7 @@ Deno.serve(async (req) => {
       // Verify athlete is in one of coach's clubs and is a minor.
       const { data: athleteRow } = await admin
         .from("profiles")
-        .select("user_id, display_name, birth_date, age, club_id")
+        .select("user_id, display_name, birth_date, age, club_id, default_locale")
         .eq("user_id", athleteId)
         .maybeSingle();
       if (!athleteRow) return jsonResponse({ error: "not_found" }, 404);
@@ -271,6 +272,7 @@ Deno.serve(async (req) => {
       const sendRes = await invokeSendEmail(supabaseUrl, serviceKey, {
         templateName: "parental-consent-request",
         recipientEmail: parentEmail,
+        fromName: clubNameForEmail || undefined,
         idempotencyKey: `parental-consent-${athleteId}-${tokenValue.slice(0, 8)}`,
         templateData: {
           athleteName: athleteRow.display_name || "your child",
@@ -278,6 +280,7 @@ Deno.serve(async (req) => {
           expiresInDays: CONSENT_TOKEN_DAYS,
           clubName: clubNameForEmail,
           coachName: coachNameForEmail,
+          locale: (athleteRow as any).default_locale || "da",
           reminderNumber: 0,
         },
       });
