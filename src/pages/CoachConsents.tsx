@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Download, Loader2, Mail, ShieldCheck } from "lucide-react";
-import { ageFromBirthDate, isBelowConsentAge } from "@/lib/age";
+import { ageFromBirthDate, isBelowConsentAge, fetchConsentAges, DEFAULT_CONSENT_AGE } from "@/lib/age";
 import { SetBirthDateDialog } from "@/components/coach/SetBirthDateDialog";
 import { toast } from "sonner";
 
@@ -133,11 +133,16 @@ export default function CoachConsents() {
         }
       } catch { /* non-fatal */ }
 
+      // Country-aware consent thresholds (GDPR Art. 8), resolved server side.
+      const thresholds = await fetchConsentAges(memberList.map((m: any) => m.user_id));
+
       const out: Row[] = memberList.map((m: any) => {
         const c = byId.get(m.user_id);
         // Consent status is resolved from birth_date only — never profiles.age.
         const age = ageFromBirthDate(m.birth_date ?? null);
-        const verdict = isBelowConsentAge(m.birth_date ?? null);
+        const threshold = thresholds.get(m.user_id) ?? DEFAULT_CONSENT_AGE;
+        const verdict = isBelowConsentAge(m.birth_date ?? null, threshold);
+
         const isMinor = verdict === true;
         let status: Row["status"] = "missing";
         if (c) {

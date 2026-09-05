@@ -4715,6 +4715,18 @@ export type Database = {
         Args: { _athlete_id: string }
         Returns: Json
       }
+      admin_consent_age_overview: {
+        Args: never
+        Returns: {
+          applicable_age: number
+          athletes: number
+          club_country: string
+          club_id: string
+          club_name: string
+          missing_birth_date: number
+          requires_guardian: number
+        }[]
+      }
       admin_reject_with_reason: {
         Args: { _athlete_id: string; _reason: string }
         Returns: Json
@@ -4739,6 +4751,14 @@ export type Database = {
       consent_age_for_athlete: {
         Args: { _athlete_id: string }
         Returns: number
+      }
+      consent_age_for_club: { Args: { _club_id: string }; Returns: number }
+      consent_ages_for_athletes: {
+        Args: { _ids: string[] }
+        Returns: {
+          applicable_age: number
+          athlete_id: string
+        }[]
       }
       create_group_thread: {
         Args: { _member_ids: string[]; _title: string }

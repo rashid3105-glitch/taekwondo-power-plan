@@ -13,6 +13,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ConsentFunnelCard } from "@/components/admin/ConsentFunnelCard";
+import { ConsentAgeOverviewCard } from "@/components/admin/ConsentAgeOverviewCard";
+
 import { JobRunsCard } from "@/components/admin/JobRunsCard";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 
@@ -252,6 +254,9 @@ export default function AdminStats() {
         </section>
 
         <ConsentFunnelCard />
+
+        <ConsentAgeOverviewCard />
+
 
         <JobRunsCard />
 
