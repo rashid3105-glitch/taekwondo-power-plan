@@ -38,3 +38,52 @@ export function isBelowConsentAge(
   if (a == null) return "unknown";
   return a < threshold;
 }
+
+// ── Country-aware consent age (GDPR Art. 8) ────────────────────────────────
+// The applicable age is resolved in the database (club country > athlete
+// residence > platform default). On ANY failure we fall back to the platform
+// default (18) — never lower — so a network error can never silently reduce
+// the protection applied to a minor.
+import { supabase } from "@/integrations/supabase/client";
+
+const cache = new Map<string, number>();
+
+export async function fetchConsentAge(athleteId: string): Promise<number> {
+  const hit = cache.get(athleteId);
+  if (hit != null) return hit;
+  try {
+    const { data, error } = await supabase.rpc("consent_age_for_athlete", {
+      _athlete_id: athleteId,
+    });
+    const age = typeof data === "number" ? data : null;
+    if (error || age == null || age < 1 || age > 25) return DEFAULT_CONSENT_AGE;
+    cache.set(athleteId, age);
+    return age;
+  } catch {
+    return DEFAULT_CONSENT_AGE;
+  }
+}
+
+export async function fetchConsentAges(
+  athleteIds: string[],
+): Promise<Map<string, number>> {
+  const out = new Map<string, number>();
+  if (athleteIds.length === 0) return out;
+  try {
+    const { data, error } = await supabase.rpc("consent_ages_for_athletes", {
+      _ids: athleteIds,
+    });
+    if (error) throw error;
+    for (const row of (data as any[]) || []) {
+      const age = row?.applicable_age;
+      if (typeof age === "number" && age >= 1 && age <= 25) {
+        out.set(row.athlete_id, age);
+        cache.set(row.athlete_id, age);
+      }
+    }
+  } catch {
+    // fall through — callers use DEFAULT_CONSENT_AGE for missing entries
+  }
+  return out;
+}
+
