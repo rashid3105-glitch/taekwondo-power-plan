@@ -580,6 +580,14 @@ export default function Klubanalyse() {
                 {C.ceiling}
               </p>
               <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+                {C.average(avgLevel)}
+              </p>
+              {unknownCount > 0 && (
+                <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+                  {C.unknownNote(unknownCount)}
+                </p>
+              )}
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
                 {strongestIdx === weakestIdx
                   ? C.even
                   : C.strongestLine(DIMENSIONS[strongestIdx].name, DIMENSIONS[weakestIdx].name)}
