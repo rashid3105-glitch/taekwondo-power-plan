@@ -265,7 +265,11 @@ export function SquadOverview({
         return d !== null && d >= 7;
       });
     }
-    if (isTkd && beltFilter !== "all") out = out.filter((r) => r.belt_level === beltFilter);
+    if (isTkd && beltFilter !== "all") {
+      out = out.filter(
+        (r) => r.belt_level === beltFilter || LEGACY_TO_LADDER[r.belt_level] === beltFilter,
+      );
+    }
     if (teamFilter !== "all" && teams.some((tm) => tm.id === teamFilter)) {
       const ids = new Set(teamMembers[teamFilter] ?? []);
       out = out.filter((r) => ids.has(r.user_id));
