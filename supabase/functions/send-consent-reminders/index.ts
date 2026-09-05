@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
 
       const { data: prof } = await admin
         .from("profiles")
-        .select("display_name, club_id, clubs:club_id(name)")
+        .select("display_name, club_id, default_locale, clubs:club_id(name)")
         .eq("user_id", tk.athlete_id)
         .maybeSingle();
 
@@ -89,6 +89,7 @@ Deno.serve(async (req) => {
 
       const result = await sendTemplateEmail("parental-consent-request", tk.parent_email, {
         idempotencyKey: `parental-consent-reminder-${tk.id}-${step}`,
+        fromName: (prof as any)?.clubs?.name || undefined,
         templateData: {
           athleteName: (prof as any)?.display_name || "your child",
           clubName: (prof as any)?.clubs?.name || null,
@@ -96,6 +97,7 @@ Deno.serve(async (req) => {
           expiresInDays: CONSENT_TOKEN_DAYS,
           daysLeft,
           reminderNumber,
+          locale: (prof as any)?.default_locale || "da",
         },
       });
 
