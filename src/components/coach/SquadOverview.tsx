@@ -496,8 +496,8 @@ export function SquadOverview({
                 </div>
 
                 {/* Middle: activity + last seen */}
-                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-3">
-                  <div className="space-y-1.5">
+                <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-3 [&>*]:min-w-0">
+                  <div className="min-w-0 space-y-1.5">
                     <div className="flex justify-between text-[10px] font-semibold">
                       <span className="text-muted-foreground uppercase tracking-tight truncate">
                         {t("squadWeeklyActivity")}
