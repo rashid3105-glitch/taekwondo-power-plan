@@ -146,7 +146,7 @@ export default function AdminApproval() {
     const [profilesRes, emailsRes, plansRes, rolesRes, coachAthletesRes, clubsRes] = await Promise.all([
       supabase
         .from("profiles")
-        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, sport_start_date, phone, phone_country_code, athlete_code")
+        .select("user_id, display_name, created_at, is_approved, age, weight_kg, belt_level, experience_years, goals, sessions_per_week, payment_status, payment_date, is_demo, demo_full_access, demo_expires_at, club_id, discipline, country, current_injury, last_seen_at, birth_date, sport_start_date, phone, phone_country_code, athlete_code, pending_coach_id")
         .or("is_parent.is.null,is_parent.eq.false")
         .order("created_at", { ascending: false }),
       supabase.functions.invoke("get-admin-users"),
@@ -200,6 +200,17 @@ export default function AdminApproval() {
       athleteCoachMap[link.athlete_id] = link.coach_id;
     }
 
+    // Athletes who signed up via an invite link but are not approved yet have
+    // no coach_athletes row. Fall back to the inviting coach on the profile so
+    // the responsible coach is pre-selected in admin.
+    const pendingCoachMap: Record<string, string> = {};
+    for (const p of ((profilesRes.data ?? []) as any[])) {
+      if (p?.pending_coach_id) pendingCoachMap[p.user_id] = p.pending_coach_id;
+    }
+    for (const p of (profiles as any[])) {
+      if (p?.pending_coach_id) pendingCoachMap[p.user_id] = p.pending_coach_id;
+    }
+
     const coachProfiles = profiles.filter(p => coachSet.has(p.user_id));
     setCoaches(coachProfiles.map(p => ({ user_id: p.user_id, display_name: p.display_name })));
 
@@ -219,8 +230,10 @@ export default function AdminApproval() {
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
-      coachId: athleteCoachMap[p.user_id] || null,
-      coachName: athleteCoachMap[p.user_id] ? (profileNameMap[athleteCoachMap[p.user_id]] || "") : undefined,
+      coachId: athleteCoachMap[p.user_id] || pendingCoachMap[p.user_id] || null,
+      coachName: (athleteCoachMap[p.user_id] || pendingCoachMap[p.user_id])
+        ? (profileNameMap[athleteCoachMap[p.user_id] || pendingCoachMap[p.user_id]] || "")
+        : undefined,
     })).sort((a, b) => (a.display_name || "").localeCompare(b.display_name || "")));
     setLoading(false);
   };

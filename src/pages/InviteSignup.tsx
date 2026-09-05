@@ -24,7 +24,7 @@ export default function InviteSignup() {
   const { locale, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("welcome");
-  const [info, setInfo] = useState<{ valid: boolean; coach_name?: string; club_name?: string } | null>(null);
+  const [info, setInfo] = useState<{ valid: boolean; coach_name?: string; club_name?: string; coach_country?: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
@@ -88,6 +88,10 @@ export default function InviteSignup() {
           data: {
             display_name: name,
             birth_date: birthDate,
+            // Carry the invite so the profile gets the coach's country and the
+            // inviting coach pre-filled as the responsible coach.
+            ...(code ? { invite_code: code } : {}),
+            ...(info?.coach_country ? { country: info.coach_country } : {}),
             ...(isMinor ? { guardian_email: guardianEmail.trim().toLowerCase() } : {}),
           },
           // Carry the invite code in the confirmation link so it survives
