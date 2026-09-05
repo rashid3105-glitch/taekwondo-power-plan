@@ -253,6 +253,9 @@ export default function AdminStats() {
 
         <ConsentFunnelCard />
 
+        <ConsentAgeOverviewCard />
+
+
         <JobRunsCard />
 
         {/* Signups chart */}
