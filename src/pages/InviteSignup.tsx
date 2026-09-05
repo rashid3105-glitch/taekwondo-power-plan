@@ -120,17 +120,9 @@ export default function InviteSignup() {
   }
 
   if (!info?.valid) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-5">
-        <div className="w-full max-w-sm text-center space-y-4">
-          <h1 className="text-xl font-extrabold">Linket er udløbet eller ugyldigt</h1>
-          <Button onClick={() => navigate("/")} variant="outline" className="w-full h-11 rounded-xl">
-            Tilbage til forsiden
-          </Button>
-        </div>
-      </div>
-    );
+    return <InviteErrorState reason={(info as any)?.reason} />;
   }
+
 
   const headline = info.coach_name
     ? `Din træner ${info.coach_name} har inviteret dig til SportsTalent`
