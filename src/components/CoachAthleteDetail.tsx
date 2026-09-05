@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { Video as VideoIcon } from "lucide-react";
 import { WeightModule } from "@/components/weight/WeightModule";
 import { CollapsiblePanel } from "@/components/coach/CollapsiblePanel";
+import { SetBirthDateDialog } from "@/components/coach/SetBirthDateDialog";
 
 /** High-contrast save button — must stand out everywhere in the system. */
 const SAVE_BTN = "bg-foreground text-background hover:bg-foreground/90 border-transparent font-semibold";
@@ -76,6 +77,7 @@ interface AthleteProfile {
   display_name: string;
   athlete_code: string | null;
   age: number | null;
+  birth_date?: string | null;
   weight_kg: number | null;
   belt_level: string;
   experience_years: number | null;
