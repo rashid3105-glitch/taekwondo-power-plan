@@ -30,6 +30,7 @@ import { SquadPulse, type PulseFilter } from "@/components/coach/SquadPulse";
 import { WeeklySquadExport } from "@/components/coach/WeeklySquadExport";
 import { AthleteAddMenu } from "@/components/coach/AthleteAddMenu";
 import { PendingAthletesSection } from "@/components/coach/PendingAthletesSection";
+import { MissingBirthDatesCard } from "@/components/coach/MissingBirthDatesCard";
 import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
 import AnnouncementsCard from "@/components/AnnouncementsCard";
 import { BulkMonthlyReportsCard } from "@/components/coach/BulkMonthlyReportsCard";
@@ -491,6 +492,7 @@ export default function CoachDashboard() {
             <div className="space-y-4">
               <AnnouncementsCard />
               <ComplianceAlertsCard />
+              <MissingBirthDatesCard />
               {coachUserId && <PendingAthletesSection coachId={coachUserId} />}
               
               {!isAdmin && athletes.length >= MAX_ATHLETES && (
