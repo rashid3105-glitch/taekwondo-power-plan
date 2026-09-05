@@ -15,7 +15,6 @@ type Info = {
   used?: boolean;
   athlete_name?: string | null;
   club_name?: string | null;
-  athlete_avatar_url?: string | null;
   consent_type?: string;
   data_items?: string[];
   policy_version?: string;
@@ -178,17 +177,9 @@ export default function Consent() {
           <>
             {/* 1. Instant recognition: photo, child, club */}
             <div className="mt-2 flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-              {info.athlete_avatar_url ? (
-                <img
-                  src={info.athlete_avatar_url}
-                  alt={athleteName}
-                  className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-primary/50"
-                />
-              ) : (
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/15 text-lg font-bold text-primary ring-2 ring-primary/40">
-                  {initials(athleteName)}
-                </div>
-              )}
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/15 text-lg font-bold text-primary ring-2 ring-primary/40">
+                {initials(athleteName)}
+              </div>
               <div className="min-w-0">
                 <div className="truncate text-lg font-bold leading-tight">{athleteName}</div>
                 <div className="truncate text-sm text-muted-foreground">{clubName}</div>

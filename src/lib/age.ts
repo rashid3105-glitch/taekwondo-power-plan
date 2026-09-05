@@ -48,6 +48,11 @@ import { supabase } from "@/integrations/supabase/client";
 
 const cache = new Map<string, number>();
 
+export function clearConsentAgeCache(athleteId?: string) {
+  if (athleteId) cache.delete(athleteId);
+  else cache.clear();
+}
+
 export async function fetchConsentAge(athleteId: string): Promise<number> {
   const hit = cache.get(athleteId);
   if (hit != null) return hit;
@@ -62,6 +67,11 @@ export async function fetchConsentAge(athleteId: string): Promise<number> {
   } catch {
     return DEFAULT_CONSENT_AGE;
   }
+}
+
+export function clearConsentAgeCache(athleteId?: string) {
+  if (athleteId) cache.delete(athleteId);
+  else cache.clear();
 }
 
 export async function fetchConsentAges(
