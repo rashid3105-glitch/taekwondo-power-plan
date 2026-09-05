@@ -522,8 +522,8 @@ export function SquadOverview({
                 </div>
 
                 {/* Footer: status + actions */}
-                <div className="mt-3 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
                     {r.has_active_plan ? (
                       <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 text-[9px] font-bold uppercase tracking-wider border border-emerald-500/20">
                         {t("squadPlanActive")}
