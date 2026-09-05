@@ -230,8 +230,10 @@ export default function AdminApproval() {
       email: emailMap[p.user_id] || "",
       plans: plansByUser[p.user_id] || [],
       isCoach: coachSet.has(p.user_id),
-      coachId: athleteCoachMap[p.user_id] || null,
-      coachName: athleteCoachMap[p.user_id] ? (profileNameMap[athleteCoachMap[p.user_id]] || "") : undefined,
+      coachId: athleteCoachMap[p.user_id] || pendingCoachMap[p.user_id] || null,
+      coachName: (athleteCoachMap[p.user_id] || pendingCoachMap[p.user_id])
+        ? (profileNameMap[athleteCoachMap[p.user_id] || pendingCoachMap[p.user_id]] || "")
+        : undefined,
     })).sort((a, b) => (a.display_name || "").localeCompare(b.display_name || "")));
     setLoading(false);
   };
