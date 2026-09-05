@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
+import { InviteErrorState } from "@/components/InviteErrorState";
+
 
 import { useLanguage } from "@/i18n/LanguageContext";
 import logo from "@/assets/logo.png";
