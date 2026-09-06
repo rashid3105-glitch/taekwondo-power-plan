@@ -446,14 +446,17 @@ export function GlobalAppMenu() {
                       { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500", badge: newAssessments },
 
 
-                    ].map((it) => (
+                    ].map((it: any) => (
                       <button
                         key={it.to}
                         onClick={() => goAndClose(it.to)}
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
                       >
                         <it.icon className={`h-4 w-4 shrink-0 ${it.color}`} />
-                        <span className="truncate">{it.label}</span>
+                        <span className="flex-1 truncate text-left">{it.label}</span>
+                        {it.badge > 0 && (
+                          <Badge className="ml-auto bg-amber-500 text-black hover:bg-amber-500">{it.badge}</Badge>
+                        )}
                       </button>
                     ))}
                   </div>
