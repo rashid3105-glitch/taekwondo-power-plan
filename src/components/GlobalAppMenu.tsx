@@ -443,7 +443,7 @@ export function GlobalAppMenu() {
                       { to: "/admin/hero", icon: ImageIcon, label: "Forsidebilleder", color: "text-tab-plan" },
                       { to: "/admin/announcements", icon: Megaphone, label: "Besked til brugere", color: "text-amber-500" },
                       { to: "/admin/stats", icon: BarChart3, label: t("adminStats"), color: "text-sky-400" },
-                      { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500" },
+                      { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500", badge: newAssessments },
 
 
                     ].map((it) => (
