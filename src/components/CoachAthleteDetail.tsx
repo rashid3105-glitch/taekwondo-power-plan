@@ -365,20 +365,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             }
           >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">{t("age")}</Label>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={5}
-                  max={99}
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder="—"
-                  className="h-9"
-                />
-              </div>
-              <div className="space-y-1">
+              <div className="space-y-1 col-span-2 sm:col-span-1">
+
                 <Label className="text-xs">{t("birthDate")}</Label>
                 <SetBirthDateDialog
                   athleteId={athlete.user_id}
