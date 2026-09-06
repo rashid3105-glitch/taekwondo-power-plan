@@ -100,20 +100,28 @@ export default function AuthPage() {
       sessionStorage.getItem("pending_invite_code") ||
       localStorage.getItem("pending_invite_code");
     if (pendingInvite) {
+      // Always clear the stored code first: a stale/expired code must never be
+      // able to block a successful sign-in on every retry.
+      sessionStorage.removeItem("pending_invite_code");
+      try { localStorage.removeItem("pending_invite_code"); } catch {}
       const { data, error } = await supabase.rpc("apply_invite_to_my_profile" as any, { _code: pendingInvite });
       const result = data as { ok?: boolean; error?: string } | null;
       if (error || !result?.ok) {
         console.error("apply invite failed", error ?? result?.error);
-        throw new Error(t("inviteErrInvalidDesc"));
+        // Surface the problem, but let the user into the app anyway.
+        toast({
+          title: t("error"),
+          description: t("inviteErrInvalidDesc"),
+          variant: "destructive",
+        });
       }
-      sessionStorage.removeItem("pending_invite_code");
-      try { localStorage.removeItem("pending_invite_code"); } catch {}
     }
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) await registerPushToken(user.id);
     } catch { /* non-blocking */ }
   };
+
 
   const handleBiometricLogin = async () => {
     setBioLoading(true);
