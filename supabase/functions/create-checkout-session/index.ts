@@ -47,6 +47,19 @@ serve(async (req) => {
     const priceId = PRICE_IDS[tier][billingCycle];
     const checkoutCurrency = "dkk";
 
+    // The webhook needs club_id to activate the licence.
+    const supabaseAsUser = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: `Bearer ${token}` } }, auth: { persistSession: false } }
+    );
+    const { data: profileRows } = await supabaseAsUser
+      .from("profiles")
+      .select("club_id")
+      .eq("user_id", user.id)
+      .limit(1);
+    const clubId: string | null = profileRows?.[0]?.club_id ?? null;
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
@@ -80,7 +93,21 @@ serve(async (req) => {
       mode: "subscription",
       success_url: `${origin}/payment-success`,
       cancel_url: `${origin}/priser`,
-      metadata: { tier, billingCycle, user_id: user.id, currency: checkoutCurrency },
+      metadata: {
+        tier,
+        billingCycle,
+        user_id: user.id,
+        currency: checkoutCurrency,
+        ...(clubId ? { club_id: clubId } : {}),
+      },
+      // Copied onto the subscription so customer.subscription.* events carry it too.
+      subscription_data: {
+        metadata: {
+          tier,
+          user_id: user.id,
+          ...(clubId ? { club_id: clubId } : {}),
+        },
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {

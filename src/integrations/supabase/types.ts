@@ -3386,6 +3386,27 @@ export type Database = {
           },
         ]
       }
+      stripe_webhook_events: {
+        Row: {
+          event_id: string
+          payload: Json | null
+          received_at: string
+          type: string | null
+        }
+        Insert: {
+          event_id: string
+          payload?: Json | null
+          received_at?: string
+          type?: string | null
+        }
+        Update: {
+          event_id?: string
+          payload?: Json | null
+          received_at?: string
+          type?: string | null
+        }
+        Relationships: []
+      }
       subscription_tiers: {
         Row: {
           all_modules: boolean

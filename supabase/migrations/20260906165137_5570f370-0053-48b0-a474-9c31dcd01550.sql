@@ -1,0 +1,1 @@
+GRANT SELECT ON public.stripe_webhook_events TO authenticated;

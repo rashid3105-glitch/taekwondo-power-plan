@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { tierForProduct } from "../_shared/stripeTiers.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -64,42 +65,14 @@ serve(async (req) => {
     let maxAthletes = 0;
 
     // Map Stripe product IDs to our internal tier + athlete cap.
-    // Current club licences + grandfathered legacy products.
-    const PRODUCT_TIER_MAP: Record<string, { tier: string; maxAthletes: number }> = {
-      // 2026 club licences (yearly, DKK)
-      prod_V5HoMRxckpTPcf: { tier: "club", maxAthletes: 50 },
-      prod_V5HoWT93Bfbukz: { tier: "club_plus", maxAthletes: 100 },
-      // Legacy (grandfathered)
-      prod_UQuIZRc7eLMmE0: { tier: "athlete", maxAthletes: 1 },
-      prod_UQuIKmqozCZzN0: { tier: "coach_solo", maxAthletes: 0 },
-      prod_UQuIXPiWckbl4r: { tier: "team_small", maxAthletes: 5 },
-      prod_UQuI9cf28z44Af: { tier: "team_medium", maxAthletes: 15 },
-      prod_UQuIQvV9maNhXb: { tier: "team_large", maxAthletes: 25 },
-      prod_UNmxepUc1kEm0x: { tier: "athlete", maxAthletes: 1 },
-      prod_UNmxvBF3VPxR8F: { tier: "athlete", maxAthletes: 1 },
-      prod_UNmxLjXYQZjVx8: { tier: "coach_solo", maxAthletes: 0 },
-      prod_UNmx6gu55G7X61: { tier: "coach_solo", maxAthletes: 0 },
-      prod_UNmxNDy5xrs57e: { tier: "team_small", maxAthletes: 5 },
-      prod_UNmxmSA5vcR8YF: { tier: "team_small", maxAthletes: 5 },
-      prod_UNmx2hMlzBk4lQ: { tier: "team_medium", maxAthletes: 15 },
-      prod_UNmxCljnNNwjAE: { tier: "team_medium", maxAthletes: 15 },
-      prod_UNmxTKbskuXAIB: { tier: "team_large", maxAthletes: 25 },
-      prod_UNmxyBA46pSNcK: { tier: "team_large", maxAthletes: 25 },
-    };
-
+    // Shared with stripe-webhook: see _shared/stripeTiers.ts
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       productId = subscription.items.data[0].price.product as string;
-      const mapped = PRODUCT_TIER_MAP[productId];
-      if (mapped) {
-        tier = mapped.tier;
-        maxAthletes = mapped.maxAthletes;
-      } else {
-        // Legacy fallback: assume single-athlete entitlement
-        tier = "athlete";
-        maxAthletes = 1;
-      }
+      const mapped = tierForProduct(productId);
+      tier = mapped.tier;
+      maxAthletes = mapped.maxAthletes;
     }
 
     // Sync payment_status in profiles
