@@ -181,6 +181,21 @@ export function GlobalAppMenu() {
     };
   }, [userId]);
 
+  // Badge: antal klubanalyser der endnu ikke er fulgt op (status "new").
+  useEffect(() => {
+    if (!isAdmin) { setNewAssessments(0); return; }
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from("club_assessments")
+        .select("id", { count: "exact", head: true })
+        .eq("followup_status", "new")
+        .is("archived_at", null);
+      if (!cancelled) setNewAssessments(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [isAdmin]);
+
   const hidden = authed !== true || shouldHide(pathname);
 
   useEffect(() => {
