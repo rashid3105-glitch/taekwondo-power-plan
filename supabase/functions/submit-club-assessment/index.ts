@@ -16,6 +16,23 @@ const json = (body: unknown, status = 200) =>
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// Testbesvarelser udløser ikke admin-notifikation.
+export function isTestEmail(raw: string): boolean {
+  const e = String(raw || '').trim().toLowerCase()
+  return (
+    e.endsWith('@sportstalent.dk') ||
+    e.includes('+test') ||
+    e.endsWith('@example.com') ||
+    e.endsWith('.example.com')
+  )
+}
+
+// Feature flag — standard TIL. Sæt CLUB_ASSESSMENT_NOTIFICATION_ENABLED=false
+// for at slå admin-notifikationen fra.
+function notificationEnabled(): boolean {
+  return (Deno.env.get('CLUB_ASSESSMENT_NOTIFICATION_ENABLED') || 'true').toLowerCase() !== 'false'
+}
+
 async function hashIp(ip: string): Promise<string> {
   const data = new TextEncoder().encode(`club-assessment:${ip}`)
   const digest = await crypto.subtle.digest('SHA-256', data)
@@ -102,6 +119,9 @@ Deno.serve(async (req) => {
     // Admin-notifikation med klubprofilen. Fejl logges og sluges.
     try {
       const row: any = updated[0]
+      if (!notificationEnabled() || isTestEmail(row.email)) {
+        return json({ success: true })
+      }
       await sendTemplateEmail('club-assessment-notification', '', {
         templateData: {
           assessmentId: row.id,
@@ -111,7 +131,7 @@ Deno.serve(async (req) => {
           role,
           level: row.level,
           scores: row.scores,
-          isTest: String(row.email || '').endsWith('@sportstalent.dk'),
+          isTest: false,
           adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${row.id}`,
         },
         idempotencyKey: `club-assessment-notification-profile-${row.id}`,
@@ -212,7 +232,10 @@ Deno.serve(async (req) => {
   // Admin-notifikation — helt uafhængig af respondentens rapportmail.
   // Fejl logges og sluges; må aldrig påvirke svaret til klienten.
   try {
-    const isTest = email.endsWith('@sportstalent.dk')
+    if (!notificationEnabled() || isTestEmail(email)) {
+      console.log('club-assessment admin notification skipped (test or disabled)')
+      return json({ success: true, id: data.id, token: profileToken })
+    }
     await sendTemplateEmail('club-assessment-notification', '', {
       templateData: {
         assessmentId: data.id,
@@ -222,7 +245,7 @@ Deno.serve(async (req) => {
         role: null,
         level,
         scores,
-        isTest,
+        isTest: false,
         adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${data.id}`,
       },
       idempotencyKey: `club-assessment-notification-${data.id}`,

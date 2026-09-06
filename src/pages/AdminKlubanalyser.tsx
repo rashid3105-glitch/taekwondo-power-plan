@@ -30,9 +30,32 @@ type Row = {
   questions_version: number | null;
   member_range: string | null;
   coach_range: string | null;
+  followup_status: string | null;
+  followup_note: string | null;
 };
 
-const isTestRow = (r: Row) => (r.email || "").toLowerCase().endsWith("@sportstalent.dk");
+const STATUSES = [
+  { value: "new", label: "Ny" },
+  { value: "contacted", label: "Kontaktet" },
+  { value: "declined", label: "Afvist" },
+  { value: "won", label: "Vundet" },
+] as const;
+
+const STATUS_ORDER: Record<string, number> = { new: 0, contacted: 1, won: 2, declined: 3 };
+
+const statusLabel = (v: string | null) =>
+  STATUSES.find((s) => s.value === (v || "new"))?.label ?? "Ny";
+
+// Samme regel som i submit-club-assessment: disse besvarelser er test.
+const isTestRow = (r: Row) => {
+  const e = (r.email || "").toLowerCase();
+  return (
+    e.endsWith("@sportstalent.dk") ||
+    e.includes("+test") ||
+    e.endsWith("@example.com") ||
+    e.endsWith(".example.com")
+  );
+};
 
 const maxDimFor = (r: Row) => ((r.questions_version ?? 1) >= 2 ? 12 : 9);
 
@@ -53,6 +76,32 @@ export default function AdminKlubanalyser() {
   const [showArchived, setShowArchived] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [hideTests, setHideTests] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [noteDraft, setNoteDraft] = useState<string>("");
+  const [savingNote, setSavingNote] = useState(false);
+
+  const setStatus = async (r: Row, value: string) => {
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, followup_status: value } : x)));
+    const { error } = await supabase
+      .from("club_assessments")
+      .update({ followup_status: value } as any)
+      .eq("id", r.id);
+    if (error) { toast.error("Kunne ikke gemme status: " + error.message); return; }
+    toast.success("Status gemt");
+  };
+
+  const saveNote = async (r: Row) => {
+    setSavingNote(true);
+    const { error } = await supabase
+      .from("club_assessments")
+      .update({ followup_note: noteDraft || null } as any)
+      .eq("id", r.id);
+    setSavingNote(false);
+    if (error) { toast.error("Kunne ikke gemme noten: " + error.message); return; }
+    setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, followup_note: noteDraft || null } : x)));
+    toast.success("Noten er gemt");
+  };
 
   const runAnalysis = async (r: Row) => {
     setAnalyzingId(r.id);
@@ -90,7 +139,7 @@ export default function AdminKlubanalyser() {
     (async () => {
       const { data, error } = await supabase
         .from("club_assessments")
-        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at, ai_analysis, ai_analysis_at, questions_version, member_range, coach_range")
+        .select("id, created_at, email, club_name, sport, role, level, scores, answers, subject_variant, report_sent_at, profile_completed_at, locale, archived_at, ai_analysis, ai_analysis_at, questions_version, member_range, coach_range, followup_status, followup_note")
         .order("created_at", { ascending: false });
       if (error) setError(error.message);
       setRows((data as any) ?? []);
@@ -103,10 +152,25 @@ export default function AdminKlubanalyser() {
     [rows, selectedId]
   );
 
+  useEffect(() => {
+    setNoteDraft(selected?.followup_note ?? "");
+  }, [selected?.id, selected?.followup_note]);
+
   const visibleRows = useMemo(
-    () => rows.filter((r) => (showArchived ? true : !r.archived_at)),
-    [rows, showArchived]
+    () =>
+      rows
+        .filter((r) => (showArchived ? true : !r.archived_at))
+        .filter((r) => (hideTests ? !isTestRow(r) : true))
+        .filter((r) => (statusFilter === "all" ? true : (r.followup_status || "new") === statusFilter))
+        .sort((a, b) => {
+          const d = (STATUS_ORDER[a.followup_status || "new"] ?? 0) - (STATUS_ORDER[b.followup_status || "new"] ?? 0);
+          if (d !== 0) return d;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        }),
+    [rows, showArchived, hideTests, statusFilter]
   );
+  const testCount = rows.filter(isTestRow).length;
+  const newCount = rows.filter((r) => !r.archived_at && (r.followup_status || "new") === "new").length;
   const archivedCount = rows.filter((r) => r.archived_at).length;
 
   const variantCounts = useMemo(() => {
@@ -149,7 +213,7 @@ export default function AdminKlubanalyser() {
             </div>
           )}
           <p className="mt-3 text-xs text-muted-foreground">
-            Åbnings- og klikdata registreres ikke af mailsystemet. A/B-testen kan i dag kun
+            Åbningsdata opsamles ikke — hverken åbninger eller klik registreres af mailsystemet. A/B-testen kan i dag kun
             aflæses på antal sendte mails pr. variant — ikke på effekt.
           </p>
         </div>
@@ -158,6 +222,20 @@ export default function AdminKlubanalyser() {
           <Button variant="outline" size="sm" onClick={() => setShowArchived((v) => !v)}>
             {showArchived ? "Skjul arkiverede" : `Vis arkiverede (${archivedCount})`}
           </Button>
+          <Button variant="outline" size="sm" onClick={() => setHideTests((v) => !v)}>
+            {hideTests ? `Vis test (${testCount})` : "Skjul test"}
+          </Button>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-9 rounded-md border border-border bg-background px-2 text-sm text-foreground"
+          >
+            <option value="all">Alle statusser</option>
+            {STATUSES.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
+            ))}
+          </select>
+          <Badge variant="outline" className="border-amber-500 text-amber-500">{newCount} nye</Badge>
         </div>
 
         {loading ? (
@@ -180,6 +258,7 @@ export default function AdminKlubanalyser() {
                   <th className="px-3 py-2 text-left">Svagest</th>
                   <th className="px-3 py-2 text-left">Variant</th>
                   <th className="px-3 py-2 text-left">Rapport</th>
+                  <th className="px-3 py-2 text-left">Status</th>
                   <th className="px-3 py-2 text-right">Arkiv</th>
                 </tr>
               </thead>
@@ -218,6 +297,17 @@ export default function AdminKlubanalyser() {
                             <MailX className="h-3.5 w-3.5" /> ikke sendt
                           </span>
                         )}
+                      </td>
+                      <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={r.followup_status || "new"}
+                          onChange={(e) => setStatus(r, e.target.value)}
+                          className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                        >
+                          {STATUSES.map((s) => (
+                            <option key={s.value} value={s.value}>{s.label}</option>
+                          ))}
+                        </select>
                       </td>
                       <td className="px-3 py-2 text-right">
                         <Button
@@ -268,6 +358,22 @@ export default function AdminKlubanalyser() {
 
             <h3 className="mt-4 text-sm font-semibold text-foreground">Profil</h3>
             <AssessmentRadar scores={selected.scores} max={maxDimFor(selected)} />
+
+            <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3">
+              <h3 className="text-sm font-semibold text-foreground">
+                Opfølgning — status: {statusLabel(selected.followup_status)}
+              </h3>
+              <textarea
+                value={noteDraft}
+                onChange={(e) => setNoteDraft(e.target.value)}
+                rows={3}
+                placeholder="Kort note om opfølgningen…"
+                className="no-print mt-2 w-full rounded-md border border-border bg-background p-2 text-sm text-foreground"
+              />
+              <Button size="sm" className="no-print mt-2" disabled={savingNote} onClick={() => saveNote(selected)}>
+                {savingNote ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Gem note
+              </Button>
+            </div>
 
             <h3 className="mt-4 text-sm font-semibold text-foreground">Dimensioner</h3>
             <ul className="mt-2 space-y-1">

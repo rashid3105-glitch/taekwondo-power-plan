@@ -132,6 +132,7 @@ export function GlobalAppMenu() {
   const [profile, setProfile] = useState<MiniProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
+  const [newAssessments, setNewAssessments] = useState(0);
   const isCoach = hasCoachRole;
   const isDemo = !!(profile?.is_demo && profile?.payment_status !== "paid");
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
@@ -179,6 +180,21 @@ export function GlobalAppMenu() {
       cancelled = true;
     };
   }, [userId]);
+
+  // Badge: antal klubanalyser der endnu ikke er fulgt op (status "new").
+  useEffect(() => {
+    if (!isAdmin) { setNewAssessments(0); return; }
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from("club_assessments")
+        .select("id", { count: "exact", head: true })
+        .eq("followup_status", "new")
+        .is("archived_at", null);
+      if (!cancelled) setNewAssessments(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [isAdmin]);
 
   const hidden = authed !== true || shouldHide(pathname);
 
@@ -442,17 +458,20 @@ export function GlobalAppMenu() {
                       { to: "/admin/hero", icon: ImageIcon, label: "Forsidebilleder", color: "text-tab-plan" },
                       { to: "/admin/announcements", icon: Megaphone, label: "Besked til brugere", color: "text-amber-500" },
                       { to: "/admin/stats", icon: BarChart3, label: t("adminStats"), color: "text-sky-400" },
-                      { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500" },
+                      { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500", badge: newAssessments },
 
 
-                    ].map((it) => (
+                    ].map((it: any) => (
                       <button
                         key={it.to}
                         onClick={() => goAndClose(it.to)}
                         className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
                       >
                         <it.icon className={`h-4 w-4 shrink-0 ${it.color}`} />
-                        <span className="truncate">{it.label}</span>
+                        <span className="flex-1 truncate text-left">{it.label}</span>
+                        {it.badge > 0 && (
+                          <Badge className="ml-auto bg-amber-500 text-black hover:bg-amber-500">{it.badge}</Badge>
+                        )}
                       </button>
                     ))}
                   </div>
