@@ -1,6 +1,8 @@
 project_id = "zklwergsziidgyxewbkw"
 
 [functions]
+  [functions.stripe-webhook]
+    verify_jwt = false
   [functions.account-deletion-dry-run]
     verify_jwt = true
   [functions.assessment-unsubscribe]
