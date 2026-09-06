@@ -119,6 +119,9 @@ Deno.serve(async (req) => {
     // Admin-notifikation med klubprofilen. Fejl logges og sluges.
     try {
       const row: any = updated[0]
+      if (!notificationEnabled() || isTestEmail(row.email)) {
+        return json({ success: true })
+      }
       await sendTemplateEmail('club-assessment-notification', '', {
         templateData: {
           assessmentId: row.id,
