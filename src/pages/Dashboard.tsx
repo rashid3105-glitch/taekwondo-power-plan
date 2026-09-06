@@ -22,7 +22,6 @@ import { AIPlanCard } from "@/components/AIPlanCard";
 import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import { Badge } from "@/components/ui/badge";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
-import { MedicalDocumentTranslator } from "@/components/MedicalDocumentTranslator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -1243,9 +1242,6 @@ export default function Dashboard() {
                 )}
               </div>
             )}
-
-            {/* Medical document translator */}
-            <MedicalDocumentTranslator />
 
             <Dialog open={!!rehabModal} onOpenChange={(o) => !o && setRehabModal(null)}>
               <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
