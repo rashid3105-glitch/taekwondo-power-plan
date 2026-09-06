@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { PulseFilter } from "./SquadPulse";
 import { ClubTeam, listClubTeams, listTeamMembers } from "@/lib/clubTeams";
+import { TrainingStatusRow, getLatestTrainingStatuses } from "@/lib/trainingStatus";
+import { TrainingStatusBadge } from "@/components/TrainingStatusCard";
 
 
 interface SquadRow {
@@ -160,6 +162,7 @@ export function SquadOverview({
   const { activeClubId } = useActiveClub();
   
   const [rows, setRows] = useState<SquadRow[]>([]);
+  const [trainingStatuses, setTrainingStatuses] = useState<Record<string, TrainingStatusRow>>({});
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<SortKey>("name");
   const [view, setView] = useState<ViewMode>("compact");
@@ -189,6 +192,11 @@ export function SquadOverview({
         : all
       ).map((r) => ({ ...r, club_name: metaMap.get(r.user_id) ?? null }));
       setRows(filtered);
+      try {
+        setTrainingStatuses(await getLatestTrainingStatuses(filtered.map((r) => r.user_id)));
+      } catch {
+        /* status is optional decoration */
+      }
     }
     setLoading(false);
   };
@@ -480,6 +488,11 @@ export function SquadOverview({
                         <p className="font-semibold text-sm text-card-foreground truncate">{r.display_name}</p>
                         {r.has_active_injury && <Heart className="h-3 w-3 text-destructive flex-shrink-0" />}
                       </div>
+                      {trainingStatuses[r.user_id] && (
+                        <div className="mt-1">
+                          <TrainingStatusBadge row={trainingStatuses[r.user_id]} />
+                        </div>
+                      )}
                       <p className="text-[11px] text-muted-foreground truncate mt-0.5">
                         {r.club_name || r.athlete_code || "—"}
                       </p>

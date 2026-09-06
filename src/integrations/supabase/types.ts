@@ -269,6 +269,39 @@ export type Database = {
           },
         ]
       }
+      athlete_training_status: {
+        Row: {
+          athlete_user_id: string
+          club_id: string | null
+          created_at: string
+          id: string
+          limitations: string | null
+          recorded_by: string
+          review_date: string | null
+          status: Database["public"]["Enums"]["training_status"]
+        }
+        Insert: {
+          athlete_user_id: string
+          club_id?: string | null
+          created_at?: string
+          id?: string
+          limitations?: string | null
+          recorded_by: string
+          review_date?: string | null
+          status: Database["public"]["Enums"]["training_status"]
+        }
+        Update: {
+          athlete_user_id?: string
+          club_id?: string | null
+          created_at?: string
+          id?: string
+          limitations?: string | null
+          recorded_by?: string
+          review_date?: string | null
+          status?: Database["public"]["Enums"]["training_status"]
+        }
+        Relationships: []
+      }
       athlete_week_technique_focus: {
         Row: {
           athlete_id: string
@@ -4989,6 +5022,7 @@ export type Database = {
       membership_status: "active" | "pending" | "removed"
       survey_question_type: "text" | "scale" | "mc" | "yesno"
       survey_target_scope: "club" | "selected"
+      training_status: "cleared" | "cleared_with_limits" | "not_cleared"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5121,6 +5155,7 @@ export const Constants = {
       membership_status: ["active", "pending", "removed"],
       survey_question_type: ["text", "scale", "mc", "yesno"],
       survey_target_scope: ["club", "selected"],
+      training_status: ["cleared", "cleared_with_limits", "not_cleared"],
     },
   },
 } as const

@@ -25,6 +25,7 @@ import { useMySportProfile } from "@/hooks/useMySportProfile";
 import { formatGrade } from "@/lib/sportGrade";
 import { CoachAthleteDetail } from "@/components/CoachAthleteDetail";
 import { AthleteOverviewTab } from "@/components/coach/AthleteOverviewTab";
+import { TrainingStatusCard } from "@/components/TrainingStatusCard";
 import { CoachDiaryView } from "@/components/coach/CoachDiaryView";
 import { SendReminderDialog } from "@/components/SendReminderDialog";
 import { CoachAvatarUpload } from "@/components/coach/CoachAvatarUpload";
@@ -379,6 +380,7 @@ export default function CoachAthleteOverview() {
 
 
           <TabsContent value="overview" className="space-y-4 mt-3">
+            {athleteId && <TrainingStatusCard athleteUserId={athleteId} coachHint />}
             <AthleteOverviewTab
               athleteId={athlete.user_id}
               athleteName={athlete.display_name}

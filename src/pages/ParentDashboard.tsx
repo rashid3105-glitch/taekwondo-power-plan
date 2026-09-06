@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { TrainingStatusCard } from "@/components/TrainingStatusCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -251,6 +252,8 @@ export default function ParentDashboard() {
                 {t("parentViewBadge")}
               </span>
             </Card>
+
+            <TrainingStatusCard athleteUserId={a.profile.user_id} />
 
             {/* Training plan */}
             <Card className="p-4 space-y-3">

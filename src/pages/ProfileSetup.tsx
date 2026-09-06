@@ -15,6 +15,7 @@ import type { Locale } from "@/i18n/translations";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { AccountDangerZone } from "@/components/AccountDangerZone";
 import { ParentInviteSection } from "@/components/ParentInviteSection";
+import { MyTrainingStatusCard } from "@/components/TrainingStatusCard";
 import { PasskeySettings } from "@/components/PasskeySettings";
 import { PublicProfileSettings } from "@/components/profile/PublicProfileSettings";
 import { Switch } from "@/components/ui/switch";
@@ -846,6 +847,10 @@ export default function ProfileSetup() {
 
         {step === 3 && (
           <>
+            <div className="mt-6">
+              <MyTrainingStatusCard />
+            </div>
+
             <div className="mt-6">
               <PublicProfileSettings />
             </div>
