@@ -93,7 +93,21 @@ serve(async (req) => {
       mode: "subscription",
       success_url: `${origin}/payment-success`,
       cancel_url: `${origin}/priser`,
-      metadata: { tier, billingCycle, user_id: user.id, currency: checkoutCurrency },
+      metadata: {
+        tier,
+        billingCycle,
+        user_id: user.id,
+        currency: checkoutCurrency,
+        ...(clubId ? { club_id: clubId } : {}),
+      },
+      // Copied onto the subscription so customer.subscription.* events carry it too.
+      subscription_data: {
+        metadata: {
+          tier,
+          user_id: user.id,
+          ...(clubId ? { club_id: clubId } : {}),
+        },
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
