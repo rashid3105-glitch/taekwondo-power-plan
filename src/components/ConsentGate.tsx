@@ -36,7 +36,6 @@ type State =
   | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
-  | { kind: "warn" }
   | { kind: "warn" };
 
 
