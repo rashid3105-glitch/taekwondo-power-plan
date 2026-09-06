@@ -36,8 +36,7 @@ type State =
   | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
-  | { kind: "warn" }
-  | { kind: "error" };
+  | { kind: "warn" };
 
 
 function fillPlaceholders(template: string, vars: Record<string, string>) {
@@ -69,21 +68,21 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       const uid = session.user.id;
 
       const [
-        { data: profile, error: profileErr },
-        { data: consent, error: consentErr },
+        { data: profileRows, error: profileErr },
+        { data: consentRows, error: consentErr },
         { data: parents, error: parentsErr },
       ] = await Promise.all([
         supabase
           .from("profiles")
           .select("role, active_role, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
           .eq("user_id", uid)
-          .maybeSingle(),
+          .limit(1),
         supabase
           .from("consent_records")
           .select("status, grace_until")
           .eq("athlete_id", uid)
           .eq("consent_type", "health_data_processing")
-          .maybeSingle(),
+          .limit(1),
         supabase
           .from("parent_athletes" as any)
           .select("id")
@@ -91,14 +90,19 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .limit(1),
       ]);
 
-      // An authorization/query failure is exactly the case that must close the
-      // gate: `{ data: null, error }` is never treated as "no row / not an
-      // athlete". Only "no error, no row" is a legitimate non-athlete.
+      const profile = (profileRows as any)?.[0] ?? null;
+      const consent = (consentRows as any)?.[0] ?? null;
+
+      // A query error here is an AVAILABILITY problem (expired token, offline,
+      // timeout, 5xx) — not an authorization problem. RLS denial on SELECT
+      // returns an empty list, never an error, so the gate cannot fail closed
+      // on RLS from the client. We therefore fail OPEN with a retry banner.
       if (profileErr || consentErr || parentsErr) {
-        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr);
-        setState({ kind: "error" });
+        console.warn("ConsentGate query error; failing open with warning:", profileErr || consentErr || parentsErr);
+        setState({ kind: "warn" });
         return;
       }
+
 
       const isAthlete =
         (profile as any)?.role === "athlete" ||
@@ -163,8 +167,6 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // Thrown errors here are availability problems (network, timeout,
       // consent-age lookup), not consent problems — fail OPEN: the app renders
       // with a warning banner and a retry, instead of a full-screen block.
-      // Authorization failures are surfaced as query `error` above and DO fail
-      // closed (kind: "error").
       console.warn("ConsentGate evaluation failed; failing open with warning:", e);
       setState({ kind: "warn" });
     }
@@ -430,30 +432,6 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (state.kind === "error") {
-    return (
-      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg p-6 space-y-5">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-6 w-6 text-amber-500" />
-            <h1 className="text-xl font-semibold">{t("consentCheckFailedTitle")}</h1>
-          </div>
-          <p className="text-sm leading-relaxed">{t("consentCheckFailedBody")}</p>
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => { setState({ kind: "loading" }); evaluate(); }}
-              className="w-full"
-            >
-              {t("consentCheckFailedRetry")}
-            </Button>
-            <Button onClick={logout} variant="ghost" className="w-full">
-              {t("selfConsentLogout")}
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   // Blocking
 
