@@ -191,6 +191,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         antidoping_course_date: antidopingDate || null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
+      // Age is derived from birth date (saved via SetBirthDateDialog) — no manual age input.
+
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
       if (weightKg) updates.weight_kg = Math.min(Math.max(parseFloat(weightKg), 20), 200);
 
@@ -365,21 +367,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
             }
           >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="space-y-1">
-                <Label className="text-xs">{t("age")}</Label>
-                <Input
-                  type="number"
-                  inputMode="numeric"
-                  min={5}
-                  max={99}
-                  value={age}
-                  onChange={(e) => setAge(e.target.value)}
-                  placeholder="—"
-                  className="h-9"
-                />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">{t("birthDate")}</Label>
+              <div className="space-y-1 col-span-2 sm:col-span-1">
+                <Label className="text-xs">
+                  {t("birthDate")}
+                  {age ? <span className="text-muted-foreground ml-1">({age} {t("age").toLowerCase()})</span> : null}
+                </Label>
+
                 <SetBirthDateDialog
                   athleteId={athlete.user_id}
                   athleteName={athlete.display_name}
