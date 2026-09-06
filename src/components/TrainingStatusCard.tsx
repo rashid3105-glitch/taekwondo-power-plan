@@ -231,3 +231,21 @@ export function TrainingStatusCard({ athleteUserId, canEdit = true, coachHint, c
     </Card>
   );
 }
+
+/** Convenience wrapper for the signed-in athlete's own profile page. */
+export function MyTrainingStatusCard({ className }: { className?: string }) {
+  const [uid, setUid] = useState<string | null>(null);
+  useEffect(() => {
+    let active = true;
+    import("@/integrations/supabase/client").then(({ supabase }) =>
+      supabase.auth.getUser().then(({ data }) => {
+        if (active) setUid(data.user?.id ?? null);
+      }),
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+  if (!uid) return null;
+  return <TrainingStatusCard athleteUserId={uid} className={className} />;
+}
