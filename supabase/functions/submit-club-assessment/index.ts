@@ -16,6 +16,23 @@ const json = (body: unknown, status = 200) =>
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+// Testbesvarelser udløser ikke admin-notifikation.
+export function isTestEmail(raw: string): boolean {
+  const e = String(raw || '').trim().toLowerCase()
+  return (
+    e.endsWith('@sportstalent.dk') ||
+    e.includes('+test') ||
+    e.endsWith('@example.com') ||
+    e.endsWith('.example.com')
+  )
+}
+
+// Feature flag — standard TIL. Sæt CLUB_ASSESSMENT_NOTIFICATION_ENABLED=false
+// for at slå admin-notifikationen fra.
+function notificationEnabled(): boolean {
+  return (Deno.env.get('CLUB_ASSESSMENT_NOTIFICATION_ENABLED') || 'true').toLowerCase() !== 'false'
+}
+
 async function hashIp(ip: string): Promise<string> {
   const data = new TextEncoder().encode(`club-assessment:${ip}`)
   const digest = await crypto.subtle.digest('SHA-256', data)
