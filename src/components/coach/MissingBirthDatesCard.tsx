@@ -35,7 +35,7 @@ export function MissingBirthDatesCard() {
         return;
       }
       const missing = ((data as any[]) || [])
-        .filter((m) => !m.is_coach && (m.age === null || m.age === undefined))
+        .filter((m) => !m.is_coach && !m.birth_date)
         .map((m) => ({ user_id: m.user_id, display_name: m.display_name }));
       setRows(missing);
       setOpen(missing.length <= 3);
