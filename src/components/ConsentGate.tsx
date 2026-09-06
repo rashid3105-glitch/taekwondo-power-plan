@@ -37,7 +37,7 @@ type State =
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
   | { kind: "warn" }
-  | { kind: "error" };
+  | { kind: "warn" };
 
 
 function fillPlaceholders(template: string, vars: Record<string, string>) {
@@ -168,8 +168,6 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // Thrown errors here are availability problems (network, timeout,
       // consent-age lookup), not consent problems — fail OPEN: the app renders
       // with a warning banner and a retry, instead of a full-screen block.
-      // Authorization failures are surfaced as query `error` above and DO fail
-      // closed (kind: "error").
       console.warn("ConsentGate evaluation failed; failing open with warning:", e);
       setState({ kind: "warn" });
     }
@@ -435,30 +433,6 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (state.kind === "error") {
-    return (
-      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg p-6 space-y-5">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-6 w-6 text-amber-500" />
-            <h1 className="text-xl font-semibold">{t("consentCheckFailedTitle")}</h1>
-          </div>
-          <p className="text-sm leading-relaxed">{t("consentCheckFailedBody")}</p>
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={() => { setState({ kind: "loading" }); evaluate(); }}
-              className="w-full"
-            >
-              {t("consentCheckFailedRetry")}
-            </Button>
-            <Button onClick={logout} variant="ghost" className="w-full">
-              {t("selfConsentLogout")}
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   // Blocking
 
