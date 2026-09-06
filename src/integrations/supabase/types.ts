@@ -4835,6 +4835,7 @@ export type Database = {
           athlete_code: string
           avatar_url: string
           belt_level: string
+          birth_date: string
           club_id: string
           country: string
           current_injury: string
