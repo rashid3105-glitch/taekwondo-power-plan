@@ -41,5 +41,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'coach-invite-admin-notification': coachInviteAdminNotification,
   'compliance-alert': complianceAlert,
   'club-assessment-notification': clubAssessmentNotification,
+  'stripe-subscription-notification': stripeSubscriptionNotification,
 }
 
