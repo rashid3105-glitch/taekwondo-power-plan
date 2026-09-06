@@ -368,8 +368,11 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
           >
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="space-y-1 col-span-2 sm:col-span-1">
+                <Label className="text-xs">
+                  {t("birthDate")}
+                  {age ? <span className="text-muted-foreground ml-1">({age} {t("age").toLowerCase()})</span> : null}
+                </Label>
 
-                <Label className="text-xs">{t("birthDate")}</Label>
                 <SetBirthDateDialog
                   athleteId={athlete.user_id}
                   athleteName={athlete.display_name}
