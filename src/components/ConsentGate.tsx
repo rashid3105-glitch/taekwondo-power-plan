@@ -36,6 +36,7 @@ type State =
   | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
+  | { kind: "warn" }
   | { kind: "error" };
 
 
@@ -67,7 +68,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       }
       const uid = session.user.id;
 
-      const [{ data: profile }, { data: consent }, { data: parents }] = await Promise.all([
+      const [
+        { data: profile, error: profileErr },
+        { data: consent, error: consentErr },
+        { data: parents, error: parentsErr },
+      ] = await Promise.all([
         supabase
           .from("profiles")
           .select("role, active_role, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
@@ -85,6 +90,15 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .eq("athlete_id", uid)
           .limit(1),
       ]);
+
+      // An authorization/query failure is exactly the case that must close the
+      // gate: `{ data: null, error }` is never treated as "no row / not an
+      // athlete". Only "no error, no row" is a legitimate non-athlete.
+      if (profileErr || consentErr || parentsErr) {
+        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr);
+        setState({ kind: "error" });
+        return;
+      }
 
       const isAthlete =
         (profile as any)?.role === "athlete" ||
@@ -146,11 +160,13 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       setState({ kind: "blocking", clubName });
 
     } catch (e) {
-      // Fail closed — consent status could not be confirmed, so protected
-      // features stay unavailable until it can be. Public routes are still
-      // rendered untouched below.
-      console.warn("ConsentGate evaluation failed; failing closed:", e);
-      setState({ kind: "error" });
+      // Thrown errors here are availability problems (network, timeout,
+      // consent-age lookup), not consent problems — fail OPEN: the app renders
+      // with a warning banner and a retry, instead of a full-screen block.
+      // Authorization failures are surfaced as query `error` above and DO fail
+      // closed (kind: "error").
+      console.warn("ConsentGate evaluation failed; failing open with warning:", e);
+      setState({ kind: "warn" });
     }
   }, []);
 
@@ -348,27 +364,69 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
 
   if (state.kind === "needsBirthDate") {
     return (
-      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg p-6 space-y-5">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-semibold">{t("consentNeedBirthDateTitle")}</h1>
+      <>
+        {!bannerDismissed && (
+          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
+            <div className="max-w-5xl mx-auto px-3 py-2 space-y-2 text-sm">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+                <span className="flex-1 text-amber-900 dark:text-amber-100">
+                  {t("consentBirthDateBannerText")}
+                </span>
+                <button
+                  onClick={() => setBannerDismissed(true)}
+                  className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
+                  aria-label="Dismiss"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <BirthDatePicker value={birthDate} onChange={setBirthDate} />
+                </div>
+                <Button size="sm" onClick={saveBirthDate} disabled={submitting || !birthDate}>
+                  {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : t("consentBirthDateBannerCta")}
+                </Button>
+              </div>
+              {error && <div className="text-xs text-destructive">{error}</div>}
+            </div>
           </div>
-          <p className="text-sm leading-relaxed">{t("consentNeedBirthDateBody")}</p>
+        )}
+        {children}
+      </>
+    );
+  }
 
-          <BirthDatePicker value={birthDate} onChange={setBirthDate} />
-
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <div className="flex flex-col gap-2">
-            <Button onClick={saveBirthDate} disabled={submitting || !birthDate} className="w-full">
-              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("consentNeedBirthDateCta")}
-            </Button>
-            <Button onClick={logout} variant="ghost" className="w-full">
-              {t("selfConsentLogout")}
-            </Button>
+  if (state.kind === "warn") {
+    return (
+      <>
+        {!bannerDismissed && (
+          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
+            <div className="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3 text-sm">
+              <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+              <span className="flex-1 text-amber-900 dark:text-amber-100">
+                {t("consentWarnBannerText")}
+              </span>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => { setState({ kind: "loading" }); evaluate(); }}
+              >
+                {t("consentWarnBannerRetry")}
+              </Button>
+              <button
+                onClick={() => setBannerDismissed(true)}
+                className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
+                aria-label="Dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-        </Card>
-      </div>
+        )}
+        {children}
+      </>
     );
   }
 
