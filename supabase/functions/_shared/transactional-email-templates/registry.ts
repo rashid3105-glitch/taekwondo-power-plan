@@ -23,6 +23,7 @@ import { template as blogCommentVerification } from './blog-comment-verification
 import { template as coachInviteAdminNotification } from './coach-invite-admin-notification.tsx'
 import { template as complianceAlert } from './compliance-alert.tsx'
 import { template as clubAssessmentNotification } from './club-assessment-notification.tsx'
+import { template as stripeSubscriptionNotification } from './stripe-subscription-notification.tsx'
 
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
