@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.prepare_training_status() FROM PUBLIC, anon, authenticated;
