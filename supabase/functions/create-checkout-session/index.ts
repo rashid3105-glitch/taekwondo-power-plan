@@ -47,6 +47,19 @@ serve(async (req) => {
     const priceId = PRICE_IDS[tier][billingCycle];
     const checkoutCurrency = "dkk";
 
+    // The webhook needs club_id to activate the licence.
+    const supabaseAsUser = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: `Bearer ${token}` } }, auth: { persistSession: false } }
+    );
+    const { data: profileRows } = await supabaseAsUser
+      .from("profiles")
+      .select("club_id")
+      .eq("user_id", user.id)
+      .limit(1);
+    const clubId: string | null = profileRows?.[0]?.club_id ?? null;
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
