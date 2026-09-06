@@ -152,6 +152,10 @@ export default function AdminKlubanalyser() {
     [rows, selectedId]
   );
 
+  useEffect(() => {
+    setNoteDraft(selected?.followup_note ?? "");
+  }, [selected?.id, selected?.followup_note]);
+
   const visibleRows = useMemo(
     () =>
       rows
@@ -209,7 +213,7 @@ export default function AdminKlubanalyser() {
             </div>
           )}
           <p className="mt-3 text-xs text-muted-foreground">
-            Åbnings- og klikdata registreres ikke af mailsystemet. A/B-testen kan i dag kun
+            Åbningsdata opsamles ikke — hverken åbninger eller klik registreres af mailsystemet. A/B-testen kan i dag kun
             aflæses på antal sendte mails pr. variant — ikke på effekt.
           </p>
         </div>
