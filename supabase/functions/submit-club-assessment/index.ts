@@ -131,7 +131,7 @@ Deno.serve(async (req) => {
           role,
           level: row.level,
           scores: row.scores,
-          isTest: String(row.email || '').endsWith('@sportstalent.dk'),
+          isTest: false,
           adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${row.id}`,
         },
         idempotencyKey: `club-assessment-notification-profile-${row.id}`,
@@ -232,7 +232,10 @@ Deno.serve(async (req) => {
   // Admin-notifikation — helt uafhængig af respondentens rapportmail.
   // Fejl logges og sluges; må aldrig påvirke svaret til klienten.
   try {
-    const isTest = email.endsWith('@sportstalent.dk')
+    if (!notificationEnabled() || isTestEmail(email)) {
+      console.log('club-assessment admin notification skipped (test or disabled)')
+      return json({ success: true, id: data.id, token: profileToken })
+    }
     await sendTemplateEmail('club-assessment-notification', '', {
       templateData: {
         assessmentId: data.id,
@@ -242,7 +245,7 @@ Deno.serve(async (req) => {
         role: null,
         level,
         scores,
-        isTest,
+        isTest: false,
         adminUrl: `https://sportstalent.dk/admin/klubanalyser?id=${data.id}`,
       },
       idempotencyKey: `club-assessment-notification-${data.id}`,
