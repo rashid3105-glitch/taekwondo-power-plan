@@ -191,6 +191,8 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
         antidoping_course_date: antidopingDate || null,
       };
       if (age) updates.age = Math.min(Math.max(parseInt(age), 5), 99);
+      // Age is derived from birth date (saved via SetBirthDateDialog) — no manual age input.
+
       if (experienceYears) updates.experience_years = Math.min(Math.max(parseInt(experienceYears), 0), 50);
       if (weightKg) updates.weight_kg = Math.min(Math.max(parseFloat(weightKg), 20), 200);
 
