@@ -641,6 +641,8 @@ export type Database = {
           consent: boolean
           created_at: string
           email: string
+          followup_note: string | null
+          followup_status: string
           id: string
           ip_hash: string | null
           level: number | null
@@ -667,6 +669,8 @@ export type Database = {
           consent: boolean
           created_at?: string
           email: string
+          followup_note?: string | null
+          followup_status?: string
           id?: string
           ip_hash?: string | null
           level?: number | null
@@ -693,6 +697,8 @@ export type Database = {
           consent?: boolean
           created_at?: string
           email?: string
+          followup_note?: string | null
+          followup_status?: string
           id?: string
           ip_hash?: string | null
           level?: number | null
