@@ -60,7 +60,9 @@ serve(async (req) => {
     { auth: { persistSession: false } }
   );
 
-  // Idempotency: Stripe re-sends events.
+  // Idempotency: Stripe re-sends events. Only an event that was processed
+  // successfully (processed_at set) counts as a duplicate — a stored but failed
+  // event must be replayable.
   const { error: insertError } = await supabase.from("stripe_webhook_events").insert({
     event_id: event.id,
     type: event.type,
@@ -68,22 +70,35 @@ serve(async (req) => {
   });
   if (insertError) {
     if (insertError.code === "23505") {
-      log("Duplicate event ignored", { id: event.id, type: event.type });
-      return new Response(JSON.stringify({ received: true, duplicate: true }), {
-        status: 200,
+      const { data: existing } = await supabase
+        .from("stripe_webhook_events")
+        .select("processed_at")
+        .eq("event_id", event.id)
+        .maybeSingle();
+      if (existing?.processed_at) {
+        log("Duplicate event ignored", { id: event.id, type: event.type });
+        return new Response(JSON.stringify({ received: true, duplicate: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      log("Replaying previously failed event", { id: event.id, type: event.type });
+    } else {
+      console.error("[STRIPE-WEBHOOK] Failed to store event:", insertError.message);
+      // Ask Stripe to retry — we could not persist the event.
+      return new Response(JSON.stringify({ error: "storage failed" }), {
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    console.error("[STRIPE-WEBHOOK] Failed to store event:", insertError.message);
-    // Ask Stripe to retry — we could not persist the event.
-    return new Response(JSON.stringify({ error: "storage failed" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   }
 
   if (!HANDLED.has(event.type)) {
     log("Unhandled event type", { type: event.type });
+    await supabase
+      .from("stripe_webhook_events")
+      .update({ processed_at: new Date().toISOString(), error: null })
+      .eq("event_id", event.id);
     return new Response(JSON.stringify({ received: true }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -93,11 +108,17 @@ serve(async (req) => {
   // From here on: always answer 200, log failures.
   try {
     await handleEvent(event, stripe, supabase);
+    await supabase
+      .from("stripe_webhook_events")
+      .update({ processed_at: new Date().toISOString(), error: null })
+      .eq("event_id", event.id);
   } catch (err) {
-    console.error(
-      `[STRIPE-WEBHOOK] Processing failed for ${event.type} (${event.id}):`,
-      err instanceof Error ? err.message : String(err)
-    );
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[STRIPE-WEBHOOK] Processing failed for ${event.type} (${event.id}):`, message);
+    await supabase
+      .from("stripe_webhook_events")
+      .update({ processed_at: null, error: message.slice(0, 2000) })
+      .eq("event_id", event.id);
   }
 
   return new Response(JSON.stringify({ received: true }), {
@@ -105,6 +126,24 @@ serve(async (req) => {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
+
+/** Stripe moved current_period_end from the subscription to the subscription item. */
+function periodEndIso(subscription: Stripe.Subscription | null | undefined): string | null {
+  if (!subscription) return null;
+  const raw =
+    (subscription.items?.data?.[0] as { current_period_end?: number } | undefined)?.current_period_end ??
+    (subscription as unknown as { current_period_end?: number }).current_period_end;
+  if (typeof raw !== "number" || !Number.isFinite(raw) || raw <= 0) {
+    console.warn(`[STRIPE-WEBHOOK] Missing current_period_end for subscription ${subscription.id}`);
+    return null;
+  }
+  const date = new Date(raw * 1000);
+  if (Number.isNaN(date.getTime())) {
+    console.warn(`[STRIPE-WEBHOOK] Invalid current_period_end (${raw}) for subscription ${subscription.id}`);
+    return null;
+  }
+  return date.toISOString();
+}
 
 type Supa = ReturnType<typeof createClient>;
 
@@ -249,7 +288,7 @@ async function handleEvent(event: Stripe.Event, stripe: Stripe, supabase: Supa) 
         customerId,
         subscriptionId,
         status: "active",
-        currentPeriodEnd: subscription ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+        currentPeriodEnd: periodEndIso(subscription),
         cancelAtPeriodEnd: subscription?.cancel_at_period_end ?? false,
       });
 
@@ -284,7 +323,7 @@ async function handleEvent(event: Stripe.Event, stripe: Stripe, supabase: Supa) 
           customerId,
           subscriptionId: subscription.id,
           status,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000).toISOString(),
+          currentPeriodEnd: periodEndIso(subscription),
           cancelAtPeriodEnd: subscription.cancel_at_period_end,
         });
         await notifyAdmin({
