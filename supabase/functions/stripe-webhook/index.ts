@@ -250,13 +250,15 @@ async function activate(
   if (clubId) {
     const update: Record<string, unknown> = { license_active: true };
     if (maxAthletes >= 5) update.max_athletes = maxAthletes;
-    await supabase.from("clubs").update(update).eq("id", clubId);
+    const { error: clubError } = await supabase.from("clubs").update(update).eq("id", clubId);
+    if (clubError) throw new Error(`club licence update failed: ${clubError.message}`);
     // Same pattern as check-subscription: paid state follows the licence.
     await supabase
       .from("profiles")
       .update({ payment_status: "paid", payment_date: new Date().toISOString().split("T")[0] })
       .eq("club_id", clubId);
     log("Club licensed", { clubId, tier, maxAthletes });
+
   } else {
     log("No club_id in metadata — licence not activated");
   }
