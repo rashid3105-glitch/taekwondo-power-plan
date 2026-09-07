@@ -224,7 +224,7 @@ async function activate(
   const { userId, clubId, tier, maxAthletes } = opts;
 
   if (userId) {
-    await supabase.from("subscriptions").upsert(
+    const { error: subError } = await supabase.from("subscriptions").upsert(
       {
         user_id: userId,
         tier_id: tier,
@@ -236,24 +236,29 @@ async function activate(
       },
       { onConflict: "user_id" }
     );
-    await supabase
+    if (subError) throw new Error(`subscriptions upsert failed: ${subError.message}`);
+    const { error: profileError } = await supabase
       .from("profiles")
       .update({ payment_status: "paid", payment_date: new Date().toISOString().split("T")[0] })
       .eq("user_id", userId);
+    if (profileError) throw new Error(`profile update failed: ${profileError.message}`);
   } else {
     log("No user_id resolved — subscriptions row not written");
   }
 
+
   if (clubId) {
     const update: Record<string, unknown> = { license_active: true };
     if (maxAthletes >= 5) update.max_athletes = maxAthletes;
-    await supabase.from("clubs").update(update).eq("id", clubId);
+    const { error: clubError } = await supabase.from("clubs").update(update).eq("id", clubId);
+    if (clubError) throw new Error(`club licence update failed: ${clubError.message}`);
     // Same pattern as check-subscription: paid state follows the licence.
     await supabase
       .from("profiles")
       .update({ payment_status: "paid", payment_date: new Date().toISOString().split("T")[0] })
       .eq("club_id", clubId);
     log("Club licensed", { clubId, tier, maxAthletes });
+
   } else {
     log("No club_id in metadata — licence not activated");
   }
