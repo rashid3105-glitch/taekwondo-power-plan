@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { AlertTriangle, MessageCircle, ShieldAlert, IdCard, UserX, Loader2, ChevronRight } from "lucide-react";
 
 interface Props {
@@ -20,6 +21,7 @@ interface Row {
 export function CoachTriage({ athletes }: Props) {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [rows, setRows] = useState<Row[] | null>(null);
 
   useEffect(() => {
@@ -42,23 +44,31 @@ export function CoachTriage({ athletes }: Props) {
       let expiring = 0;
       let inactive = 0;
 
+      // Consent count must match the Consents page exactly: club members whose
+      // consent record is not granted (missing or pending).
+      if (activeClubId) {
+        const { data: members } = await supabase.rpc("get_club_member_profiles", { _club_id: activeClubId });
+        const memberIds = ((members as any[]) || []).filter((m) => !m.is_coach).map((m) => m.user_id);
+        if (memberIds.length) {
+          const { data: consents } = await supabase
+            .from("consent_records")
+            .select("athlete_id, status")
+            .eq("club_id", activeClubId)
+            .eq("consent_type", "health_data_processing");
+          const granted = new Set(
+            ((consents as any[]) || []).filter((c) => c.status === "granted").map((c) => c.athlete_id),
+          );
+          missingConsent = memberIds.filter((id) => !granted.has(id)).length;
+        }
+      }
+
       if (ids.length) {
         const { data: profs } = await supabase
           .from("profiles")
-          .select("user_id, birth_date, guardian_email, gal_license_expires_at, myfightbook_expires_at")
+          .select("user_id, gal_license_expires_at, myfightbook_expires_at")
           .in("user_id", ids);
 
-        const { data: links } = await supabase
-          .from("parent_athletes")
-          .select("athlete_id")
-          .in("athlete_id", ids);
-        const linked = new Set(((links as any[]) || []).map((l) => l.athlete_id));
-
         for (const p of ((profs as any[]) || [])) {
-          if (p.birth_date) {
-            const age = Math.floor((today.getTime() - new Date(p.birth_date).getTime()) / (365.25 * 86400000));
-            if (age < 18 && !linked.has(p.user_id)) missingConsent++;
-          }
           for (const d of [p.gal_license_expires_at, p.myfightbook_expires_at]) {
             if (d && d >= todayStr && d <= in30) expiring++;
           }
@@ -76,13 +86,13 @@ export function CoachTriage({ athletes }: Props) {
       if (cancelled) return;
       setRows([
         { key: "msg", count: unread, label: t("coachTriageUnread"), icon: MessageCircle, to: "/messages" },
-        { key: "consent", count: missingConsent, label: t("coachTriageConsent"), icon: ShieldAlert, to: "/coach" },
+        { key: "consent", count: missingConsent, label: t("coachTriageConsent"), icon: ShieldAlert, to: "/coach/consents" },
         { key: "lic", count: expiring, label: t("coachTriageLicense"), icon: IdCard, to: "/library/reports" },
         { key: "inactive", count: inactive, label: t("coachTriageInactive"), icon: UserX, to: "/coach" },
       ]);
     })();
     return () => { cancelled = true; };
-  }, [athletes, t]);
+  }, [athletes, t, activeClubId]);
 
   const visible = (rows || []).filter((r) => r.count > 0);
   const total = visible.reduce((s, r) => s + r.count, 0);
