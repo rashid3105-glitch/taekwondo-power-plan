@@ -3421,20 +3421,26 @@ export type Database = {
       }
       stripe_webhook_events: {
         Row: {
+          error: string | null
           event_id: string
           payload: Json | null
+          processed_at: string | null
           received_at: string
           type: string | null
         }
         Insert: {
+          error?: string | null
           event_id: string
           payload?: Json | null
+          processed_at?: string | null
           received_at?: string
           type?: string | null
         }
         Update: {
+          error?: string | null
           event_id?: string
           payload?: Json | null
+          processed_at?: string | null
           received_at?: string
           type?: string | null
         }
