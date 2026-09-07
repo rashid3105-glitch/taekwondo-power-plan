@@ -91,6 +91,7 @@ serve(async (req) => {
       currency: checkoutCurrency,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
+      allow_promotion_codes: true,
       success_url: `${origin}/payment-success`,
       cancel_url: `${origin}/priser`,
       metadata: {
