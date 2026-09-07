@@ -288,7 +288,7 @@ async function handleEvent(event: Stripe.Event, stripe: Stripe, supabase: Supa) 
         customerId,
         subscriptionId,
         status: "active",
-        currentPeriodEnd: subscription ? new Date(subscription.current_period_end * 1000).toISOString() : null,
+        currentPeriodEnd: periodEndIso(subscription),
         cancelAtPeriodEnd: subscription?.cancel_at_period_end ?? false,
       });
 
@@ -323,7 +323,7 @@ async function handleEvent(event: Stripe.Event, stripe: Stripe, supabase: Supa) 
           customerId,
           subscriptionId: subscription.id,
           status,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000).toISOString(),
+          currentPeriodEnd: periodEndIso(subscription),
           cancelAtPeriodEnd: subscription.cancel_at_period_end,
         });
         await notifyAdmin({
