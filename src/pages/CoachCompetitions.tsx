@@ -347,19 +347,24 @@ export default function CoachCompetitions() {
   const addAthleteToComp = async (group: CompGroup, athleteId: string) => {
     setAddingId(athleteId);
     try {
-      const { data, error } = await supabase.from("competitions").insert({
-        user_id: athleteId,
-        name: group.name,
-        event_date: group.event_date,
-        location: group.location,
-        priority: group.priority,
-        result: null,
-        invitation_pdf_url: group.invitation_pdf_url,
-        ...(activeClubId ? { club_id: activeClubId } : {}),
-      } as any).select("id").single();
-      if (error) throw error;
+      // Service-role edge function (same path as bulk creation) — a direct
+      // client insert is blocked by RLS whenever the athlete's club is only
+      // recorded via club_memberships.
+      const { data, error } = await supabase.functions.invoke("create-athlete-competitions-bulk", {
+        body: {
+          athlete_ids: [athleteId],
+          name: group.name,
+          event_date: group.event_date,
+          location: group.location,
+          priority: group.priority,
+          invitation_pdf_url: group.invitation_pdf_url,
+        },
+      });
+      const res = data as any;
+      if (error || res?.error) throw new Error(res?.error || error?.message);
+      if (res?.failed?.length) throw new Error(res.failed[0].error);
       const athleteName = myAthletes.find(a => a.user_id === athleteId)?.display_name || "—";
-      const newId = (data as any)?.id || crypto.randomUUID();
+      const newId = res?.created?.[0]?.competition_id || crypto.randomUUID();
       setComps(prev => [...prev, { id: newId, name: group.name, event_date: group.event_date, location: group.location, user_id: athleteId, athlete_name: athleteName, priority: group.priority, result: null, invitation_pdf_url: group.invitation_pdf_url }]);
       setOpenGroup(prev => prev ? { ...prev, participants: [...prev.participants, { user_id: athleteId, athlete_name: athleteName, result: null }] } : prev);
     } catch (e: any) {
