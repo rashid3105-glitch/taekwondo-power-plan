@@ -417,6 +417,13 @@ Deno.serve(async (req) => {
         .eq("user_id", athleteId)
         .eq("status", "active");
       const athleteClubs = new Set((athleteMemberships || []).map((m: any) => m.club_id));
+      // Fallback: some athletes have a club on their profile but no membership row yet.
+      const { data: athleteProfile } = await admin
+        .from("profiles")
+        .select("club_id")
+        .eq("user_id", athleteId)
+        .maybeSingle();
+      if (athleteProfile?.club_id) athleteClubs.add(athleteProfile.club_id);
       if (!effectiveClubIds.some((cid) => athleteClubs.has(cid))) {
         return jsonResponse({ error: "forbidden" }, 403);
       }
