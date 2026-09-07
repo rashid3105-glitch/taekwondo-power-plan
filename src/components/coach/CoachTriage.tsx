@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { AlertTriangle, MessageCircle, ShieldAlert, IdCard, UserX, Loader2, ChevronRight } from "lucide-react";
 
 interface Props {
@@ -20,6 +21,7 @@ interface Row {
 export function CoachTriage({ athletes }: Props) {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const { activeClubId } = useActiveClub();
   const [rows, setRows] = useState<Row[] | null>(null);
 
   useEffect(() => {
@@ -84,13 +86,13 @@ export function CoachTriage({ athletes }: Props) {
       if (cancelled) return;
       setRows([
         { key: "msg", count: unread, label: t("coachTriageUnread"), icon: MessageCircle, to: "/messages" },
-        { key: "consent", count: missingConsent, label: t("coachTriageConsent"), icon: ShieldAlert, to: "/coach" },
+        { key: "consent", count: missingConsent, label: t("coachTriageConsent"), icon: ShieldAlert, to: "/coach/consents" },
         { key: "lic", count: expiring, label: t("coachTriageLicense"), icon: IdCard, to: "/library/reports" },
         { key: "inactive", count: inactive, label: t("coachTriageInactive"), icon: UserX, to: "/coach" },
       ]);
     })();
     return () => { cancelled = true; };
-  }, [athletes, t]);
+  }, [athletes, t, activeClubId]);
 
   const visible = (rows || []).filter((r) => r.count > 0);
   const total = visible.reduce((s, r) => s + r.count, 0);
