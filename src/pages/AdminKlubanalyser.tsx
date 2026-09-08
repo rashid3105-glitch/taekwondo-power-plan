@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, FileDown } from "lucide-react";
+import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, FileDown, Clock, XCircle, CheckCircle2, type LucideIcon } from "lucide-react";
 import { downloadClubAssessmentDocx } from "@/lib/clubAssessmentDocx";
 import { toast } from "sonner";
 import { format } from "date-fns";
