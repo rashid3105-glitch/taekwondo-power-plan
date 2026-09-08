@@ -70,7 +70,8 @@ interface PendingUser {
 export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
-  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number; sport?: string }[]>([]);
+  const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number; sport?: string; license_active?: boolean }[]>([]);
+  const [licenseFilter, setLicenseFilter] = useState<"active" | "inactive" | "all">("active");
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -156,7 +157,7 @@ export default function AdminApproval() {
         .order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
       supabase.from("coach_athletes").select("coach_id, athlete_id"),
-      supabase.from("clubs" as any).select("id, name, max_athletes, sport").order("name"),
+      supabase.from("clubs" as any).select("id, name, max_athletes, sport, license_active").order("name"),
     ]);
 
     if (emailsRes.error) {
@@ -188,7 +189,7 @@ export default function AdminApproval() {
     const plans = (plansRes.data || []) as (UserPlan & { user_id: string })[];
     const roles = (rolesRes.data || []) as { user_id: string; role: string }[];
     const coachAthleteLinks = (coachAthletesRes.data || []) as { coach_id: string; athlete_id: string }[];
-    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number; sport?: string }[] | null) ?? []);
+    const clubsList = ((clubsRes.data as unknown as { id: string; name: string; max_athletes: number; sport?: string; license_active?: boolean }[] | null) ?? []);
     setClubs(clubsList);
     const clubMap = new Map<string, string>(clubsList.map((club) => [club.id, club.name]));
     const clubSportMap = new Map<string, string>(clubsList.map((club) => [club.id, club.sport || "taekwondo"]));
@@ -525,8 +526,19 @@ export default function AdminApproval() {
   const demoCount = users.filter(u => u.is_demo).length;
   const coachCount = users.filter(u => u.isCoach).length;
 
+  // Licence lookup — unlicensed clubs stay findable, they are the sales pipeline.
+  const licenseByClub = new Map(clubs.map((c) => [c.id, c.license_active === true]));
+  const matchesLicense = (clubId: string | null | undefined, mode: "active" | "inactive" | "all") => {
+    if (mode === "all") return true;
+    if (!clubId) return mode === "active";
+    return licenseByClub.get(clubId) === (mode === "active");
+  };
+  const licensedUserCount = users.filter(u => matchesLicense(u.club_id, "active")).length;
+  const unlicensedUserCount = users.filter(u => matchesLicense(u.club_id, "inactive")).length;
+
   // Filter & search
   const filteredUsers = users.filter(u => {
+    if (!matchesLicense(u.club_id, licenseFilter)) return false;
     const q = searchQuery.toLowerCase();
     const matchesSearch = !q || 
       (u.display_name || "").toLowerCase().includes(q) || 
@@ -1099,6 +1111,16 @@ export default function AdminApproval() {
               {clubs.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select value={licenseFilter} onValueChange={(v) => setLicenseFilter(v as any)}>
+            <SelectTrigger className="w-full sm:w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">{t("licenseFilterActive")} ({licensedUserCount})</SelectItem>
+              <SelectItem value="inactive">{t("licenseFilterInactive")} ({unlicensedUserCount})</SelectItem>
+              <SelectItem value="all">{t("licenseFilterAll")} ({users.length})</SelectItem>
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
