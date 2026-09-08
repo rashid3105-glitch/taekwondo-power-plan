@@ -49,7 +49,36 @@ export default function Priser() {
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  // All plans route to the contact form — no self-service checkout for now.
+  // Self-service Stripe checkout is intentionally DISABLED: the founding banner above the
+  // cards promises 50% off, but that discount is granted manually and there is no coupon in
+  // the system — a club clicking through would be charged full price. All cards therefore
+  // scroll to the contact form. The checkout code below is kept so it can be re-enabled later.
+  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const handleCheckout = async (planId: string) => {
+    setCheckoutError(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/auth?redirect=/priser");
+      return;
+    }
+    setCheckoutPlan(planId);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+        body: { tier: planId },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+      else throw new Error("No checkout URL");
+    } catch (e) {
+      setCheckoutError(t("pricingCheckoutError"));
+    } finally {
+      setCheckoutPlan(null);
+    }
+  };
+  void handleCheckout; void checkoutPlan; void checkoutError;
+
   const scrollToContact = () => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
 
 
