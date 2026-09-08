@@ -188,8 +188,18 @@ async function resolveUserId(
     if (data?.[0]?.user_id) return data[0].user_id as string;
   }
   if (email) {
-    const { data } = await supabase.from("profiles").select("user_id").ilike("email", email).limit(1);
-    if (data?.[0]?.user_id) return data[0].user_id as string;
+    // profiles has no email column — the address lives in auth.users.
+    const target = email.trim().toLowerCase();
+    for (let page = 1; page <= 10; page++) {
+      const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+      if (error) {
+        console.error("[STRIPE-WEBHOOK] listUsers failed:", error.message);
+        break;
+      }
+      const match = data.users.find((u) => (u.email ?? "").toLowerCase() === target);
+      if (match) return match.id;
+      if (data.users.length < 1000) break;
+    }
   }
   return null;
 }
