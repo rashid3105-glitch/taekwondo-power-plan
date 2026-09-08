@@ -93,12 +93,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       const profile = (profileRows as any)?.[0] ?? null;
       const consent = (consentRows as any)?.[0] ?? null;
 
-      // A query error here is an AVAILABILITY problem (expired token, offline,
-      // timeout, 5xx) — not an authorization problem. RLS denial on SELECT
-      // returns an empty list, never an error, so the gate cannot fail closed
-      // on RLS from the client. We therefore fail OPEN with a retry banner.
+      // If consent status cannot be read (expired token, offline, timeout,
+      // 5xx), we cannot know whether consent exists — fail CLOSED with a
+      // full-screen retry, never render protected content on uncertainty.
       if (profileErr || consentErr || parentsErr) {
-        console.warn("ConsentGate query error; failing open with warning:", profileErr || consentErr || parentsErr);
+        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr);
         setState({ kind: "error" });
         return;
       }
@@ -164,10 +163,9 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       setState({ kind: "blocking", clubName });
 
     } catch (e) {
-      // Thrown errors here are availability problems (network, timeout,
-      // consent-age lookup), not consent problems — fail OPEN: the app renders
-      // with a warning banner and a retry, instead of a full-screen block.
-      console.warn("ConsentGate evaluation failed; failing open with warning:", e);
+      // Any thrown error leaves consent status unknown — fail CLOSED with a
+      // full-screen retry screen rather than rendering the app.
+      console.warn("ConsentGate evaluation failed; failing closed:", e);
       setState({ kind: "error" });
     }
   }, []);
