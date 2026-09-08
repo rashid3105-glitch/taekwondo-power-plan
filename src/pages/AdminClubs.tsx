@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ClubBrandingSection } from "@/components/admin/ClubBrandingSection";
 
 
@@ -30,6 +31,7 @@ export default function AdminClubs() {
   const [newClubName, setNewClubName] = useState("");
   const [newClubMax, setNewClubMax] = useState(5);
   const [creating, setCreating] = useState(false);
+  const [licenseFilter, setLicenseFilter] = useState<"active" | "inactive" | "all">("active");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -153,6 +155,12 @@ export default function AdminClubs() {
 
   if (!isAdmin) return null;
 
+  const activeCount = clubs.filter(c => c.license_active === true).length;
+  const inactiveCount = clubs.length - activeCount;
+  const visibleClubs = licenseFilter === "all"
+    ? clubs
+    : clubs.filter(c => (c.license_active === true) === (licenseFilter === "active"));
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -199,8 +207,20 @@ export default function AdminClubs() {
           </div>
         </div>
 
+        {/* Unlicensed clubs are never hidden — they are the sales pipeline. */}
+        <Select value={licenseFilter} onValueChange={(v) => setLicenseFilter(v as any)}>
+          <SelectTrigger className="w-full sm:w-56">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">{t("licenseFilterActive")} ({activeCount})</SelectItem>
+            <SelectItem value="inactive">{t("licenseFilterInactive")} ({inactiveCount})</SelectItem>
+            <SelectItem value="all">{t("licenseFilterAll")} ({clubs.length})</SelectItem>
+          </SelectContent>
+        </Select>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {clubs.map(club => {
+          {visibleClubs.map(club => {
             const dirty = isDirty(club);
             const saving = savingId === club.id;
             return (
@@ -265,7 +285,7 @@ export default function AdminClubs() {
           })}
         </div>
 
-        {clubs.length === 0 && (
+        {visibleClubs.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-8">No clubs found.</p>
         )}
       </div>
