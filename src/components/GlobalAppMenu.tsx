@@ -196,6 +196,21 @@ export function GlobalAppMenu() {
     return () => { cancelled = true; };
   }, [isAdmin]);
 
+  // Badge: demo-tilmeldinger der endnu ikke er fulgt op (status "new").
+  useEffect(() => {
+    if (!isAdmin) { setNewLeads(0); return; }
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from("profiles")
+        .select("user_id", { count: "exact", head: true })
+        .eq("is_demo", true)
+        .eq("lead_status", "new");
+      if (!cancelled) setNewLeads(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [isAdmin]);
+
   const hidden = authed !== true || shouldHide(pathname);
 
   useEffect(() => {
@@ -459,6 +474,7 @@ export function GlobalAppMenu() {
                       { to: "/admin/announcements", icon: Megaphone, label: "Besked til brugere", color: "text-amber-500" },
                       { to: "/admin/stats", icon: BarChart3, label: t("adminStats"), color: "text-sky-400" },
                       { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500", badge: newAssessments },
+                      { to: "/admin/leads", icon: UserPlus, label: t("adminLeads"), color: "text-amber-500", badge: newLeads },
 
 
                     ].map((it: any) => (

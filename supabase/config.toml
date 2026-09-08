@@ -38,3 +38,5 @@ project_id = "zklwergsziidgyxewbkw"
     verify_jwt = false
   [functions.submit-blog-comment]
     verify_jwt = false
+  [functions.admin-leads]
+    verify_jwt = true

@@ -931,10 +931,7 @@ export default function AdminApproval() {
                 onClick={async () => {
                   setResettingPassword(u.user_id);
                   try {
-                    const { error } = await supabase.auth.resetPasswordForEmail(u.email!, {
-                      redirectTo: `${window.location.origin}/reset-password`,
-                    });
-                    if (error) throw error;
+                    await sendPasswordResetEmail(u.email!);
                     toast({ title: t("resetPasswordSent") || "Password reset email sent", description: u.email });
                   } catch (err: any) {
                     toast({ title: t("error"), description: err.message, variant: "destructive" });
