@@ -36,7 +36,7 @@ type State =
   | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
-  | { kind: "warn" };
+  | { kind: "error" };
 
 
 function fillPlaceholders(template: string, vars: Record<string, string>) {
@@ -93,13 +93,12 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       const profile = (profileRows as any)?.[0] ?? null;
       const consent = (consentRows as any)?.[0] ?? null;
 
-      // A query error here is an AVAILABILITY problem (expired token, offline,
-      // timeout, 5xx) — not an authorization problem. RLS denial on SELECT
-      // returns an empty list, never an error, so the gate cannot fail closed
-      // on RLS from the client. We therefore fail OPEN with a retry banner.
+      // If consent status cannot be read (expired token, offline, timeout,
+      // 5xx), we cannot know whether consent exists — fail CLOSED with a
+      // full-screen retry, never render protected content on uncertainty.
       if (profileErr || consentErr || parentsErr) {
-        console.warn("ConsentGate query error; failing open with warning:", profileErr || consentErr || parentsErr);
-        setState({ kind: "warn" });
+        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr);
+        setState({ kind: "error" });
         return;
       }
 
@@ -164,11 +163,10 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       setState({ kind: "blocking", clubName });
 
     } catch (e) {
-      // Thrown errors here are availability problems (network, timeout,
-      // consent-age lookup), not consent problems — fail OPEN: the app renders
-      // with a warning banner and a retry, instead of a full-screen block.
-      console.warn("ConsentGate evaluation failed; failing open with warning:", e);
-      setState({ kind: "warn" });
+      // Any thrown error leaves consent status unknown — fail CLOSED with a
+      // full-screen retry screen rather than rendering the app.
+      console.warn("ConsentGate evaluation failed; failing closed:", e);
+      setState({ kind: "error" });
     }
   }, []);
 
@@ -396,35 +394,30 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (state.kind === "warn") {
+  if (state.kind === "error") {
+    // Fail CLOSED: if consent status cannot be confirmed we must not render the
+    // app. No dismiss affordance; only retry or sign out.
     return (
-      <>
-        {!bannerDismissed && (
-          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
-            <div className="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3 text-sm">
-              <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
-              <span className="flex-1 text-amber-900 dark:text-amber-100">
-                {t("consentWarnBannerText")}
-              </span>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => { setState({ kind: "loading" }); evaluate(); }}
-              >
-                {t("consentWarnBannerRetry")}
-              </Button>
-              <button
-                onClick={() => setBannerDismissed(true)}
-                className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
-                aria-label="Dismiss"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">{t("consentErrorTitle")}</h1>
           </div>
-        )}
-        {children}
-      </>
+          <p className="text-sm leading-relaxed">{t("consentWarnBannerText")}</p>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => { setState({ kind: "loading" }); evaluate(); }}
+              className="w-full"
+            >
+              {t("consentWarnBannerRetry")}
+            </Button>
+            <Button onClick={logout} variant="ghost" className="w-full">
+              {t("selfConsentLogout")}
+            </Button>
+          </div>
+        </Card>
+      </div>
     );
   }
 
