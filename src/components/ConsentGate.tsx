@@ -396,35 +396,30 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (state.kind === "warn") {
+  if (state.kind === "error") {
+    // Fail CLOSED: if consent status cannot be confirmed we must not render the
+    // app. No dismiss affordance; only retry or sign out.
     return (
-      <>
-        {!bannerDismissed && (
-          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
-            <div className="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3 text-sm">
-              <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
-              <span className="flex-1 text-amber-900 dark:text-amber-100">
-                {t("consentWarnBannerText")}
-              </span>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => { setState({ kind: "loading" }); evaluate(); }}
-              >
-                {t("consentWarnBannerRetry")}
-              </Button>
-              <button
-                onClick={() => setBannerDismissed(true)}
-                className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
-                aria-label="Dismiss"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">{t("consentErrorTitle")}</h1>
           </div>
-        )}
-        {children}
-      </>
+          <p className="text-sm leading-relaxed">{t("consentWarnBannerText")}</p>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => { setState({ kind: "loading" }); evaluate(); }}
+              className="w-full"
+            >
+              {t("consentWarnBannerRetry")}
+            </Button>
+            <Button onClick={logout} variant="ghost" className="w-full">
+              {t("selfConsentLogout")}
+            </Button>
+          </div>
+        </Card>
+      </div>
     );
   }
 
