@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
       if (notificationEnabled() && leadEmail && !isTestEmail(leadEmail)) {
         const { data: leadProfile } = await admin
           .from("profiles")
-          .select("display_name, discipline, sport")
+          .select("display_name, discipline")
           .eq("user_id", user.id)
           .maybeSingle();
         await sendTemplateEmail("demo-signup-notification", "", {
@@ -158,7 +158,7 @@ Deno.serve(async (req) => {
             userEmail: leadEmail,
             clubName: clubName || null,
             role: "Træner",
-            sport: (leadProfile as any)?.sport || (leadProfile as any)?.discipline || null,
+            sport: (leadProfile as any)?.discipline || null,
             athleteBand: athleteBand || null,
             signedUpAt: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC",
             adminUrl: `https://sportstalent.dk/admin/leads?user=${user.id}`,
