@@ -300,9 +300,9 @@ export default function AdminKlubanalyser() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-9 rounded-md border border-border bg-background px-2 text-sm text-foreground"
           >
-            <option value="all">Alle statusser</option>
+            <option value="all">Alle statusser ({statusCounts.all ?? 0})</option>
             {STATUSES.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
+              <option key={s.value} value={s.value}>{s.label} ({statusCounts[s.value] ?? 0})</option>
             ))}
           </select>
           <Badge variant="outline" className="border-amber-500 text-amber-500">{newCount} nye</Badge>
