@@ -369,15 +369,18 @@ export default function AdminKlubanalyser() {
                         )}
                       </td>
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={r.followup_status || "new"}
-                          onChange={(e) => setStatus(r, e.target.value)}
-                          className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
-                        >
-                          {STATUSES.map((s) => (
-                            <option key={s.value} value={s.value}>{s.label}</option>
-                          ))}
-                        </select>
+                        <div className="flex items-center gap-2">
+                          <StatusBadge value={r.followup_status} />
+                          <select
+                            value={r.followup_status || "new"}
+                            onChange={(e) => setStatus(r, e.target.value)}
+                            className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                          >
+                            {STATUSES.map((s) => (
+                              <option key={s.value} value={s.value}>{s.label}</option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
                       <td className="px-3 py-2 text-right">
                         <Button
