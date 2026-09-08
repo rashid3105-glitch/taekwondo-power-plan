@@ -196,7 +196,7 @@ async function collectMetrics(
   };
 }
 
-async function callLLM(metrics: any, athleteName: string, locale: string) {
+async function callLLM(metrics: any, locale: string) {
   const langName = LANG_NAMES[locale] || "Danish";
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
@@ -209,9 +209,9 @@ Cover, when data is present:
 3) Physical test progression
 4) Daily life signals (diary mood/energy) and recovery indicators (sleep/HRV/resting HR) — only if wearable data exists; otherwise skip this entirely without mentioning the absence.
 
-Do not invent numbers. Do NOT invent topics that are not in the data — in particular: never mention injuries, illness, family events, school, weight changes, or competitions unless those topics are explicitly present in the JSON (e.g. diary.injury_entries > 0, or a competition entry is listed). If diary.injury_entries is 0, do not write about injuries at all. Refer to the athlete by first name only.`;
+Do not invent numbers. Do NOT invent topics that are not in the data — in particular: never mention injuries, illness, family events, school, weight changes, or competitions unless those topics are explicitly present in the JSON (e.g. diary.injury_entries > 0, or a competition entry is listed). If diary.injury_entries is 0, do not write about injuries at all. Refer to the athlete neutrally as "the athlete" — no names are provided.`;
 
-  const userPrompt = `Athlete first name: ${athleteName}
+  const userPrompt = `Subject: the athlete
 Period: ${metrics.period.year}-${String(metrics.period.month).padStart(2, "0")}
 
 Structured month data (JSON):
@@ -328,10 +328,9 @@ serve(async (req) => {
       .maybeSingle();
 
     const locale = (profile?.default_locale as string) || "da";
-    const firstName = (profile?.display_name || "").split(" ")[0] || "athlete";
 
     const metrics = await collectMetrics(admin, athleteId, year, month);
-    const summary = await callLLM(metrics, firstName, locale);
+    const summary = await callLLM(metrics, locale);
 
     const { data: upserted, error: upsertErr } = await admin
       .from("monthly_development_reports")

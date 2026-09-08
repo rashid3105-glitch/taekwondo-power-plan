@@ -172,14 +172,14 @@ serve(async (req) => {
         }))
       : [];
 
-    const userPrompt = `Athlete: ${sanitizePromptText(profile?.display_name, 80) || "Athlete"}
+    const userPrompt = `Athlete: the athlete
 Belt: ${sanitizePromptText(profile?.belt_level, 30) || "n/a"}
 Weight: ${sanitizePromptText(profile?.weight_category, 30) || "n/a"}
 Age: ${Number(video?.athlete_age) || "n/a"} (${ageGroup})
 
 Match: ${sanitizePromptText(video?.title, 120) || "Match"}
 Discipline: ${discipline}${discipline === "poomsae" && poomsaeType ? ` (${sanitizePromptText(poomsaeType, 40)})` : ""}
-Opponent: ${sanitizePromptText(video?.opponent_name, 80) || "n/a"}
+Opponent: the opponent
 Event: ${sanitizePromptText(video?.event_name, 120) || "n/a"}
 Date: ${sanitizePromptText(video?.match_date, 20) || "n/a"}
 Duration: ${video?.duration_seconds ? Math.round(Number(video.duration_seconds)) + "s" : "n/a"}

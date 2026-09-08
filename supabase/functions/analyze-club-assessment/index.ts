@@ -89,7 +89,6 @@ Skriv en skarp, konkret analyse på dansk af nedenstående klub, baseret udelukk
 KLUB
 Navn: ${row.club_name ?? "ikke oplyst"}
 Sport: ${row.sport ?? "ikke oplyst"}
-Respondentens rolle: ${row.role ?? "ikke oplyst"}
 Antal medlemmer: ${row.member_range ?? "ikke oplyst"}
 Antal aktive trænere: ${row.coach_range ?? "ikke oplyst"}
 Samlet modenhedsniveau: ${row.level ?? "?"} (${levelName})
