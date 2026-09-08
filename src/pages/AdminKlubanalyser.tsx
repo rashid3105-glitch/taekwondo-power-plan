@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, Printer } from "lucide-react";
+import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, FileDown } from "lucide-react";
+import { downloadClubAssessmentDocx } from "@/lib/clubAssessmentDocx";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { DIMENSIONS, LEVELS, QUESTIONS, pointsFor } from "@/data/clubAssessment";
@@ -80,6 +81,45 @@ export default function AdminKlubanalyser() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [noteDraft, setNoteDraft] = useState<string>("");
   const [savingNote, setSavingNote] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const exportDocx = async (r: Row) => {
+    setExporting(true);
+    try {
+      const max = maxDimFor(r);
+      const metaLine =
+        `Niveau ${r.level ?? "—"}${r.level ? ` — ${LEVELS[r.level - 1]?.name ?? ""}` : ""} · ` +
+        `${r.member_range ? `${r.member_range} medlemmer · ` : ""}` +
+        `${r.coach_range ? `${r.coach_range} trænere · ` : ""}` +
+        `Spørgsmålsversion ${r.questions_version ?? 1} · ` +
+        (r.report_sent_at
+          ? `Rapportmail leveret ${format(new Date(r.report_sent_at), "dd/MM/yyyy HH:mm")}`
+          : "Rapportmail ikke sendt");
+
+      const answers =
+        Array.isArray(r.answers) && (r.questions_version ?? 1) >= 2 && r.answers.length === QUESTIONS.length
+          ? QUESTIONS.map((q, i) => ({
+              question: q.text,
+              answer: `${r.answers![i] === -1 ? "Ved ikke" : q.options[r.answers![i]] ?? "—"} (${pointsFor(q, r.answers![i])}/3 · ${DIMENSIONS[q.dim]?.name}${q.reverse ? " · omvendt" : ""})`,
+            }))
+          : undefined;
+
+      await downloadClubAssessmentDocx({
+        clubName: r.club_name || "Klub ikke oplyst",
+        email: r.email,
+        metaLine,
+        analysis: r.ai_analysis,
+        dimensions: DIMENSIONS.map((d, i) => ({ name: d.name, score: `${r.scores?.[i] ?? "—"}/${max}` })),
+        answers,
+        radarSvg: document.querySelector<SVGSVGElement>("#klubanalyse-radar svg"),
+      });
+      toast.success("Word-filen er hentet");
+    } catch (e: any) {
+      toast.error("Kunne ikke lave Word-filen: " + (e?.message ?? "ukendt fejl"));
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const setStatus = async (r: Row, value: string) => {
     setRows((prev) => prev.map((x) => (x.id === r.id ? { ...x, followup_status: value } : x)));
@@ -341,8 +381,15 @@ export default function AdminKlubanalyser() {
                 {selected.club_name || "Klub ikke oplyst"}{" "}
                 <span className="text-sm font-normal text-muted-foreground">— {selected.email}</span>
               </h2>
-              <Button variant="outline" size="sm" className="no-print" onClick={() => window.print()}>
-                <Printer className="mr-2 h-4 w-4" /> Udskriv
+              <Button
+                variant="outline"
+                size="sm"
+                className="no-print"
+                disabled={exporting}
+                onClick={() => exportDocx(selected)}
+              >
+                {exporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileDown className="mr-2 h-4 w-4" />}
+                Download som Word
               </Button>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -357,7 +404,9 @@ export default function AdminKlubanalyser() {
             </p>
 
             <h3 className="mt-4 text-sm font-semibold text-foreground">Profil</h3>
-            <AssessmentRadar scores={selected.scores} max={maxDimFor(selected)} />
+            <div id="klubanalyse-radar">
+              <AssessmentRadar scores={selected.scores} max={maxDimFor(selected)} />
+            </div>
 
             <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3">
               <h3 className="text-sm font-semibold text-foreground">
