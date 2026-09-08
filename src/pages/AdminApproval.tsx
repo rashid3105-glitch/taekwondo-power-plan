@@ -18,6 +18,7 @@ import { getSportProfile } from "@/config/sportProfiles";
 import { formatGrade, gradeLabelFor, gradeOptions, gradeOptionLabel, isTkdBeltSystem } from "@/lib/sportGrade";
 import { format } from "date-fns";
 import { COUNTRIES } from "@/data/countries";
+import { sendPasswordResetEmail } from "@/lib/adminUserActions";
 import { PHONE_CODES } from "@/data/phoneCodes";
 import { AnnouncementEditor } from "@/components/admin/AnnouncementEditor";
 import { SuperadminToggle } from "@/components/admin/SuperadminToggle";
@@ -931,10 +932,7 @@ export default function AdminApproval() {
                 onClick={async () => {
                   setResettingPassword(u.user_id);
                   try {
-                    const { error } = await supabase.auth.resetPasswordForEmail(u.email!, {
-                      redirectTo: `${window.location.origin}/reset-password`,
-                    });
-                    if (error) throw error;
+                    await sendPasswordResetEmail(u.email!);
                     toast({ title: t("resetPasswordSent") || "Password reset email sent", description: u.email });
                   } catch (err: any) {
                     toast({ title: t("error"), description: err.message, variant: "destructive" });

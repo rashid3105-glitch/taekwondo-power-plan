@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,6 +9,22 @@ const corsHeaders = {
 const ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const generateCode = () =>
   Array.from({ length: 8 }, () => ALPHABET[Math.floor(Math.random() * ALPHABET.length)]).join("");
+
+// Samme testfilter som i submit-club-assessment.
+const isTestEmail = (email: string) => {
+  const e = (email || "").toLowerCase();
+  return (
+    e.endsWith("@sportstalent.dk") ||
+    e.includes("+test") ||
+    e.endsWith("@example.com") ||
+    e.endsWith(".example.com")
+  );
+};
+
+// Feature flag — standard TIL. Sæt DEMO_SIGNUP_NOTIFICATION_ENABLED=false
+// for at slå admin-notifikationen fra.
+const notificationEnabled = () =>
+  (Deno.env.get("DEMO_SIGNUP_NOTIFICATION_ENABLED") || "true").toLowerCase() !== "false";
 
 const slugify = (s: string) =>
   s
@@ -122,6 +139,34 @@ Deno.serve(async (req) => {
         .from("coach_invites")
         .insert({ coach_id: user.id, club_id: clubId, code });
       if (invErr) throw invErr;
+    }
+
+    // Admin-notifikation. Isoleret i try/catch der kun logger — må aldrig
+    // påvirke brugerens egen tilmelding.
+    try {
+      const leadEmail = user.email || "";
+      if (notificationEnabled() && leadEmail && !isTestEmail(leadEmail)) {
+        const { data: leadProfile } = await admin
+          .from("profiles")
+          .select("display_name, discipline")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        await sendTemplateEmail("demo-signup-notification", "", {
+          idempotencyKey: `demo-signup-${user.id}`,
+          templateData: {
+            userName: (leadProfile as any)?.display_name || user.user_metadata?.display_name || leadEmail,
+            userEmail: leadEmail,
+            clubName: clubName || null,
+            role: "Træner",
+            sport: (leadProfile as any)?.discipline || null,
+            athleteBand: athleteBand || null,
+            signedUpAt: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC",
+            adminUrl: `https://sportstalent.dk/admin/leads?user=${user.id}`,
+          },
+        });
+      }
+    } catch (e) {
+      console.warn("demo signup notification failed", (e as any)?.message || e);
     }
 
     return new Response(

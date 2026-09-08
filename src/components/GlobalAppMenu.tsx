@@ -39,6 +39,7 @@ import {
   Dumbbell,
   Image as ImageIcon,
   Megaphone,
+  UserPlus,
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -133,6 +134,7 @@ export function GlobalAppMenu() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [newAssessments, setNewAssessments] = useState(0);
+  const [newLeads, setNewLeads] = useState(0);
   const isCoach = hasCoachRole;
   const isDemo = !!(profile?.is_demo && profile?.payment_status !== "paid");
   const coachAthleteMode = isCoachMode ? "coach" : "athlete";
@@ -192,6 +194,21 @@ export function GlobalAppMenu() {
         .eq("followup_status", "new")
         .is("archived_at", null);
       if (!cancelled) setNewAssessments(count ?? 0);
+    })();
+    return () => { cancelled = true; };
+  }, [isAdmin]);
+
+  // Badge: demo-tilmeldinger der endnu ikke er fulgt op (status "new").
+  useEffect(() => {
+    if (!isAdmin) { setNewLeads(0); return; }
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from("profiles")
+        .select("user_id", { count: "exact", head: true })
+        .eq("is_demo", true)
+        .eq("lead_status", "new");
+      if (!cancelled) setNewLeads(count ?? 0);
     })();
     return () => { cancelled = true; };
   }, [isAdmin]);
@@ -459,6 +476,7 @@ export function GlobalAppMenu() {
                       { to: "/admin/announcements", icon: Megaphone, label: "Besked til brugere", color: "text-amber-500" },
                       { to: "/admin/stats", icon: BarChart3, label: t("adminStats"), color: "text-sky-400" },
                       { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500", badge: newAssessments },
+                      { to: "/admin/leads", icon: UserPlus, label: t("adminLeads"), color: "text-amber-500", badge: newLeads },
 
 
                     ].map((it: any) => (

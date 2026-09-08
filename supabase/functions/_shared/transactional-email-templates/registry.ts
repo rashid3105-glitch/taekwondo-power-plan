@@ -24,6 +24,7 @@ import { template as coachInviteAdminNotification } from './coach-invite-admin-n
 import { template as complianceAlert } from './compliance-alert.tsx'
 import { template as clubAssessmentNotification } from './club-assessment-notification.tsx'
 import { template as stripeSubscriptionNotification } from './stripe-subscription-notification.tsx'
+import { template as demoSignupNotification } from './demo-signup-notification.tsx'
 
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
@@ -42,5 +43,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'compliance-alert': complianceAlert,
   'club-assessment-notification': clubAssessmentNotification,
   'stripe-subscription-notification': stripeSubscriptionNotification,
+  'demo-signup-notification': demoSignupNotification,
 }
 

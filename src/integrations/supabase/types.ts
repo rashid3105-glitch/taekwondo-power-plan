@@ -2892,6 +2892,9 @@ export type Database = {
           is_parent: boolean
           is_public: boolean
           last_seen_at: string | null
+          lead_note: string | null
+          lead_status: string
+          lead_status_updated_at: string | null
           license_values: Json
           myfightbook_expires_at: string | null
           onboarding_completed: boolean
@@ -2958,6 +2961,9 @@ export type Database = {
           is_parent?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          lead_note?: string | null
+          lead_status?: string
+          lead_status_updated_at?: string | null
           license_values?: Json
           myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
@@ -3024,6 +3030,9 @@ export type Database = {
           is_parent?: boolean
           is_public?: boolean
           last_seen_at?: string | null
+          lead_note?: string | null
+          lead_status?: string
+          lead_status_updated_at?: string | null
           license_values?: Json
           myfightbook_expires_at?: string | null
           onboarding_completed?: boolean
