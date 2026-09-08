@@ -328,7 +328,6 @@ serve(async (req) => {
       .maybeSingle();
 
     const locale = (profile?.default_locale as string) || "da";
-    const firstName = (profile?.display_name || "").split(" ")[0] || "athlete";
 
     const metrics = await collectMetrics(admin, athleteId, year, month);
     const summary = await callLLM(metrics, locale);
