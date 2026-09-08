@@ -8,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Club licences (2026). DKK only, yearly billing, prices incl. VAT.
+// Club licences (2026). DKK only, yearly billing, prices excl. VAT.
 const PRICE_IDS: Record<string, Record<string, string>> = {
   club: {
     yearly: "price_1U57F2CrYQiZxdDXfWfVxoXF", // 7.500 DKK/år — op til 50 medlemmer
