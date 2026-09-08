@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, FileDown } from "lucide-react";
+import { Loader2, ArrowLeft, ClipboardList, Mail, MailX, Archive, ArchiveRestore, Sparkles, FileDown, Clock, XCircle, CheckCircle2, type LucideIcon } from "lucide-react";
 import { downloadClubAssessmentDocx } from "@/lib/clubAssessmentDocx";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -38,14 +38,35 @@ type Row = {
 const STATUSES = [
   { value: "new", label: "Ny" },
   { value: "contacted", label: "Kontaktet" },
+  { value: "later", label: "Senere" },
   { value: "declined", label: "Afvist" },
   { value: "won", label: "Vundet" },
 ] as const;
 
-const STATUS_ORDER: Record<string, number> = { new: 0, contacted: 1, won: 2, declined: 3 };
+const STATUS_ORDER: Record<string, number> = { new: 0, contacted: 1, later: 2, won: 3, declined: 4 };
+
+// Farve + ikon, så status aldrig kun skelnes på farve.
+const STATUS_META: Record<string, { className: string; Icon: LucideIcon }> = {
+  new: { className: "border-amber-500 text-amber-500", Icon: Sparkles },
+  contacted: { className: "border-sky-500 text-sky-500", Icon: Mail },
+  later: { className: "border-violet-500 text-violet-500", Icon: Clock },
+  declined: { className: "border-destructive text-destructive", Icon: XCircle },
+  won: { className: "border-emerald-500 text-emerald-500", Icon: CheckCircle2 },
+};
 
 const statusLabel = (v: string | null) =>
   STATUSES.find((s) => s.value === (v || "new"))?.label ?? "Ny";
+
+function StatusBadge({ value }: { value: string | null }) {
+  const key = value || "new";
+  const meta = STATUS_META[key] ?? STATUS_META.new;
+  const { Icon } = meta;
+  return (
+    <Badge variant="outline" className={`gap-1 ${meta.className}`}>
+      <Icon className="h-3 w-3" /> {statusLabel(key)}
+    </Badge>
+  );
+}
 
 // Samme regel som i submit-club-assessment: disse besvarelser er test.
 const isTestRow = (r: Row) => {
@@ -212,6 +233,15 @@ export default function AdminKlubanalyser() {
   const testCount = rows.filter(isTestRow).length;
   const newCount = rows.filter((r) => !r.archived_at && (r.followup_status || "new") === "new").length;
   const archivedCount = rows.filter((r) => r.archived_at).length;
+  const statusCounts = useMemo(() => {
+    const base = rows.filter((r) => (showArchived ? true : !r.archived_at)).filter((r) => (hideTests ? !isTestRow(r) : true));
+    const m: Record<string, number> = {};
+    STATUSES.forEach((s) => { m[s.value] = 0; });
+    base.forEach((r) => { const k = r.followup_status || "new"; m[k] = (m[k] ?? 0) + 1; });
+    m.all = base.length;
+    return m;
+  }, [rows, showArchived, hideTests]);
+
 
   const variantCounts = useMemo(() => {
     const m: Record<string, number> = {};
@@ -270,9 +300,9 @@ export default function AdminKlubanalyser() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="h-9 rounded-md border border-border bg-background px-2 text-sm text-foreground"
           >
-            <option value="all">Alle statusser</option>
+            <option value="all">Alle statusser ({statusCounts.all ?? 0})</option>
             {STATUSES.map((s) => (
-              <option key={s.value} value={s.value}>{s.label}</option>
+              <option key={s.value} value={s.value}>{s.label} ({statusCounts[s.value] ?? 0})</option>
             ))}
           </select>
           <Badge variant="outline" className="border-amber-500 text-amber-500">{newCount} nye</Badge>
@@ -339,15 +369,18 @@ export default function AdminKlubanalyser() {
                         )}
                       </td>
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={r.followup_status || "new"}
-                          onChange={(e) => setStatus(r, e.target.value)}
-                          className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
-                        >
-                          {STATUSES.map((s) => (
-                            <option key={s.value} value={s.value}>{s.label}</option>
-                          ))}
-                        </select>
+                        <div className="flex items-center gap-2">
+                          <StatusBadge value={r.followup_status} />
+                          <select
+                            value={r.followup_status || "new"}
+                            onChange={(e) => setStatus(r, e.target.value)}
+                            className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
+                          >
+                            {STATUSES.map((s) => (
+                              <option key={s.value} value={s.value}>{s.label}</option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
                       <td className="px-3 py-2 text-right">
                         <Button
@@ -409,8 +442,8 @@ export default function AdminKlubanalyser() {
             </div>
 
             <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3">
-              <h3 className="text-sm font-semibold text-foreground">
-                Opfølgning — status: {statusLabel(selected.followup_status)}
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                Opfølgning — status: <StatusBadge value={selected.followup_status} />
               </h3>
               <textarea
                 value={noteDraft}
