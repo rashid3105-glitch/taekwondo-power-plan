@@ -341,8 +341,8 @@ const da: CLStrings = {
   currency: "",
   tiers: [
     { name: "Klub", desc: "Op til 50 medlemmer · 7.500 kr/år ekskl. moms (9.375 kr inkl. moms)", features: ["Alle moduler åbne", "Ubegrænsede planer", "Bulk-planlægning", "Holdoverblik", "Ugentlige rapporter pr. atlet"], cta: "Kontakt os" },
-    { name: "Klub Plus", desc: "51-120 medlemmer · 12.000 kr/år ekskl. mva. (15.000 kr inkl. mva.) ekskl. moms (15.000 kr inkl. moms)", features: ["Alt i Klub", "Prioritetssupport", "Udvidet videoanalyse", "Flere hold", "Avancerede rapporter"], cta: "Kontakt os" },
-    { name: "Klub Stor", desc: "121-250 medlemmer · 18.000 kr/år ekskl. mva. (22.500 kr inkl. mva.) ekskl. moms (22.500 kr inkl. moms)", features: ["Alt i Klub Plus", "Flere trænerteams", "Onboarding inkluderet", "Prioritetssupport", "Skalérbar opsætning"], cta: "Kontakt os" },
+    { name: "Klub Plus", desc: "51-120 medlemmer · 12.000 kr/år ekskl. moms (15.000 kr inkl. moms)", features: ["Alt i Klub", "Prioritetssupport", "Udvidet videoanalyse", "Flere hold", "Avancerede rapporter"], cta: "Kontakt os" },
+    { name: "Klub Stor", desc: "121-250 medlemmer · 18.000 kr/år ekskl. moms (22.500 kr inkl. moms)", features: ["Alt i Klub Plus", "Flere trænerteams", "Onboarding inkluderet", "Prioritetssupport", "Skalérbar opsætning"], cta: "Kontakt os" },
     { name: "Større klub", desc: "Over 250 medlemmer", features: ["Alle moduler", "Ubegrænsede planer", "Onboarding inkluderet", "Prioritetssupport", "Skalérbar opsætning"], cta: "Kontakt os" },
   ],
   pricingFootnoteLead: "Spørgsmål om priser?",
@@ -637,8 +637,8 @@ const no: CLStrings = {
   currency: "",
   tiers: [
     { name: "Klubb", desc: "Opptil 50 medlemmer · 7.500 kr/år ekskl. mva. (9.375 kr inkl. mva.)", features: ["Alle moduler åpne", "Ubegrensede planer", "Bulk-planlegging", "Lagoversikt", "Ukentlige rapporter pr. utøver"], cta: "Kontakt oss" },
-    { name: "Klubb Pluss", desc: "51-120 medlemmer · 12.000 kr/år", features: ["Alt i Klubb", "Prioritert støtte", "Avansert videoanalyse", "Flere lag", "Avanserte rapporter"], cta: "Kontakt oss" },
-    { name: "Klubb Stor", desc: "121-250 medlemmer · 18.000 kr/år", features: ["Alt i Klubb Pluss", "Flere trenerteam", "Onboarding inkludert", "Prioritert støtte", "Skalerbart oppsett"], cta: "Kontakt oss" },
+    { name: "Klubb Pluss", desc: "51-120 medlemmer · 12.000 kr/år ekskl. mva. (15.000 kr inkl. mva.)", features: ["Alt i Klubb", "Prioritert støtte", "Avansert videoanalyse", "Flere lag", "Avanserte rapporter"], cta: "Kontakt oss" },
+    { name: "Klubb Stor", desc: "121-250 medlemmer · 18.000 kr/år ekskl. mva. (22.500 kr inkl. mva.)", features: ["Alt i Klubb Pluss", "Flere trenerteam", "Onboarding inkludert", "Prioritert støtte", "Skalerbart oppsett"], cta: "Kontakt oss" },
     { name: "Større klubb", desc: "Over 250 medlemmer", features: ["Alle moduler", "Ubegrensede planer", "Onboarding inkludert", "Prioritert støtte", "Skalerbart oppsett"], cta: "Kontakt oss" },
   ],
   pricingFootnoteLead: "Spørsmål om priser?",
