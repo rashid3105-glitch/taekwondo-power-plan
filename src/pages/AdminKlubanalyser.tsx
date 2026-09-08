@@ -38,14 +38,35 @@ type Row = {
 const STATUSES = [
   { value: "new", label: "Ny" },
   { value: "contacted", label: "Kontaktet" },
+  { value: "later", label: "Senere" },
   { value: "declined", label: "Afvist" },
   { value: "won", label: "Vundet" },
 ] as const;
 
-const STATUS_ORDER: Record<string, number> = { new: 0, contacted: 1, won: 2, declined: 3 };
+const STATUS_ORDER: Record<string, number> = { new: 0, contacted: 1, later: 2, won: 3, declined: 4 };
+
+// Farve + ikon, så status aldrig kun skelnes på farve.
+const STATUS_META: Record<string, { className: string; Icon: LucideIcon }> = {
+  new: { className: "border-amber-500 text-amber-500", Icon: Sparkles },
+  contacted: { className: "border-sky-500 text-sky-500", Icon: Mail },
+  later: { className: "border-violet-500 text-violet-500", Icon: Clock },
+  declined: { className: "border-destructive text-destructive", Icon: XCircle },
+  won: { className: "border-emerald-500 text-emerald-500", Icon: CheckCircle2 },
+};
 
 const statusLabel = (v: string | null) =>
   STATUSES.find((s) => s.value === (v || "new"))?.label ?? "Ny";
+
+function StatusBadge({ value }: { value: string | null }) {
+  const key = value || "new";
+  const meta = STATUS_META[key] ?? STATUS_META.new;
+  const { Icon } = meta;
+  return (
+    <Badge variant="outline" className={`gap-1 ${meta.className}`}>
+      <Icon className="h-3 w-3" /> {statusLabel(key)}
+    </Badge>
+  );
+}
 
 // Samme regel som i submit-club-assessment: disse besvarelser er test.
 const isTestRow = (r: Row) => {
