@@ -8,7 +8,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const GOLD = "#D4AF37";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 
-// Club licence plans — yearly billing, prices incl. VAT (DKK/year).
+// Club licence plans — yearly billing, prices excl. VAT (DKK/year).
 const PLANS: { id: string; nameKey: string; limitKey: string; price: number | null; highlight?: boolean }[] = [
   { id: "club", nameKey: "pricingPlanClub", limitKey: "pricingPlanClubLimit", price: 7500 },
   { id: "club_plus", nameKey: "pricingPlanClubPlus", limitKey: "pricingPlanClubPlusLimit", price: 12000, highlight: true },
@@ -20,7 +20,7 @@ const PRICING_JSONLD = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: "Sportstalent klublicens",
-  description: "Klublicens til Sportstalent — årlig fakturering, alle priser inkl. moms.",
+  description: "Klublicens til Sportstalent — årlig fakturering, alle priser ekskl. moms.",
   brand: { "@type": "Brand", name: "Sportstalent" },
   offers: {
     "@type": "AggregateOffer",
@@ -28,14 +28,14 @@ const PRICING_JSONLD = {
     lowPrice: 7500,
     highPrice: 18000,
     offerCount: 3,
-    valueAddedTaxIncluded: true,
+    valueAddedTaxIncluded: false,
     url: "https://sportstalent.dk/priser",
     availability: "https://schema.org/InStock",
     priceSpecification: {
       "@type": "UnitPriceSpecification",
       price: 7500,
       priceCurrency: "DKK",
-      valueAddedTaxIncluded: true,
+      valueAddedTaxIncluded: false,
       billingDuration: 12,
       billingIncrement: 1,
       unitCode: "ANN",
@@ -149,7 +149,12 @@ export default function Priser() {
                 {plan.price ? plan.price.toLocaleString("da-DK") : t("pricingPlanContact")}
               </div>
               {plan.price && (
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("pricingPerYearUnit")}</div>
+                <>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("pricingPerYearUnit")}</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.38)" }}>
+                    {t("pricingInclVatNote").replace("{amount}", Math.round(plan.price * 1.25).toLocaleString("da-DK"))}
+                  </div>
+                </>
               )}
               <button
                 onClick={scrollToContact}
