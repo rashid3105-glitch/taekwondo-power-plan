@@ -39,6 +39,7 @@ import {
   Dumbbell,
   Image as ImageIcon,
   Megaphone,
+  UserPlus,
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
