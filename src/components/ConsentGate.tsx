@@ -365,38 +365,34 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   }
 
   if (state.kind === "needsBirthDate") {
+    // Full-screen block: an athlete without a birth date must not reach the app,
+    // since we cannot tell whether they are a minor. No dismiss affordance.
     return (
-      <>
-        {!bannerDismissed && (
-          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
-            <div className="max-w-5xl mx-auto px-3 py-2 space-y-2 text-sm">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
-                <span className="flex-1 text-amber-900 dark:text-amber-100">
-                  {t("consentBirthDateBannerText")}
-                </span>
-                <button
-                  onClick={() => setBannerDismissed(true)}
-                  className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
-                  aria-label="Dismiss"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
-                  <BirthDatePicker value={birthDate} onChange={setBirthDate} />
-                </div>
-                <Button size="sm" onClick={saveBirthDate} disabled={submitting || !birthDate}>
-                  {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : t("consentBirthDateBannerCta")}
-                </Button>
-              </div>
-              {error && <div className="text-xs text-destructive">{error}</div>}
-            </div>
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">{t("birthDateGateTitle")}</h1>
           </div>
-        )}
-        {children}
-      </>
+          <p className="text-sm leading-relaxed">{t("consentBirthDateBannerText")}</p>
+
+          <BirthDatePicker value={birthDate} onChange={setBirthDate} />
+
+          <p className="text-xs text-muted-foreground">
+            <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
+          </p>
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="flex flex-col gap-2">
+            <Button onClick={saveBirthDate} disabled={submitting || !birthDate} className="w-full">
+              {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("consentBirthDateBannerCta")}
+            </Button>
+            <Button onClick={logout} variant="ghost" className="w-full">
+              {t("selfConsentLogout")}
+            </Button>
+          </div>
+        </Card>
+      </div>
     );
   }
 
