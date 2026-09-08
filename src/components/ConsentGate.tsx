@@ -36,7 +36,7 @@ type State =
   | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
-  | { kind: "warn" };
+  | { kind: "error" };
 
 
 function fillPlaceholders(template: string, vars: Record<string, string>) {
@@ -99,7 +99,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // on RLS from the client. We therefore fail OPEN with a retry banner.
       if (profileErr || consentErr || parentsErr) {
         console.warn("ConsentGate query error; failing open with warning:", profileErr || consentErr || parentsErr);
-        setState({ kind: "warn" });
+        setState({ kind: "error" });
         return;
       }
 
@@ -168,7 +168,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // consent-age lookup), not consent problems — fail OPEN: the app renders
       // with a warning banner and a retry, instead of a full-screen block.
       console.warn("ConsentGate evaluation failed; failing open with warning:", e);
-      setState({ kind: "warn" });
+      setState({ kind: "error" });
     }
   }, []);
 
