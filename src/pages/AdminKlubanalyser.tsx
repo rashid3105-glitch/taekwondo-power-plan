@@ -442,8 +442,8 @@ export default function AdminKlubanalyser() {
             </div>
 
             <div className="mt-4 rounded-lg border border-border bg-muted/30 p-3">
-              <h3 className="text-sm font-semibold text-foreground">
-                Opfølgning — status: {statusLabel(selected.followup_status)}
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                Opfølgning — status: <StatusBadge value={selected.followup_status} />
               </h3>
               <textarea
                 value={noteDraft}
