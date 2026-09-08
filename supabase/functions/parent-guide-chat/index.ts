@@ -158,7 +158,12 @@ Deno.serve(async (req) => {
     // Replace the child's real first name with the {CHILD} placeholder in
     // everything that leaves the platform (history + the parent's new message).
     const nameRe = firstName
-      ? new RegExp("\\b" + firstName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "gi")
+      ? new RegExp(
+          "(?<![\\p{L}\\p{N}])" +
+            firstName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+            "(?![\\p{L}\\p{N}])",
+          "giu",
+        )
       : null;
     const depersonalise = (s: string) => (nameRe ? s.replace(nameRe, "{CHILD}") : s);
 
