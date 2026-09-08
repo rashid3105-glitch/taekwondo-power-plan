@@ -233,6 +233,15 @@ export default function AdminKlubanalyser() {
   const testCount = rows.filter(isTestRow).length;
   const newCount = rows.filter((r) => !r.archived_at && (r.followup_status || "new") === "new").length;
   const archivedCount = rows.filter((r) => r.archived_at).length;
+  const statusCounts = useMemo(() => {
+    const base = rows.filter((r) => (showArchived ? true : !r.archived_at)).filter((r) => (hideTests ? !isTestRow(r) : true));
+    const m: Record<string, number> = {};
+    STATUSES.forEach((s) => { m[s.value] = 0; });
+    base.forEach((r) => { const k = r.followup_status || "new"; m[k] = (m[k] ?? 0) + 1; });
+    m.all = base.length;
+    return m;
+  }, [rows, showArchived, hideTests]);
+
 
   const variantCounts = useMemo(() => {
     const m: Record<string, number> = {};
