@@ -9,10 +9,10 @@ const GOLD = "#D4AF37";
 const sec = { maxWidth: 1000, margin: "0 auto", padding: "72px 32px" };
 
 // Club licence plans — yearly billing, prices incl. VAT (DKK/year).
-// `id` must match the tier keys in the create-checkout-session edge function.
 const PLANS: { id: string; nameKey: string; limitKey: string; price: number | null; highlight?: boolean }[] = [
   { id: "club", nameKey: "pricingPlanClub", limitKey: "pricingPlanClubLimit", price: 7500 },
   { id: "club_plus", nameKey: "pricingPlanClubPlus", limitKey: "pricingPlanClubPlusLimit", price: 12000, highlight: true },
+  { id: "club_big", nameKey: "pricingPlanClubBig", limitKey: "pricingPlanClubBigLimit", price: 18000 },
   { id: "large", nameKey: "pricingPlanBig", limitKey: "pricingPlanBigLimit", price: null },
 ];
 
@@ -26,8 +26,8 @@ const PRICING_JSONLD = {
     "@type": "AggregateOffer",
     priceCurrency: "DKK",
     lowPrice: 7500,
-    highPrice: 12000,
-    offerCount: 2,
+    highPrice: 18000,
+    offerCount: 3,
     valueAddedTaxIncluded: true,
     url: "https://sportstalent.dk/priser",
     availability: "https://schema.org/InStock",
@@ -49,31 +49,8 @@ export default function Priser() {
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<string | null>(null);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
-  // Starts a Stripe checkout for a club licence (yearly, DKK).
-  const handleCheckout = async (planId: string) => {
-    setCheckoutError(null);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth?redirect=/priser");
-      return;
-    }
-    setCheckoutPlan(planId);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout-session", {
-        body: { tier: planId },
-      });
-      if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
-      else throw new Error("No checkout URL");
-    } catch (e) {
-      setCheckoutError(t("pricingCheckoutError"));
-    } finally {
-      setCheckoutPlan(null);
-    }
-  };
+  // All plans route to the contact form — no self-service checkout for now.
+  const scrollToContact = () => document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" });
 
 
 
@@ -146,29 +123,16 @@ export default function Priser() {
                 <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>{t("pricingPerYearUnit")}</div>
               )}
               <button
-                disabled={checkoutPlan === plan.id}
-                onClick={() => plan.price
-                  ? handleCheckout(plan.id)
-                  : document.getElementById("contact-form")?.scrollIntoView({ behavior: "smooth" })}
-                style={{ marginTop: "auto", padding: "12px", borderRadius: 8, border: plan.highlight ? "none" : "0.5px solid rgba(212,175,55,0.5)", background: plan.highlight ? GOLD : "transparent", color: plan.highlight ? "#0B0C14" : GOLD, fontSize: 13, fontWeight: 800, cursor: checkoutPlan === plan.id ? "wait" : "pointer", opacity: checkoutPlan === plan.id ? 0.7 : 1 }}
+                onClick={scrollToContact}
+                style={{ marginTop: "auto", padding: "12px", borderRadius: 8, border: plan.highlight ? "none" : "0.5px solid rgba(212,175,55,0.5)", background: plan.highlight ? GOLD : "transparent", color: plan.highlight ? "#0B0C14" : GOLD, fontSize: 13, fontWeight: 800, cursor: "pointer" }}
               >
-                {checkoutPlan === plan.id
-                  ? t("pricingCheckoutLoading")
-                  : plan.price
-                    ? t("pricingPlanCta")
-                    : t("pricingPlanContact")}
+                {t("pricingPlanContact")}
               </button>
             </div>
           ))}
         </div>
 
-        {checkoutError && (
-          <div style={{ marginTop: 14, background: "rgba(239,68,68,0.1)", border: "0.5px solid rgba(239,68,68,0.4)", borderRadius: 10, padding: "12px 16px", fontSize: 13, color: "#FCA5A5" }}>
-            {checkoutError}
-          </div>
-        )}
-
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 16, lineHeight: 1.6 }}>{t("pricingVatNote")}</div>
+        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 16, lineHeight: 1.6 }}>{t("pricingTermsNote")}</div>
       </div>
 
 
