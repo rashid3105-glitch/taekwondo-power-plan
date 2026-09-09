@@ -139,8 +139,7 @@ Generate the post-competition action plan, with goals targeted at lifting the lo
     if (!response.ok) {
       if (response.status === 429) return json({ error: "Rate limit exceeded. Please try again in a moment." }, 429);
       if (response.status === 402) return json({ error: "AI credits exhausted. Add credits in Settings → Workspace → Usage." }, 402);
-      const errText = await response.text();
-      console.error("AI gateway error:", response.status, errText);
+      console.error("generate-competition-reflection: AI gateway error", { status: response.status });
       return json({ error: "AI service error" }, 500);
     }
 
@@ -152,7 +151,7 @@ Generate the post-competition action plan, with goals targeted at lifting the lo
     try {
       plan = JSON.parse(content);
     } catch {
-      console.error("Failed to parse AI response:", content);
+      console.error("generate-competition-reflection: could not parse model response", { length: content?.length ?? 0 });
       return json({ error: "Failed to parse AI response" }, 500);
     }
 

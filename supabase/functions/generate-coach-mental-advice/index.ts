@@ -137,8 +137,7 @@ Provide an honest, practical mental review for this coach, focusing on their wea
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
+      console.error("generate-coach-mental-advice: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -151,7 +150,7 @@ Provide an honest, practical mental review for this coach, focusing on their wea
     let advice;
     try { advice = JSON.parse(content); }
     catch {
-      console.error("Failed to parse AI response:", content);
+      console.error("generate-coach-mental-advice: could not parse model response", { length: content?.length ?? 0 });
       return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
