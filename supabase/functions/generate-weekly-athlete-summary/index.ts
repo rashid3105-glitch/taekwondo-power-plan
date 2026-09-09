@@ -117,8 +117,7 @@ ${workoutText}`;
     if (!response.ok) {
       if (response.status === 429) return json({ error: "Rate limit exceeded. Please try again in a moment." }, 429);
       if (response.status === 402) return json({ error: "AI credits exhausted." }, 402);
-      const errText = await response.text();
-      console.error("AI gateway error:", response.status, errText);
+      console.error("generate-weekly-athlete-summary: AI gateway error", { status: response.status });
       return json({ error: "AI service error" }, 500);
     }
 
