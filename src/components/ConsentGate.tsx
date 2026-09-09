@@ -71,10 +71,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         { data: profileRows, error: profileErr },
         { data: consentRows, error: consentErr },
         { data: parents, error: parentsErr },
+        { data: memberships, error: membershipsErr },
       ] = await Promise.all([
         supabase
           .from("profiles")
-          .select("role, active_role, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
+          .select("role, roles, active_role, is_parent, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
           .eq("user_id", uid)
           .limit(1),
         supabase
@@ -88,6 +89,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .select("id")
           .eq("athlete_id", uid)
           .limit(1),
+        supabase
+          .from("club_memberships" as any)
+          .select("role_in_club")
+          .eq("user_id", uid)
+          .eq("status", "active"),
       ]);
 
       const profile = (profileRows as any)?.[0] ?? null;
@@ -96,11 +102,12 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // If consent status cannot be read (expired token, offline, timeout,
       // 5xx), we cannot know whether consent exists — fail CLOSED with a
       // full-screen retry, never render protected content on uncertainty.
-      if (profileErr || consentErr || parentsErr) {
-        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr);
+      if (profileErr || consentErr || parentsErr || membershipsErr) {
+        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr || membershipsErr);
         setState({ kind: "error" });
         return;
       }
+
 
 
       const isAthlete =
@@ -110,6 +117,22 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         setState({ kind: "ok" });
         return;
       }
+
+      // Coaches / club admins are never asked for a birth date: the purpose of
+      // the block is to decide whether a MINOR ATHLETE needs guardian consent.
+      // Role sources are the same ones the rest of the app uses — profiles.role
+      // / profiles.roles and active club_memberships.role_in_club.
+      const profileRoles = ((profile as any)?.roles as string[] | null) ?? [];
+      const isStaff =
+        (profile as any)?.role === "coach" ||
+        (profile as any)?.active_role === "coach" ||
+        (Array.isArray(profileRoles) &&
+          (profileRoles.includes("coach") || profileRoles.includes("admin"))) ||
+        ((memberships as any[]) ?? []).some(
+          (m) => m?.role_in_club === "coach" || m?.role_in_club === "admin",
+        );
+      const isParent = (profile as any)?.is_parent === true;
+
 
       const clubName: string | null = (profile as any)?.clubs?.name ?? null;
       const status = (consent as any)?.status;
@@ -129,9 +152,14 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // a minor without a registered birth date could otherwise consent for
       // themselves. Ask the athlete for the date first, then re-evaluate.
       if (verdict === "unknown") {
+        if (isStaff || isParent) {
+          setState({ kind: "ok" });
+          return;
+        }
         setState({ kind: "needsBirthDate" });
         return;
       }
+
 
       if (verdict === true) {
         if (status === "granted") {
