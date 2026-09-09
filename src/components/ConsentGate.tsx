@@ -71,10 +71,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         { data: profileRows, error: profileErr },
         { data: consentRows, error: consentErr },
         { data: parents, error: parentsErr },
+        { data: memberships, error: membershipsErr },
       ] = await Promise.all([
         supabase
           .from("profiles")
-          .select("role, active_role, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
+          .select("role, roles, active_role, is_parent, birth_date, age, guardian_email, club_id, clubs:club_id(name)")
           .eq("user_id", uid)
           .limit(1),
         supabase
@@ -88,6 +89,11 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .select("id")
           .eq("athlete_id", uid)
           .limit(1),
+        supabase
+          .from("club_memberships" as any)
+          .select("role_in_club")
+          .eq("user_id", uid)
+          .eq("status", "active"),
       ]);
 
       const profile = (profileRows as any)?.[0] ?? null;
@@ -96,11 +102,12 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // If consent status cannot be read (expired token, offline, timeout,
       // 5xx), we cannot know whether consent exists — fail CLOSED with a
       // full-screen retry, never render protected content on uncertainty.
-      if (profileErr || consentErr || parentsErr) {
-        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr);
+      if (profileErr || consentErr || parentsErr || membershipsErr) {
+        console.warn("ConsentGate query error; failing closed:", profileErr || consentErr || parentsErr || membershipsErr);
         setState({ kind: "error" });
         return;
       }
+
 
 
       const isAthlete =
