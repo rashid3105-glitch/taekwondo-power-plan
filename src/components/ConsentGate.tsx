@@ -152,9 +152,14 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       // a minor without a registered birth date could otherwise consent for
       // themselves. Ask the athlete for the date first, then re-evaluate.
       if (verdict === "unknown") {
+        if (isStaff || isParent) {
+          setState({ kind: "ok" });
+          return;
+        }
         setState({ kind: "needsBirthDate" });
         return;
       }
+
 
       if (verdict === true) {
         if (status === "granted") {
