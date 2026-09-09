@@ -223,7 +223,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ id: data.id }),
     })
     if (!res.ok) {
-      console.error(`send-assessment-report returned ${res.status}: ${await res.text()}`)
+      console.error('submit-club-assessment: send-assessment-report error', { status: res.status })
     }
   } catch (e) {
     console.error('send-assessment-report invocation failed', e)

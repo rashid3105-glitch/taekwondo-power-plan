@@ -141,7 +141,7 @@ Keep it concise. No markdown, only JSON.`;
     });
     if (!aiRes.ok) {
       const txt = await aiRes.text();
-      console.error("generate-competition-plan gateway", aiRes.status, txt.slice(0, 300));
+      console.error("generate-competition-plan: AI gateway error", { status: aiRes.status });
       return new Response(JSON.stringify({ error: "AI gateway error", detail: txt.slice(0, 200) }), { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const aiJson = await aiRes.json();
