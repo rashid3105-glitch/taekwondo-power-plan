@@ -139,7 +139,6 @@ Generate the post-competition action plan, with goals targeted at lifting the lo
     if (!response.ok) {
       if (response.status === 429) return json({ error: "Rate limit exceeded. Please try again in a moment." }, 429);
       if (response.status === 402) return json({ error: "AI credits exhausted. Add credits in Settings → Workspace → Usage." }, 402);
-      const errText = await response.text();
       console.error("generate-competition-reflection: AI gateway error", { status: response.status });
       return json({ error: "AI service error" }, 500);
     }

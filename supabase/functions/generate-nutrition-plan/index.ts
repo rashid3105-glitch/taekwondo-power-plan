@@ -142,7 +142,6 @@ CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = response ? await response.text() : "no response";
       console.error("generate-nutrition-plan: AI gateway error after retries", { status });
       return new Response(JSON.stringify({ error: "AI service is temporarily unavailable. Please try again in a minute." }), {
         status: 200,

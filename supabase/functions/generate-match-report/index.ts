@@ -213,7 +213,6 @@ Provide a detailed WT performance report.`;
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const txt = await response.text();
       console.error("generate-match-report: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -276,7 +276,6 @@ Design the program for ${profile.program_weeks || 8} weeks with appropriate peri
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
       console.error("generate-plan: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500,

@@ -116,7 +116,6 @@ Write the report now.`;
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "AI credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      const t = await response.text();
       console.error("generate-health-report: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }

@@ -157,7 +157,6 @@ Provide personalized mental performance advice focusing on their weakest areas, 
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const t = await response.text();
       console.error("generate-mental-advice: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
