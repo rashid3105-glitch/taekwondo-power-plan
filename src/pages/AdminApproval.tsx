@@ -72,7 +72,7 @@ export default function AdminApproval() {
   const [users, setUsers] = useState<PendingUser[]>([]);
   const [coaches, setCoaches] = useState<{ user_id: string; display_name: string }[]>([]);
   const [clubs, setClubs] = useState<{ id: string; name: string; max_athletes: number; sport?: string; license_active?: boolean }[]>([]);
-  const [licenseFilter, setLicenseFilter] = useState<"active" | "inactive" | "all">("active");
+  const [licenseFilter, setLicenseFilter] = useState<"active" | "inactive" | "all">("all");
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
