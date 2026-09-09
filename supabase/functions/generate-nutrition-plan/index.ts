@@ -143,7 +143,7 @@ CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in
         });
       }
       const t = response ? await response.text() : "no response";
-      console.error("AI gateway error after retries:", status, t);
+      console.error("generate-nutrition-plan: AI gateway error after retries", { status });
       return new Response(JSON.stringify({ error: "AI service is temporarily unavailable. Please try again in a minute." }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -158,7 +158,7 @@ CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in
     try {
       plan = JSON.parse(content);
     } catch (e) {
-      console.error("Failed to parse AI response:", content);
+      console.error("generate-nutrition-plan: could not parse model response", { length: content?.length ?? 0 });
       return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

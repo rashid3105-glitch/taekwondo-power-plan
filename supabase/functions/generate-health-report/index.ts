@@ -117,7 +117,7 @@ Write the report now.`;
         return new Response(JSON.stringify({ error: "AI credits exhausted." }), { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
       const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
+      console.error("generate-health-report: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
@@ -129,7 +129,7 @@ Write the report now.`;
     try {
       report = JSON.parse(content);
     } catch {
-      console.error("Failed to parse AI response:", content);
+      console.error("generate-health-report: could not parse model response", { length: content?.length ?? 0 });
       return new Response(JSON.stringify({ error: "Failed to parse AI response" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 

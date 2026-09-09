@@ -214,7 +214,7 @@ Provide a detailed WT performance report.`;
         });
       }
       const txt = await response.text();
-      console.error("AI gateway error:", response.status, txt);
+      console.error("generate-match-report: AI gateway error", { status: response.status });
       return new Response(JSON.stringify({ error: "AI service error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -262,7 +262,7 @@ Provide a detailed WT performance report.`;
         report = JSON.parse(tryRepairJson(content));
         console.warn("Repaired malformed AI JSON");
       } catch {
-        console.error("Failed to parse AI response:", content);
+        console.error("generate-match-report: could not parse model response", { length: content?.length ?? 0 });
         return new Response(JSON.stringify({ error: "Failed to parse AI response" }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
