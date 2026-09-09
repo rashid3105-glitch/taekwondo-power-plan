@@ -119,8 +119,7 @@ Deno.serve(async (req) => {
         }) };
       }
       if (!resp.ok) {
-        const txt = await resp.text();
-        console.error("scan-food gateway error", resp.status, txt);
+        console.error("scan-food: AI gateway error", { status: resp.status });
         return { errorResponse: new Response(JSON.stringify({ error: "ai_error" }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         }) };

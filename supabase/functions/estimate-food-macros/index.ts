@@ -127,8 +127,7 @@ Deno.serve(async (req) => {
       });
     }
     if (!resp.ok) {
-      const txt = await resp.text();
-      console.error("estimate-food-macros gateway error", resp.status, txt);
+      console.error("estimate-food-macros: AI gateway error", { status: resp.status });
       return new Response(JSON.stringify({ error: "ai_error" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
