@@ -81,8 +81,7 @@ ${catalogText}`;
     if (resp.status === 429) return json({ error: "rate_limited" }, 429);
     if (resp.status === 402) return json({ error: "payment_required" }, 402);
     if (!resp.ok) {
-      const txt = await resp.text();
-      console.error("suggest-test-battery gateway error", resp.status, txt);
+      console.error("suggest-test-battery: AI gateway error", { status: resp.status });
       return json(fallback(catalog, focuses, desired, "ai_error"), 200);
     }
 
