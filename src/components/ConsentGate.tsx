@@ -118,6 +118,22 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      // Coaches / club admins are never asked for a birth date: the purpose of
+      // the block is to decide whether a MINOR ATHLETE needs guardian consent.
+      // Role sources are the same ones the rest of the app uses — profiles.role
+      // / profiles.roles and active club_memberships.role_in_club.
+      const profileRoles = ((profile as any)?.roles as string[] | null) ?? [];
+      const isStaff =
+        (profile as any)?.role === "coach" ||
+        (profile as any)?.active_role === "coach" ||
+        (Array.isArray(profileRoles) &&
+          (profileRoles.includes("coach") || profileRoles.includes("admin"))) ||
+        ((memberships as any[]) ?? []).some(
+          (m) => m?.role_in_club === "coach" || m?.role_in_club === "admin",
+        );
+      const isParent = (profile as any)?.is_parent === true;
+
+
       const clubName: string | null = (profile as any)?.clubs?.name ?? null;
       const status = (consent as any)?.status;
       const grace = (consent as any)?.grace_until as string | null | undefined;
