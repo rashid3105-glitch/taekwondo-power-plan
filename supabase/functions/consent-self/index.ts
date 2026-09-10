@@ -14,7 +14,7 @@
 // to parents already promises this, but for now they need to contact the
 // club (the data controller) to action it.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { POLICY_VERSION } from "../_shared/age.ts";
+import { POLICY_VERSION, isBelowConsentAge, DEFAULT_CONSENT_AGE } from "../_shared/age.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
