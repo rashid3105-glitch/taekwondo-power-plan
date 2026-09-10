@@ -4927,6 +4927,7 @@ export type Database = {
           unread_count: number
         }[]
       }
+      has_health_consent: { Args: { _athlete: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
