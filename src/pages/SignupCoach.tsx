@@ -226,8 +226,11 @@ export default function SignupCoach() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={resend.disabled}
                 className="w-full h-11 rounded-xl"
                 onClick={async () => {
+                  if (resend.disabled) return;
+                  resend.setSending(true);
                   try {
                     const { error } = await supabase.auth.resend({
                       type: "signup",
@@ -235,13 +238,25 @@ export default function SignupCoach() {
                       options: { emailRedirectTo: `${window.location.origin}/auth?tab=signin` },
                     });
                     if (error) throw error;
+                    resend.start();
                     toast({ title: "Mail sendt igen" });
                   } catch (e: any) {
-                    toast({ title: "Fejl", description: e.message, variant: "destructive" });
+                    resend.startFromError(e?.message);
+                    toast({
+                      title: "Vent lidt",
+                      description: "Vi kan kun sende én mail ad gangen. Prøv igen om lidt, og tjek din spam-mappe.",
+                      variant: "destructive",
+                    });
+                  } finally {
+                    resend.setSending(false);
                   }
                 }}
               >
-                Send mailen igen
+                {resend.sending
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : resend.remaining > 0
+                    ? `Send mailen igen (${resend.remaining}s)`
+                    : "Send mailen igen"}
               </Button>
             </div>
           )}
