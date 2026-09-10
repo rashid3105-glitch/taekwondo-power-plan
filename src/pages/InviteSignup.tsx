@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { InviteErrorState } from "@/components/InviteErrorState";
+import { useResendCooldown } from "@/hooks/useResendCooldown";
 
 
 import { useLanguage } from "@/i18n/LanguageContext";
