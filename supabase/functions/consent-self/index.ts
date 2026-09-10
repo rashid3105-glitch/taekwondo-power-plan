@@ -14,7 +14,7 @@
 // to parents already promises this, but for now they need to contact the
 // club (the data controller) to action it.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { POLICY_VERSION } from "../_shared/age.ts";
+import { POLICY_VERSION, isBelowConsentAge, DEFAULT_CONSENT_AGE } from "../_shared/age.ts";
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -85,9 +85,30 @@ Deno.serve(async (req) => {
     // Best-effort: stamp the user's current club so coaches can scope by club.
     const { data: prof } = await admin
       .from("profiles")
-      .select("club_id")
+      .select("club_id, birth_date, country")
       .eq("user_id", user.id)
       .maybeSingle();
+
+    // Server-side age guard — a minor can never self-grant health consent.
+    if (!prof?.birth_date) {
+      return json({ error: "birth_date_required" }, 400);
+    }
+
+    let consentAge = DEFAULT_CONSENT_AGE;
+    try {
+      const { data: ageData, error: ageErr } = await admin.rpc(
+        "consent_age_for_athlete",
+        { _athlete_id: user.id },
+      );
+      if (!ageErr && typeof ageData === "number") consentAge = ageData;
+    } catch (_e) {
+      // fail-safe: keep DEFAULT_CONSENT_AGE
+    }
+
+    if (isBelowConsentAge(prof.birth_date, consentAge) !== false) {
+      return json({ error: "guardian_consent_required" }, 403);
+    }
+
 
     const patch = {
       status: "granted",
