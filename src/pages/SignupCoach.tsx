@@ -19,6 +19,7 @@ const BANDS: Band[] = ["1-5", "6-15", "16-30", "30+"];
 export default function SignupCoach() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const resend = useResendCooldown();
   const { t } = useLanguage();
   const [step, setStep] = useState<Step>("account");
   const [loading, setLoading] = useState(false);
