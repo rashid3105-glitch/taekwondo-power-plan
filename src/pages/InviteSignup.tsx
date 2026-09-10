@@ -22,6 +22,7 @@ export default function InviteSignup() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const resend = useResendCooldown();
   const { locale, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("welcome");
