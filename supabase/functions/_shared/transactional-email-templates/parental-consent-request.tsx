@@ -49,7 +49,7 @@ const S: Record<Loc, Strings> = {
       'Mental self-assessments the athlete fills in',
     ],
     minutes: 'Takes about a minute. No account and no password needed.',
-    withdraw: 'You can withdraw your approval at any time.',
+    withdraw: 'You can withdraw your approval at any time \u2014 contact the club and processing stops.',
     notMyChild:
       'Not this child\u2019s parent or guardian? Open the link and choose \u201cThis is not my child\u201d \u2014 the club is notified and we stop emailing you.',
     fallback: 'If the button does not work, copy this link into your browser:',
@@ -74,7 +74,7 @@ const S: Record<Loc, Strings> = {
       'Mentale selvvurderinger som atleten udfylder',
     ],
     minutes: 'Det tager cirka et minut. Hverken konto eller adgangskode er n\u00f8dvendig.',
-    withdraw: 'Du kan tr\u00e6kke din godkendelse tilbage n\u00e5r som helst.',
+    withdraw: 'Du kan tr\u00e6kke godkendelsen tilbage n\u00e5r som helst. Kontakt klubben, s\u00e5 stopper behandlingen.',
     notMyChild:
       'Er du ikke for\u00e6lder eller v\u00e6rge for barnet? \u00c5bn linket og v\u00e6lg \u201cDet er ikke mit barn\u201d \u2014 s\u00e5 f\u00e5r klubben besked, og vi holder op med at skrive til dig.',
     fallback: 'Virker knappen ikke, kan du kopiere dette link ind i din browser:',
@@ -99,7 +99,7 @@ const S: Record<Loc, Strings> = {
       'Mentala sj\u00e4lvskattningar som idrottaren fyller i',
     ],
     minutes: 'Tar ungef\u00e4r en minut. Inget konto och inget l\u00f6senord beh\u00f6vs.',
-    withdraw: 'Du kan \u00e5terkalla ditt godk\u00e4nnande n\u00e4r som helst.',
+    withdraw: 'Du kan \u00e5terkalla ditt godk\u00e4nnande n\u00e4r som helst. Kontakta klubben s\u00e5 upph\u00f6r behandlingen.',
     notMyChild:
       '\u00c4r du inte v\u00e5rdnadshavare f\u00f6r barnet? \u00d6ppna l\u00e4nken och v\u00e4lj \u201cDet h\u00e4r \u00e4r inte mitt barn\u201d \u2014 klubben meddelas och vi slutar mejla dig.',
     fallback: 'Om knappen inte fungerar, kopiera den h\u00e4r l\u00e4nken till din webbl\u00e4sare:',
@@ -124,7 +124,7 @@ const S: Record<Loc, Strings> = {
       'Mentale Selbsteinsch\u00e4tzungen, die der Athlet ausf\u00fcllt',
     ],
     minutes: 'Dauert etwa eine Minute. Kein Konto und kein Passwort n\u00f6tig.',
-    withdraw: 'Sie k\u00f6nnen Ihre Zustimmung jederzeit widerrufen.',
+    withdraw: 'Sie k\u00f6nnen Ihre Zustimmung jederzeit widerrufen. Kontaktieren Sie den Verein, dann endet die Verarbeitung.',
     notMyChild:
       'Sie sind nicht Elternteil oder Vormund dieses Kindes? \u00d6ffnen Sie den Link und w\u00e4hlen Sie \u201eDas ist nicht mein Kind\u201c \u2014 der Verein wird informiert und wir schreiben Ihnen nicht mehr.',
     fallback: 'Falls die Schaltfl\u00e4che nicht funktioniert, kopieren Sie diesen Link in Ihren Browser:',
@@ -149,7 +149,7 @@ const S: Record<Loc, Strings> = {
       '\u0627\u0644\u062a\u0642\u064a\u064a\u0645\u0627\u062a \u0627\u0644\u0630\u0627\u062a\u064a\u0629 \u0627\u0644\u0630\u0647\u0646\u064a\u0629',
     ],
     minutes: '\u064a\u0633\u062a\u063a\u0631\u0642 \u062f\u0642\u064a\u0642\u0629 \u062a\u0642\u0631\u064a\u0628\u0627\u064b. \u0644\u0627 \u062d\u0627\u062c\u0629 \u0644\u062d\u0633\u0627\u0628 \u0623\u0648 \u0643\u0644\u0645\u0629 \u0645\u0631\u0648\u0631.',
-    withdraw: '\u064a\u0645\u0643\u0646\u0643 \u0633\u062d\u0628 \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0641\u064a \u0623\u064a \u0648\u0642\u062a.',
+    withdraw: '\u064a\u0645\u0643\u0646\u0643 \u0633\u062d\u0628 \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0641\u064a \u0623\u064a \u0648\u0642\u062a. \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u0646\u0627\u062f\u064a \u0648\u0633\u062a\u062a\u0648\u0642\u0641 \u0627\u0644\u0645\u0639\u0627\u0644\u062c\u0629.',
     notMyChild:
       '\u0644\u0633\u062a \u0648\u0644\u064a \u0623\u0645\u0631 \u0647\u0630\u0627 \u0627\u0644\u0637\u0641\u0644\u061f \u0627\u0641\u062a\u062d \u0627\u0644\u0631\u0627\u0628\u0637 \u0648\u0627\u062e\u062a\u0631 \u201c\u0647\u0630\u0627 \u0644\u064a\u0633 \u0637\u0641\u0644\u064a\u201d.',
     fallback: '\u0625\u0630\u0627 \u0644\u0645 \u064a\u0639\u0645\u0644 \u0627\u0644\u0632\u0631\u060c \u0627\u0646\u0633\u062e \u0647\u0630\u0627 \u0627\u0644\u0631\u0627\u0628\u0637:',
@@ -174,7 +174,7 @@ const S: Record<Loc, Strings> = {
       'Mentale egenvurderinger som ut\u00f8veren fyller ut',
     ],
     minutes: 'Tar omtrent ett minutt. Ingen konto og ingen passord.',
-    withdraw: 'Du kan trekke tilbake godkjenningen n\u00e5r som helst.',
+    withdraw: 'Du kan trekke tilbake godkjenningen n\u00e5r som helst. Kontakt klubben, s\u00e5 stopper behandlingen.',
     notMyChild:
       'Er du ikke forelder eller verge for barnet? \u00c5pne lenken og velg \u201cDette er ikke mitt barn\u201d \u2014 klubben blir varslet og vi slutter \u00e5 sende e-post.',
     fallback: 'Hvis knappen ikke virker, kopier denne lenken inn i nettleseren:',
@@ -199,7 +199,7 @@ const S: Record<Loc, Strings> = {
       'Autoevaluaciones mentales que completa el atleta',
     ],
     minutes: 'Tarda alrededor de un minuto. Sin cuenta ni contrase\u00f1a.',
-    withdraw: 'Puedes retirar tu aprobaci\u00f3n en cualquier momento.',
+    withdraw: 'Puedes retirar tu aprobaci\u00f3n en cualquier momento. Contacta con el club y el tratamiento se detiene.',
     notMyChild:
       '\u00bfNo eres el padre, madre o tutor? Abre el enlace y elige \u201cEste no es mi hijo\u201d: el club recibe el aviso y dejamos de escribirte.',
     fallback: 'Si el bot\u00f3n no funciona, copia este enlace en tu navegador:',
