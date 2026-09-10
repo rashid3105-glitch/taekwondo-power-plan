@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PageMeta } from "@/components/PageMeta";
 import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 import { InviteErrorState } from "@/components/InviteErrorState";
+import { useResendCooldown } from "@/hooks/useResendCooldown";
 
 
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -21,6 +22,7 @@ export default function InviteSignup() {
   const { code } = useParams<{ code: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const resend = useResendCooldown();
   const { locale, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("welcome");
@@ -279,8 +281,11 @@ export default function InviteSignup() {
               <Button
                 type="button"
                 variant="outline"
+                disabled={resend.disabled}
                 className="w-full h-11 rounded-xl"
                 onClick={async () => {
+                  if (resend.disabled) return;
+                  resend.setSending(true);
                   try {
                     const { error } = await supabase.auth.resend({
                       type: "signup",
@@ -290,13 +295,25 @@ export default function InviteSignup() {
                       },
                     });
                     if (error) throw error;
+                    resend.start();
                     toast({ title: "Mail sendt igen" });
                   } catch (e: any) {
-                    toast({ title: "Fejl", description: e.message, variant: "destructive" });
+                    resend.startFromError(e?.message);
+                    toast({
+                      title: "Vent lidt",
+                      description: "Vi kan kun sende én mail ad gangen. Prøv igen om lidt, og tjek din spam-mappe.",
+                      variant: "destructive",
+                    });
+                  } finally {
+                    resend.setSending(false);
                   }
                 }}
               >
-                Send mailen igen
+                {resend.sending
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : resend.remaining > 0
+                    ? `Send mailen igen (${resend.remaining}s)`
+                    : "Send mailen igen"}
               </Button>
             </div>
           )}
