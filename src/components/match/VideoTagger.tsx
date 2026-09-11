@@ -52,6 +52,17 @@ interface MatchTag {
   __pending?: boolean;
 }
 
+/** Snap a measured frame rate to the nearest broadcast standard. */
+const COMMON_FPS = [23.976, 24, 25, 29.97, 30, 48, 50, 59.94, 60];
+function snapFps(raw: number): number {
+  if (!Number.isFinite(raw) || raw <= 0) return 30;
+  let best = COMMON_FPS[0];
+  for (const c of COMMON_FPS) {
+    if (Math.abs(c - raw) < Math.abs(best - raw)) best = c;
+  }
+  return Math.abs(best - raw) / raw < 0.08 ? Math.round(best * 1000) / 1000 : Math.round(raw);
+}
+
 interface VideoTaggerProps {
   video: MatchVideo;
   isCoach: boolean;
@@ -213,7 +224,9 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     { id: string; timestamp_seconds: number; paths: { points: [number, number][]; color: string }[] }[]
   >([]);
   const DRAW_COLOR = "#ef4444";
-  const ANNOTATION_WINDOW_S = 0.3;
+  const lastAnnotationIdRef = useRef<string | null>(null);
+  /** How long a drawing stays on screen around its own moment, in seconds. */
+  const [annotationHold, setAnnotationHold] = useState(2);
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -261,14 +274,13 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   // Show only annotations recorded near the current playback moment.
   useEffect(() => {
     if (isDrawing) return;
-    const ts = currentFrame / FPS;
     const active = allAnnotations
-      .filter((a) => Math.abs(a.timestamp_seconds - ts) <= ANNOTATION_WINDOW_S)
+      .filter((a) => Math.abs(a.timestamp_seconds - currentTime) <= annotationHold / 2)
       .flatMap((a) => a.paths);
     setSavedPaths(active);
     redrawCanvas(active);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFrame, allAnnotations, isDrawing]);
+  }, [currentTime, allAnnotations, isDrawing, annotationHold]);
 
   // Initial load of all annotations for this video.
   useEffect(() => {
