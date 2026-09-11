@@ -5,8 +5,10 @@
 export const UPLOAD_LIMITS = {
   /** Photos — always compressed client-side before this ceiling applies. */
   image: 5 * 1024 * 1024,
-  /** Short clips (drills, technique, match). */
+  /** Short clips (drills, technique). */
   video: 30 * 1024 * 1024,
+  /** Full match recordings — matches the match_videos storage bucket ceiling. */
+  matchVideo: 200 * 1024 * 1024,
   /** Documents. */
   file: 5 * 1024 * 1024,
   /** Chat attachments are stricter: they sync offline and replay on reconnect. */
