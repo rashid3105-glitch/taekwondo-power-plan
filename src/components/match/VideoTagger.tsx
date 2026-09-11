@@ -863,26 +863,70 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       type="button"
                       size="sm"
                       variant={drawMode ? "default" : "outline"}
-                      className={`h-7 px-3 text-xs gap-1.5 font-semibold ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : "bg-video-input text-video-input-foreground border-video-border hover:bg-video-input/90"}`}
+                      className={`h-9 px-3 text-xs gap-1.5 font-semibold ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : "bg-video-input text-video-input-foreground border-video-border hover:bg-video-input/90"}`}
                       onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => {
-                        setDrawMode((d) => !d);
-                      }}
-
+                      onClick={() => setDrawMode((d) => !d)}
                     >
                       ✏️ {drawMode ? t("annotationModeOn") : t("annotationMode")}
                     </Button>
-                    {savedPaths.length > 0 && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="h-7 px-3 text-xs gap-1.5"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={clearAnnotations}
-                      >
-                        🗑 {t("annotationClear")}
-                      </Button>
+
+                    {/* How long each drawing stays visible around its own moment */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {t("annotationHoldLabel")}
+                      </span>
+                      {[1, 2, 4].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => setAnnotationHold(s)}
+                          className={`h-9 px-3 rounded-full text-xs font-semibold border transition-colors ${
+                            annotationHold === s
+                              ? "bg-video-accent text-video-accent-foreground border-video-accent"
+                              : "bg-video-surface text-video-foreground border-video-border"
+                          }`}
+                        >
+                          {s}s
+                        </button>
+                      ))}
+                    </div>
+
+                    {allAnnotations.length > 0 && (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-9 px-3 text-xs gap-1.5"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => void undoLastAnnotation()}
+                        >
+                          ↶ {t("annotationUndo")}
+                        </Button>
+                        {savedPaths.length > 0 && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-9 px-3 text-xs gap-1.5"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => void clearAnnotationsHere()}
+                          >
+                            🗑 {t("annotationClearHere")}
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-9 px-3 text-xs gap-1.5 text-destructive"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => void clearAllAnnotations()}
+                        >
+                          {t("annotationClearAll")}
+                        </Button>
+                      </>
                     )}
                   </div>
                 )}
