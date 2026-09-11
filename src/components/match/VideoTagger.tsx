@@ -19,7 +19,8 @@ import {
   removePendingTagInsert, makeTempId, type PendingTagInsert,
 } from "@/lib/matchOfflineDB";
 import { VideoScrubber } from "./VideoScrubber";
-import { NoteEditor, NotesList, NoteOverlayMarkers, useVideoNotes } from "./VideoNotes";
+import { NoteEditor, NotesList, useVideoNotes } from "./VideoNotes";
+import type { TimelineMarker } from "./VideoScrubber";
 
 interface MatchVideo {
   id: string;
@@ -51,6 +52,17 @@ interface MatchTag {
   __pending?: boolean;
 }
 
+/** Snap a measured frame rate to the nearest broadcast standard. */
+const COMMON_FPS = [23.976, 24, 25, 29.97, 30, 48, 50, 59.94, 60];
+function snapFps(raw: number): number {
+  if (!Number.isFinite(raw) || raw <= 0) return 30;
+  let best = COMMON_FPS[0];
+  for (const c of COMMON_FPS) {
+    if (Math.abs(c - raw) < Math.abs(best - raw)) best = c;
+  }
+  return Math.abs(best - raw) / raw < 0.08 ? Math.round(best * 1000) / 1000 : Math.round(raw);
+}
+
 interface VideoTaggerProps {
   video: MatchVideo;
   isCoach: boolean;
@@ -77,7 +89,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   const [duration, setDuration] = useState<number>(video.duration_seconds || 0);
   const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
   const [speed, setSpeed] = useState<number>(1);
-  const [hoverTag, setHoverTag] = useState<MatchTag | null>(null);
+  
   const [myProfile, setMyProfile] = useState<{ display_name: string; belt_level?: string | null; weight_category?: string | null } | null>(null);
 
   // Tag draft
@@ -95,30 +107,68 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   const [clubTechs, setClubTechs] = useState<ClubTechnique[]>([]);
   const [techDialogOpen, setTechDialogOpen] = useState(false);
 
-  // Frame stepping
-  const FPS = 30;
-  const FRAME = 1 / FPS;
-  const [currentFrame, setCurrentFrame] = useState(0);
+  // Playback position. Seconds are authoritative; frame numbers are derived
+  // from the clip's measured frame rate so 25/50/60 fps footage lines up.
+  const [fps, setFps] = useState(30);
+  const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const totalFrames = Math.max(0, Math.floor((duration || 0) * FPS));
+  const currentFrame = Math.round(currentTime * fps);
+  const fpsBaseRef = useRef<{ mediaTime: number; frames: number } | null>(null);
+
+  // A–B loop
+  const [loopStart, setLoopStart] = useState<number | null>(null);
+  const [loopEnd, setLoopEnd] = useState<number | null>(null);
 
   // Per-user notes
   const { notes, reload: reloadNotes } = useVideoNotes(video.id);
   const [noteEditorOpen, setNoteEditorOpen] = useState(false);
-  const [noteFrame, setNoteFrame] = useState(0);
+  const [noteTime, setNoteTime] = useState(0);
 
-  function stepFrame(dir: number) {
-    if (!videoRef.current) return;
-    videoRef.current.pause();
-    videoRef.current.currentTime = Math.max(
-      0,
-      Math.min(duration || videoRef.current.duration || 0, videoRef.current.currentTime + dir * FRAME),
-    );
+  // Measure the real frame rate from decoded frames when the browser supports it.
+  useEffect(() => {
+    const v = videoRef.current as any;
+    if (!v || !videoSrc || typeof v.requestVideoFrameCallback !== "function") return;
+    let cancelled = false;
+    let handle = 0;
+    fpsBaseRef.current = null;
+    const cb = (_now: number, meta: any) => {
+      if (cancelled) return;
+      setCurrentTime(meta.mediaTime);
+      lastTimeRef.current = meta.mediaTime;
+      const base = fpsBaseRef.current;
+      if (!base || meta.mediaTime < base.mediaTime || meta.presentedFrames < base.frames) {
+        fpsBaseRef.current = { mediaTime: meta.mediaTime, frames: meta.presentedFrames };
+      } else {
+        const dt = meta.mediaTime - base.mediaTime;
+        const df = meta.presentedFrames - base.frames;
+        if (dt > 0.7 && df > 5) {
+          const snapped = snapFps(df / dt);
+          setFps((prev) => (snapped !== prev ? snapped : prev));
+        }
+      }
+      handle = v.requestVideoFrameCallback(cb);
+    };
+    handle = v.requestVideoFrameCallback(cb);
+    return () => {
+      cancelled = true;
+      try { v.cancelVideoFrameCallback(handle); } catch { /* ignore */ }
+    };
+  }, [videoSrc]);
+
+  function seekTo(seconds: number) {
+    const v = videoRef.current;
+    if (!v) return;
+    const max = duration || v.duration || 0;
+    const next = Math.max(0, Math.min(max, seconds));
+    v.currentTime = next;
+    setCurrentTime(next);
   }
 
-  function seekToFrame(frame: number) {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = Math.max(0, Math.min(duration || videoRef.current.duration || 0, frame / FPS));
+  function stepFrame(dir: number) {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    seekTo(v.currentTime + (dir * 1) / fps);
   }
 
   function togglePlay() {
@@ -128,10 +178,38 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     else v.pause();
   }
 
+  function applySpeed(s: number) {
+    setSpeed(s);
+    if (videoRef.current) videoRef.current.playbackRate = s;
+  }
+
+  // Keep playback inside the A–B loop.
+  useEffect(() => {
+    if (loopStart === null || loopEnd === null || loopEnd <= loopStart) return;
+    if (currentTime >= loopEnd || currentTime < loopStart - 0.5) {
+      seekTo(loopStart);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime, loopStart, loopEnd]);
+
   function openNoteEditor() {
-    setNoteFrame(currentFrame);
+    setNoteTime(videoRef.current?.currentTime ?? currentTime);
     if (videoRef.current) videoRef.current.pause();
     setNoteEditorOpen(true);
+  }
+
+  function handleShortcut(e: React.KeyboardEvent) {
+    switch (e.key) {
+      case "ArrowLeft": e.preventDefault(); stepFrame(-1); break;
+      case "ArrowRight": e.preventDefault(); stepFrame(1); break;
+      case "j": case "J": e.preventDefault(); stepFrame(-10); break;
+      case "l": case "L": e.preventDefault(); stepFrame(10); break;
+      case "k": case "K": case " ": e.preventDefault(); togglePlay(); break;
+      case "n": case "N": e.preventDefault(); openNoteEditor(); break;
+      case "i": case "I": e.preventDefault(); setLoopStart(videoRef.current?.currentTime ?? currentTime); break;
+      case "o": case "O": e.preventDefault(); setLoopEnd(videoRef.current?.currentTime ?? currentTime); break;
+      default: break;
+    }
   }
 
   // Annotation state
@@ -146,7 +224,9 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     { id: string; timestamp_seconds: number; paths: { points: [number, number][]; color: string }[] }[]
   >([]);
   const DRAW_COLOR = "#ef4444";
-  const ANNOTATION_WINDOW_S = 0.3;
+  const lastAnnotationIdRef = useRef<string | null>(null);
+  /** How long a drawing stays on screen around its own moment, in seconds. */
+  const [annotationHold, setAnnotationHold] = useState(2);
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -194,14 +274,13 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   // Show only annotations recorded near the current playback moment.
   useEffect(() => {
     if (isDrawing) return;
-    const ts = currentFrame / FPS;
     const active = allAnnotations
-      .filter((a) => Math.abs(a.timestamp_seconds - ts) <= ANNOTATION_WINDOW_S)
+      .filter((a) => Math.abs(a.timestamp_seconds - currentTime) <= annotationHold / 2)
       .flatMap((a) => a.paths);
     setSavedPaths(active);
     redrawCanvas(active);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFrame, allAnnotations, isDrawing]);
+  }, [currentTime, allAnnotations, isDrawing, annotationHold]);
 
   // Initial load of all annotations for this video.
   useEffect(() => {
@@ -263,7 +342,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || !videoRef.current) return;
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
-    const { data: inserted } = await (supabase.from as any)("video_annotations").insert({
+    const { data: inserted, error } = await (supabase.from as any)("video_annotations").insert({
       video_id: video.id,
       created_by: user.id,
       timestamp_seconds: ts,
@@ -271,7 +350,12 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
       color: DRAW_COLOR,
       expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
     }).select("id, timestamp_seconds, paths, color").maybeSingle();
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
     if (inserted) {
+      lastAnnotationIdRef.current = (inserted as any).id;
       setAllAnnotations((prev) => [
         ...prev,
         {
@@ -283,14 +367,65 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     }
   };
 
-  const clearAnnotations = async () => {
-    setSavedPaths([]);
-    setAllAnnotations([]);
+  const deleteAnnotations = async (ids: string[]) => {
+    if (!ids.length) return;
+    const { error } = await (supabase.from as any)("video_annotations").delete().in("id", ids);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
+    setAllAnnotations((prev) => prev.filter((a) => !ids.includes(a.id)));
+    if (lastAnnotationIdRef.current && ids.includes(lastAnnotationIdRef.current)) {
+      lastAnnotationIdRef.current = null;
+    }
     clearCanvas();
-    await (supabase.from as any)("video_annotations")
-      .delete()
-      .eq("video_id", video.id);
   };
+
+  /** Remove only the most recent drawing made in this session. */
+  const undoLastAnnotation = async () => {
+    const id = lastAnnotationIdRef.current ?? allAnnotations[allAnnotations.length - 1]?.id;
+    if (!id) return;
+    await deleteAnnotations([id]);
+  };
+
+  /** Remove the drawings shown at the current moment only. */
+  const clearAnnotationsHere = async () => {
+    const ids = allAnnotations
+      .filter((a) => Math.abs(a.timestamp_seconds - currentTime) <= annotationHold / 2)
+      .map((a) => a.id);
+    await deleteAnnotations(ids);
+  };
+
+  /** Remove every drawing on this video — confirmed first. */
+  const clearAllAnnotations = async () => {
+    if (!allAnnotations.length) return;
+    if (!confirm(t("annotationClearAllConfirm"))) return;
+    await deleteAnnotations(allAnnotations.map((a) => a.id));
+  };
+
+  // One timeline for tags and notes together.
+  const timelineMarkers: TimelineMarker[] = useMemo(() => {
+    const tagMarkers: TimelineMarker[] = tags.map((tg) => ({
+      id: `tag-${tg.id}`,
+      time: tg.timestamp_seconds,
+      kind: "tag",
+      color:
+        tg.outcome === "scored" ? "hsl(160 84% 39%)" :
+        tg.outcome === "conceded" ? "hsl(350 89% 60%)" :
+        tg.outcome === "penalty" ? "hsl(38 92% 50%)" :
+        "hsl(var(--primary))",
+      label: `${fmt(tg.timestamp_seconds)} · ${tg.notes || tg.technique}`,
+    }));
+    const noteMarkers: TimelineMarker[] = notes.map((n) => ({
+      id: `note-${n.id}`,
+      time: n.timestamp_seconds,
+      kind: "note",
+      color: "hsl(var(--video-analysis-accent))",
+      label: `${fmt(n.timestamp_seconds)} · ${n.note_text || (n.tags ?? []).join(", ")}`,
+    }));
+    return [...tagMarkers, ...noteMarkers].sort((a, b) => a.time - b.time);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tags, notes]);
 
   const techList = useMemo(() => techniquesFor(video.discipline), [video.discipline]);
 
@@ -624,10 +759,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       className="max-h-[70vh] max-w-full h-auto w-auto object-contain block"
                       style={{ aspectRatio: String(aspectRatio) }}
                       preload="metadata"
-                      onKeyDown={(e) => {
-                        if (e.key === "ArrowLeft") { e.preventDefault(); stepFrame(-1); }
-                        if (e.key === "ArrowRight") { e.preventDefault(); stepFrame(1); }
-                      }}
+                      onKeyDown={handleShortcut}
                       onLoadedMetadata={(e) => {
                         const v = e.target as HTMLVideoElement;
                         if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
@@ -643,9 +775,15 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                         }
                       }}
                       onTimeUpdate={(e) => {
+                        // Fallback for browsers without requestVideoFrameCallback.
                         const v = e.target as HTMLVideoElement;
                         lastTimeRef.current = v.currentTime;
-                        setCurrentFrame(Math.round(v.currentTime * FPS));
+                        setCurrentTime(v.currentTime);
+                      }}
+                      onSeeked={(e) => {
+                        const v = e.target as HTMLVideoElement;
+                        lastTimeRef.current = v.currentTime;
+                        setCurrentTime(v.currentTime);
                       }}
                       onPlay={() => { wasPlayingRef.current = true; setIsPlaying(true); }}
                       onPause={(e) => {
@@ -656,8 +794,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                     />
                     <canvas
                       ref={canvasRef}
-                      width={800}
-                      height={Math.round(800 / aspectRatio)}
+                      width={1280}
+                      height={Math.round(1280 / aspectRatio)}
                       onMouseDown={startDraw}
                       onMouseMove={draw}
                       onMouseUp={endDraw}
@@ -672,16 +810,11 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                         touchAction: drawMode ? "none" : "auto",
                       }}
                     />
-                    {/* Note markers overlay */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} currentFrame={currentFrame} onJump={seekToFrame} />
-                    </div>
                     {/* + Add note button */}
                     <button
                       type="button"
                       onClick={openNoteEditor}
-                      className="absolute bottom-3 right-3 px-3 h-9 rounded-full text-xs font-semibold text-black shadow-lg flex items-center gap-1 z-10"
-                      style={{ background: "#F5A623" }}
+                      className="absolute bottom-3 right-3 px-3 h-10 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 z-10 bg-video-accent text-video-accent-foreground"
                     >
                       <Plus className="h-3.5 w-3.5" />
                       {t("videoNoteAdd")}
@@ -689,19 +822,28 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   </div>
                 </div>
 
-                {/* New tick-scrubber with controls + speed pills */}
+                {/* Tick-scrubber, one shared timeline, speed pills and A–B loop */}
                 <VideoScrubber
-                  currentFrame={currentFrame}
-                  totalFrames={totalFrames}
+                  currentTime={currentTime}
+                  duration={duration}
+                  fps={fps}
                   isPlaying={isPlaying}
                   speed={speed}
-                  noteFrames={notes.map((n) => n.frame_number)}
-                  onSeek={seekToFrame}
+                  markers={timelineMarkers}
+                  loopStart={loopStart}
+                  loopEnd={loopEnd}
+                  onSeek={seekTo}
                   onStep={(d) => stepFrame(d)}
                   onTogglePlay={togglePlay}
-                  onSpeed={(s) => {
-                    setSpeed(s);
-                    if (videoRef.current) videoRef.current.playbackRate = s;
+                  onSpeed={applySpeed}
+                  onSetLoopStart={() => setLoopStart(currentTime)}
+                  onSetLoopEnd={() => setLoopEnd(currentTime)}
+                  onClearLoop={() => { setLoopStart(null); setLoopEnd(null); }}
+                  labels={{
+                    frame: t("videoFrameLabel"),
+                    loopStart: t("videoLoopStart"),
+                    loopEnd: t("videoLoopEnd"),
+                    loopClear: t("videoLoopClear"),
                   }}
                 />
 
@@ -709,7 +851,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                 {noteEditorOpen && (
                   <NoteEditor
                     videoId={video.id}
-                    frameNumber={noteFrame}
+                    seconds={noteTime}
+                    fps={fps}
                     onClose={() => setNoteEditorOpen(false)}
                     onSaved={() => void reloadNotes()}
                   />
@@ -720,62 +863,70 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       type="button"
                       size="sm"
                       variant={drawMode ? "default" : "outline"}
-                      className={`h-7 px-3 text-xs gap-1.5 font-semibold ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : "bg-video-input text-video-input-foreground border-video-border hover:bg-video-input/90"}`}
+                      className={`h-9 px-3 text-xs gap-1.5 font-semibold ${drawMode ? "bg-red-500 hover:bg-red-600 border-red-500 text-white" : "bg-video-input text-video-input-foreground border-video-border hover:bg-video-input/90"}`}
                       onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => {
-                        setDrawMode((d) => !d);
-                      }}
-
+                      onClick={() => setDrawMode((d) => !d)}
                     >
                       ✏️ {drawMode ? t("annotationModeOn") : t("annotationMode")}
                     </Button>
-                    {savedPaths.length > 0 && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        className="h-7 px-3 text-xs gap-1.5"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={clearAnnotations}
-                      >
-                        🗑 {t("annotationClear")}
-                      </Button>
-                    )}
-                  </div>
-                )}
-                {/* Clickable timeline markers */}
-                {duration > 0 && (
-                  <div className="relative h-7 mt-1">
-                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 rounded-full bg-muted" />
-                    {tags.map((tag) => {
-                      const pct = Math.min(100, Math.max(0, (tag.timestamp_seconds / duration) * 100));
-                      const color =
-                        tag.outcome === "scored" ? "bg-emerald-500 hover:bg-emerald-400" :
-                        tag.outcome === "conceded" ? "bg-rose-500 hover:bg-rose-400" :
-                        tag.outcome === "penalty" ? "bg-amber-500 hover:bg-amber-400" :
-                        "bg-primary hover:bg-primary/80";
-                      return (
+
+                    {/* How long each drawing stays visible around its own moment */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {t("annotationHoldLabel")}
+                      </span>
+                      {[1, 2, 4].map((s) => (
                         <button
-                          key={tag.id}
+                          key={s}
                           type="button"
                           onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => jumpTo(tag.timestamp_seconds)}
-                          onMouseEnter={() => setHoverTag(tag)}
-                          onMouseLeave={() => setHoverTag((p) => (p?.id === tag.id ? null : p))}
-                          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full ring-2 ring-background transition-transform hover:scale-125 ${color}`}
-                          style={{ left: `${pct}%` }}
-                          title={`${fmt(tag.timestamp_seconds)} — ${tag.notes || tag.technique}`}
-                          aria-label={`${fmt(tag.timestamp_seconds)} ${tag.technique}`}
-                        />
-                      );
-                    })}
-                    {hoverTag && (
-                      <div
-                        className="absolute -top-7 z-10 -translate-x-1/2 px-2 py-0.5 rounded bg-foreground text-background text-[10px] font-mono whitespace-nowrap pointer-events-none shadow-md"
-                        style={{ left: `${Math.min(100, Math.max(0, (hoverTag.timestamp_seconds / duration) * 100))}%` }}
-                      >
-                        {fmt(hoverTag.timestamp_seconds)}{hoverTag.notes ? ` · ${hoverTag.notes}` : ""}
-                      </div>
+                          onClick={() => setAnnotationHold(s)}
+                          className={`h-9 px-3 rounded-full text-xs font-semibold border transition-colors ${
+                            annotationHold === s
+                              ? "bg-video-accent text-video-accent-foreground border-video-accent"
+                              : "bg-video-surface text-video-foreground border-video-border"
+                          }`}
+                        >
+                          {s}s
+                        </button>
+                      ))}
+                    </div>
+
+                    {allAnnotations.length > 0 && (
+                      <>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-9 px-3 text-xs gap-1.5"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => void undoLastAnnotation()}
+                        >
+                          ↶ {t("annotationUndo")}
+                        </Button>
+                        {savedPaths.length > 0 && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="h-9 px-3 text-xs gap-1.5"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => void clearAnnotationsHere()}
+                          >
+                            🗑 {t("annotationClearHere")}
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="ghost"
+                          className="h-9 px-3 text-xs gap-1.5 text-destructive"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => void clearAllAnnotations()}
+                        >
+                          {t("annotationClearAll")}
+                        </Button>
+                      </>
                     )}
                   </div>
                 )}
@@ -935,7 +1086,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
               {t("videoNoteAdd")} ({notes.length})
             </div>
-            <NotesList notes={notes} onJump={seekToFrame} onDeleted={() => void reloadNotes()} />
+            <NotesList notes={notes} fps={fps} onJump={seekTo} onDeleted={() => void reloadNotes()} />
           </div>
         </CardContent>
       </Card>

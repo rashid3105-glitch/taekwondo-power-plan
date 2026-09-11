@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { limitFor } from "@/lib/uploadLimits";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,8 @@ interface MatchVideoRow {
   __outboxId?: string;
 }
 
-const MAX_BYTES = 200 * 1024 * 1024; // 200 MB
+// Single source of truth, kept in step with the match_videos storage bucket.
+const MAX_BYTES = limitFor("matchVideo");
 
 export default function MatchAnalysis() {
   const { athleteId } = useParams<{ athleteId: string }>();

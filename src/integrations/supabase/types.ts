@@ -4267,6 +4267,7 @@ export type Database = {
           id: string
           note_text: string | null
           tags: string[] | null
+          timestamp_seconds: number | null
           user_id: string
           video_id: string
         }
@@ -4276,6 +4277,7 @@ export type Database = {
           id?: string
           note_text?: string | null
           tags?: string[] | null
+          timestamp_seconds?: number | null
           user_id: string
           video_id: string
         }
@@ -4285,6 +4287,7 @@ export type Database = {
           id?: string
           note_text?: string | null
           tags?: string[] | null
+          timestamp_seconds?: number | null
           user_id?: string
           video_id?: string
         }
