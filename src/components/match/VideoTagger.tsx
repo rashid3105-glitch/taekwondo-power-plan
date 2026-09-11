@@ -342,7 +342,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || !videoRef.current) return;
     const ts = Math.round(videoRef.current.currentTime * 10) / 10;
-    const { data: inserted } = await (supabase.from as any)("video_annotations").insert({
+    const { data: inserted, error } = await (supabase.from as any)("video_annotations").insert({
       video_id: video.id,
       created_by: user.id,
       timestamp_seconds: ts,
@@ -350,7 +350,12 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
       color: DRAW_COLOR,
       expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
     }).select("id, timestamp_seconds, paths, color").maybeSingle();
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
     if (inserted) {
+      lastAnnotationIdRef.current = (inserted as any).id;
       setAllAnnotations((prev) => [
         ...prev,
         {
@@ -362,14 +367,65 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     }
   };
 
-  const clearAnnotations = async () => {
-    setSavedPaths([]);
-    setAllAnnotations([]);
+  const deleteAnnotations = async (ids: string[]) => {
+    if (!ids.length) return;
+    const { error } = await (supabase.from as any)("video_annotations").delete().in("id", ids);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
+    setAllAnnotations((prev) => prev.filter((a) => !ids.includes(a.id)));
+    if (lastAnnotationIdRef.current && ids.includes(lastAnnotationIdRef.current)) {
+      lastAnnotationIdRef.current = null;
+    }
     clearCanvas();
-    await (supabase.from as any)("video_annotations")
-      .delete()
-      .eq("video_id", video.id);
   };
+
+  /** Remove only the most recent drawing made in this session. */
+  const undoLastAnnotation = async () => {
+    const id = lastAnnotationIdRef.current ?? allAnnotations[allAnnotations.length - 1]?.id;
+    if (!id) return;
+    await deleteAnnotations([id]);
+  };
+
+  /** Remove the drawings shown at the current moment only. */
+  const clearAnnotationsHere = async () => {
+    const ids = allAnnotations
+      .filter((a) => Math.abs(a.timestamp_seconds - currentTime) <= annotationHold / 2)
+      .map((a) => a.id);
+    await deleteAnnotations(ids);
+  };
+
+  /** Remove every drawing on this video — confirmed first. */
+  const clearAllAnnotations = async () => {
+    if (!allAnnotations.length) return;
+    if (!confirm(t("annotationClearAllConfirm"))) return;
+    await deleteAnnotations(allAnnotations.map((a) => a.id));
+  };
+
+  // One timeline for tags and notes together.
+  const timelineMarkers: TimelineMarker[] = useMemo(() => {
+    const tagMarkers: TimelineMarker[] = tags.map((tg) => ({
+      id: `tag-${tg.id}`,
+      time: tg.timestamp_seconds,
+      kind: "tag",
+      color:
+        tg.outcome === "scored" ? "hsl(160 84% 39%)" :
+        tg.outcome === "conceded" ? "hsl(350 89% 60%)" :
+        tg.outcome === "penalty" ? "hsl(38 92% 50%)" :
+        "hsl(var(--primary))",
+      label: `${fmt(tg.timestamp_seconds)} · ${tg.notes || tg.technique}`,
+    }));
+    const noteMarkers: TimelineMarker[] = notes.map((n) => ({
+      id: `note-${n.id}`,
+      time: n.timestamp_seconds,
+      kind: "note",
+      color: "hsl(var(--video-analysis-accent))",
+      label: `${fmt(n.timestamp_seconds)} · ${n.note_text || (n.tags ?? []).join(", ")}`,
+    }));
+    return [...tagMarkers, ...noteMarkers].sort((a, b) => a.time - b.time);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tags, notes]);
 
   const techList = useMemo(() => techniquesFor(video.discipline), [video.discipline]);
 
