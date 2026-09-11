@@ -19,7 +19,8 @@ import {
   removePendingTagInsert, makeTempId, type PendingTagInsert,
 } from "@/lib/matchOfflineDB";
 import { VideoScrubber } from "./VideoScrubber";
-import { NoteEditor, NotesList, NoteOverlayMarkers, useVideoNotes } from "./VideoNotes";
+import { NoteEditor, NotesList, useVideoNotes } from "./VideoNotes";
+import type { TimelineMarker } from "./VideoScrubber";
 
 interface MatchVideo {
   id: string;
@@ -77,7 +78,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   const [duration, setDuration] = useState<number>(video.duration_seconds || 0);
   const [aspectRatio, setAspectRatio] = useState<number>(16 / 9);
   const [speed, setSpeed] = useState<number>(1);
-  const [hoverTag, setHoverTag] = useState<MatchTag | null>(null);
+  
   const [myProfile, setMyProfile] = useState<{ display_name: string; belt_level?: string | null; weight_category?: string | null } | null>(null);
 
   // Tag draft
@@ -95,30 +96,68 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   const [clubTechs, setClubTechs] = useState<ClubTechnique[]>([]);
   const [techDialogOpen, setTechDialogOpen] = useState(false);
 
-  // Frame stepping
-  const FPS = 30;
-  const FRAME = 1 / FPS;
-  const [currentFrame, setCurrentFrame] = useState(0);
+  // Playback position. Seconds are authoritative; frame numbers are derived
+  // from the clip's measured frame rate so 25/50/60 fps footage lines up.
+  const [fps, setFps] = useState(30);
+  const [currentTime, setCurrentTime] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const totalFrames = Math.max(0, Math.floor((duration || 0) * FPS));
+  const currentFrame = Math.round(currentTime * fps);
+  const fpsBaseRef = useRef<{ mediaTime: number; frames: number } | null>(null);
+
+  // A–B loop
+  const [loopStart, setLoopStart] = useState<number | null>(null);
+  const [loopEnd, setLoopEnd] = useState<number | null>(null);
 
   // Per-user notes
   const { notes, reload: reloadNotes } = useVideoNotes(video.id);
   const [noteEditorOpen, setNoteEditorOpen] = useState(false);
-  const [noteFrame, setNoteFrame] = useState(0);
+  const [noteTime, setNoteTime] = useState(0);
 
-  function stepFrame(dir: number) {
-    if (!videoRef.current) return;
-    videoRef.current.pause();
-    videoRef.current.currentTime = Math.max(
-      0,
-      Math.min(duration || videoRef.current.duration || 0, videoRef.current.currentTime + dir * FRAME),
-    );
+  // Measure the real frame rate from decoded frames when the browser supports it.
+  useEffect(() => {
+    const v = videoRef.current as any;
+    if (!v || !videoSrc || typeof v.requestVideoFrameCallback !== "function") return;
+    let cancelled = false;
+    let handle = 0;
+    fpsBaseRef.current = null;
+    const cb = (_now: number, meta: any) => {
+      if (cancelled) return;
+      setCurrentTime(meta.mediaTime);
+      lastTimeRef.current = meta.mediaTime;
+      const base = fpsBaseRef.current;
+      if (!base || meta.mediaTime < base.mediaTime || meta.presentedFrames < base.frames) {
+        fpsBaseRef.current = { mediaTime: meta.mediaTime, frames: meta.presentedFrames };
+      } else {
+        const dt = meta.mediaTime - base.mediaTime;
+        const df = meta.presentedFrames - base.frames;
+        if (dt > 0.7 && df > 5) {
+          const snapped = snapFps(df / dt);
+          setFps((prev) => (snapped !== prev ? snapped : prev));
+        }
+      }
+      handle = v.requestVideoFrameCallback(cb);
+    };
+    handle = v.requestVideoFrameCallback(cb);
+    return () => {
+      cancelled = true;
+      try { v.cancelVideoFrameCallback(handle); } catch { /* ignore */ }
+    };
+  }, [videoSrc]);
+
+  function seekTo(seconds: number) {
+    const v = videoRef.current;
+    if (!v) return;
+    const max = duration || v.duration || 0;
+    const next = Math.max(0, Math.min(max, seconds));
+    v.currentTime = next;
+    setCurrentTime(next);
   }
 
-  function seekToFrame(frame: number) {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = Math.max(0, Math.min(duration || videoRef.current.duration || 0, frame / FPS));
+  function stepFrame(dir: number) {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    seekTo(v.currentTime + (dir * 1) / fps);
   }
 
   function togglePlay() {
@@ -128,10 +167,38 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     else v.pause();
   }
 
+  function applySpeed(s: number) {
+    setSpeed(s);
+    if (videoRef.current) videoRef.current.playbackRate = s;
+  }
+
+  // Keep playback inside the A–B loop.
+  useEffect(() => {
+    if (loopStart === null || loopEnd === null || loopEnd <= loopStart) return;
+    if (currentTime >= loopEnd || currentTime < loopStart - 0.5) {
+      seekTo(loopStart);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTime, loopStart, loopEnd]);
+
   function openNoteEditor() {
-    setNoteFrame(currentFrame);
+    setNoteTime(videoRef.current?.currentTime ?? currentTime);
     if (videoRef.current) videoRef.current.pause();
     setNoteEditorOpen(true);
+  }
+
+  function handleShortcut(e: React.KeyboardEvent) {
+    switch (e.key) {
+      case "ArrowLeft": e.preventDefault(); stepFrame(-1); break;
+      case "ArrowRight": e.preventDefault(); stepFrame(1); break;
+      case "j": case "J": e.preventDefault(); stepFrame(-10); break;
+      case "l": case "L": e.preventDefault(); stepFrame(10); break;
+      case "k": case "K": case " ": e.preventDefault(); togglePlay(); break;
+      case "n": case "N": e.preventDefault(); openNoteEditor(); break;
+      case "i": case "I": e.preventDefault(); setLoopStart(videoRef.current?.currentTime ?? currentTime); break;
+      case "o": case "O": e.preventDefault(); setLoopEnd(videoRef.current?.currentTime ?? currentTime); break;
+      default: break;
+    }
   }
 
   // Annotation state
