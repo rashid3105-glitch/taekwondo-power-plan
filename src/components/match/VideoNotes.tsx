@@ -11,13 +11,15 @@ export interface VideoNote {
   user_id: string;
   video_id: string;
   frame_number: number;
+  /** Authoritative position. Older rows fall back to frame_number / 30. */
+  timestamp_seconds: number;
   tags: string[];
   note_text: string | null;
   created_at: string;
 }
 
-const ACCENT = "#F5A623";
-const FPS = 30;
+/** Legacy rows were written assuming 30 fps. */
+const LEGACY_FPS = 30;
 
 const TAG_KEYS = [
   { key: "technique", labelKey: "videoNoteTagTechnique" },
@@ -28,32 +30,46 @@ const TAG_KEYS = [
   { key: "defense", labelKey: "videoNoteTagDefense" },
 ] as const;
 
+export function noteSeconds(row: { timestamp_seconds?: number | null; frame_number: number }): number {
+  const ts = row.timestamp_seconds;
+  return typeof ts === "number" && Number.isFinite(ts) ? ts : row.frame_number / LEGACY_FPS;
+}
+
 export function useVideoNotes(videoId: string) {
   const [notes, setNotes] = useState<VideoNote[]>([]);
+  const [loadError, setLoadError] = useState(false);
 
   const reload = async () => {
     // Load all notes for this video (RLS controls visibility — athlete sees own,
     // coach sees notes on videos belonging to athletes in their club).
-    const { data } = await (supabase.from as any)("video_notes")
+    const { data, error } = await (supabase.from as any)("video_notes")
       .select("*")
       .eq("video_id", videoId)
       .order("frame_number", { ascending: true });
-    setNotes((data ?? []) as VideoNote[]);
+    if (error) { setLoadError(true); return; }
+    setLoadError(false);
+    const rows = ((data ?? []) as any[]).map((r) => ({
+      ...r,
+      timestamp_seconds: noteSeconds(r),
+    })) as VideoNote[];
+    rows.sort((a, b) => a.timestamp_seconds - b.timestamp_seconds);
+    setNotes(rows);
   };
 
   useEffect(() => { void reload(); }, [videoId]);
 
-  return { notes, reload, setNotes };
+  return { notes, reload, setNotes, loadError };
 }
 
 // =====================================================
 // Note panel — opened by + button
 // =====================================================
 export function NoteEditor({
-  videoId, frameNumber, onClose, onSaved,
+  videoId, seconds, fps, onClose, onSaved,
 }: {
   videoId: string;
-  frameNumber: number;
+  seconds: number;
+  fps: number;
   onClose: () => void;
   onSaved: () => void;
 }) {
@@ -63,10 +79,16 @@ export function NoteEditor({
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const frameNumber = Math.round(seconds * fps);
+
   const toggleTag = (k: string) =>
     setTags((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
 
   const save = async () => {
+    if (!navigator.onLine) {
+      toast({ title: t("matchOfflineNoConnection"), variant: "destructive" });
+      return;
+    }
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setSaving(false); return; }
@@ -74,6 +96,7 @@ export function NoteEditor({
       user_id: user.id,
       video_id: videoId,
       frame_number: frameNumber,
+      timestamp_seconds: Math.round(seconds * 1000) / 1000,
       tags,
       note_text: text.trim() || null,
     });
@@ -92,7 +115,7 @@ export function NoteEditor({
         <div className="text-sm font-semibold text-video-foreground">
           {t("videoNoteAtFrame").replace("{frame}", String(frameNumber))}
         </div>
-        <button onClick={onClose} className="text-video-muted hover:text-video-foreground">
+        <button onClick={onClose} className="text-video-muted hover:text-video-foreground h-9 w-9 flex items-center justify-center">
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -105,7 +128,7 @@ export function NoteEditor({
               key={key}
               type="button"
               onClick={() => toggleTag(key)}
-              className={`px-2.5 h-7 rounded-full text-[11px] font-semibold border transition-colors ${
+              className={`px-3 h-9 rounded-full text-xs font-semibold border transition-colors ${
                 active
                   ? "bg-video-accent text-video-accent-foreground border-video-accent"
                   : "bg-video-surface text-video-foreground border-video-border hover:bg-video-card"
@@ -128,7 +151,7 @@ export function NoteEditor({
         type="button"
         onClick={save}
         disabled={saving}
-        className="w-full bg-video-accent text-video-accent-foreground hover:brightness-95"
+        className="w-full h-11 bg-video-accent text-video-accent-foreground hover:brightness-95"
       >
         {t("videoNoteSave")}
       </Button>
@@ -140,24 +163,29 @@ export function NoteEditor({
 // Notes list with filter pills
 // =====================================================
 export function NotesList({
-  notes, onJump, onDeleted,
+  notes, fps, onJump, onDeleted,
 }: {
   notes: VideoNote[];
-  onJump: (frame: number) => void;
+  fps: number;
+  onJump: (seconds: number) => void;
   onDeleted: () => void;
 }) {
   const { t } = useLanguage();
+  const { toast } = useToast();
   const [filter, setFilter] = useState<string | null>(null);
 
   const filtered = filter ? notes.filter((n) => n.tags?.includes(filter)) : notes;
 
   const del = async (id: string) => {
-    await (supabase.from as any)("video_notes").delete().eq("id", id);
+    const { error } = await (supabase.from as any)("video_notes").delete().eq("id", id);
+    if (error) {
+      toast({ title: t("error"), description: error.message, variant: "destructive" });
+      return;
+    }
     onDeleted();
   };
 
-  const fmtTime = (frame: number) => {
-    const s = frame / FPS;
+  const fmtTime = (s: number) => {
     const m = Math.floor(s / 60);
     const r = Math.floor(s % 60);
     return `${m}:${r.toString().padStart(2, "0")}`;
@@ -188,25 +216,22 @@ export function NotesList({
             <div
               key={n.id}
               className="rounded-lg border border-border bg-card p-3 cursor-pointer transition-colors hover:bg-muted/50"
-              onClick={() => onJump(n.frame_number)}
+              onClick={() => onJump(n.timestamp_seconds)}
             >
               <div className="flex items-center justify-between gap-2 mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span
-                    className="px-2 h-5 rounded text-[10px] font-mono font-bold inline-flex items-center text-black"
-                    style={{ background: ACCENT }}
-                  >
-                    F{n.frame_number}
+                  <span className="px-2 h-5 rounded text-[10px] font-mono font-bold inline-flex items-center bg-video-accent text-video-accent-foreground">
+                    F{Math.round(n.timestamp_seconds * fps)}
                   </span>
-                  <span className="text-[11px] font-mono text-muted-foreground">{fmtTime(n.frame_number)}</span>
+                  <span className="text-[11px] font-mono text-muted-foreground">{fmtTime(n.timestamp_seconds)}</span>
                 </div>
                 <button
                   type="button"
                   onClick={(e) => { e.stopPropagation(); void del(n.id); }}
-                  className="text-muted-foreground hover:text-destructive"
+                  className="text-muted-foreground hover:text-destructive h-9 w-9 flex items-center justify-center"
                   aria-label="Delete"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
               {n.tags?.length > 0 && (
@@ -240,7 +265,7 @@ function FilterPill({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className={`px-2.5 h-7 rounded-full text-[11px] font-semibold border transition-colors ${
+      className={`px-3 h-9 rounded-full text-xs font-semibold border transition-colors ${
         active
           ? "bg-video-accent text-video-accent-foreground border-video-accent"
           : "bg-video-surface text-video-foreground border-video-border hover:bg-video-card"
@@ -250,42 +275,3 @@ function FilterPill({ active, onClick, label }: { active: boolean; onClick: () =
     </button>
   );
 }
-
-// =====================================================
-// Overlay markers on the video element (numbered circles)
-// =====================================================
-export function NoteOverlayMarkers({
-  notes, totalFrames, currentFrame, onJump, windowFrames = 10,
-}: {
-  notes: VideoNote[];
-  totalFrames: number;
-  currentFrame?: number;
-  onJump: (frame: number) => void;
-  windowFrames?: number;
-}) {
-  if (!totalFrames || totalFrames <= 0) return null;
-  // Only show markers near the current frame — each note belongs to its own moment.
-  const visible = typeof currentFrame === "number"
-    ? notes.filter((n) => Math.abs(n.frame_number - currentFrame) <= windowFrames)
-    : notes;
-  return (
-    <>
-      {visible.map((n, idx) => {
-        const left = Math.min(100, Math.max(0, (n.frame_number / totalFrames) * 100));
-        return (
-          <button
-            key={n.id}
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onJump(n.frame_number); }}
-            className="absolute top-2 -translate-x-1/2 h-6 w-6 rounded-full text-[10px] font-bold text-black flex items-center justify-center shadow-md pointer-events-auto"
-            style={{ left: `${left}%`, background: ACCENT }}
-            title={`F${n.frame_number}`}
-          >
-            {idx + 1}
-          </button>
-        );
-      })}
-    </>
-  );
-}
-
