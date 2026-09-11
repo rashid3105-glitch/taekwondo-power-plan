@@ -624,10 +624,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       className="max-h-[70vh] max-w-full h-auto w-auto object-contain block"
                       style={{ aspectRatio: String(aspectRatio) }}
                       preload="metadata"
-                      onKeyDown={(e) => {
-                        if (e.key === "ArrowLeft") { e.preventDefault(); stepFrame(-1); }
-                        if (e.key === "ArrowRight") { e.preventDefault(); stepFrame(1); }
-                      }}
+                      onKeyDown={handleShortcut}
                       onLoadedMetadata={(e) => {
                         const v = e.target as HTMLVideoElement;
                         if (Number.isFinite(v.duration) && v.duration > 0) setDuration(v.duration);
@@ -643,9 +640,15 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                         }
                       }}
                       onTimeUpdate={(e) => {
+                        // Fallback for browsers without requestVideoFrameCallback.
                         const v = e.target as HTMLVideoElement;
                         lastTimeRef.current = v.currentTime;
-                        setCurrentFrame(Math.round(v.currentTime * FPS));
+                        setCurrentTime(v.currentTime);
+                      }}
+                      onSeeked={(e) => {
+                        const v = e.target as HTMLVideoElement;
+                        lastTimeRef.current = v.currentTime;
+                        setCurrentTime(v.currentTime);
                       }}
                       onPlay={() => { wasPlayingRef.current = true; setIsPlaying(true); }}
                       onPause={(e) => {
@@ -656,8 +659,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                     />
                     <canvas
                       ref={canvasRef}
-                      width={800}
-                      height={Math.round(800 / aspectRatio)}
+                      width={1280}
+                      height={Math.round(1280 / aspectRatio)}
                       onMouseDown={startDraw}
                       onMouseMove={draw}
                       onMouseUp={endDraw}
@@ -672,16 +675,11 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                         touchAction: drawMode ? "none" : "auto",
                       }}
                     />
-                    {/* Note markers overlay */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      <NoteOverlayMarkers notes={notes} totalFrames={totalFrames} currentFrame={currentFrame} onJump={seekToFrame} />
-                    </div>
                     {/* + Add note button */}
                     <button
                       type="button"
                       onClick={openNoteEditor}
-                      className="absolute bottom-3 right-3 px-3 h-9 rounded-full text-xs font-semibold text-black shadow-lg flex items-center gap-1 z-10"
-                      style={{ background: "#F5A623" }}
+                      className="absolute bottom-3 right-3 px-3 h-10 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1 z-10 bg-video-accent text-video-accent-foreground"
                     >
                       <Plus className="h-3.5 w-3.5" />
                       {t("videoNoteAdd")}
@@ -689,19 +687,28 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                   </div>
                 </div>
 
-                {/* New tick-scrubber with controls + speed pills */}
+                {/* Tick-scrubber, one shared timeline, speed pills and A–B loop */}
                 <VideoScrubber
-                  currentFrame={currentFrame}
-                  totalFrames={totalFrames}
+                  currentTime={currentTime}
+                  duration={duration}
+                  fps={fps}
                   isPlaying={isPlaying}
                   speed={speed}
-                  noteFrames={notes.map((n) => n.frame_number)}
-                  onSeek={seekToFrame}
+                  markers={timelineMarkers}
+                  loopStart={loopStart}
+                  loopEnd={loopEnd}
+                  onSeek={seekTo}
                   onStep={(d) => stepFrame(d)}
                   onTogglePlay={togglePlay}
-                  onSpeed={(s) => {
-                    setSpeed(s);
-                    if (videoRef.current) videoRef.current.playbackRate = s;
+                  onSpeed={applySpeed}
+                  onSetLoopStart={() => setLoopStart(currentTime)}
+                  onSetLoopEnd={() => setLoopEnd(currentTime)}
+                  onClearLoop={() => { setLoopStart(null); setLoopEnd(null); }}
+                  labels={{
+                    frame: t("videoFrameLabel"),
+                    loopStart: t("videoLoopStart"),
+                    loopEnd: t("videoLoopEnd"),
+                    loopClear: t("videoLoopClear"),
                   }}
                 />
 
@@ -709,7 +716,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                 {noteEditorOpen && (
                   <NoteEditor
                     videoId={video.id}
-                    frameNumber={noteFrame}
+                    seconds={noteTime}
+                    fps={fps}
                     onClose={() => setNoteEditorOpen(false)}
                     onSaved={() => void reloadNotes()}
                   />
@@ -740,42 +748,6 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
                       >
                         🗑 {t("annotationClear")}
                       </Button>
-                    )}
-                  </div>
-                )}
-                {/* Clickable timeline markers */}
-                {duration > 0 && (
-                  <div className="relative h-7 mt-1">
-                    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 rounded-full bg-muted" />
-                    {tags.map((tag) => {
-                      const pct = Math.min(100, Math.max(0, (tag.timestamp_seconds / duration) * 100));
-                      const color =
-                        tag.outcome === "scored" ? "bg-emerald-500 hover:bg-emerald-400" :
-                        tag.outcome === "conceded" ? "bg-rose-500 hover:bg-rose-400" :
-                        tag.outcome === "penalty" ? "bg-amber-500 hover:bg-amber-400" :
-                        "bg-primary hover:bg-primary/80";
-                      return (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => jumpTo(tag.timestamp_seconds)}
-                          onMouseEnter={() => setHoverTag(tag)}
-                          onMouseLeave={() => setHoverTag((p) => (p?.id === tag.id ? null : p))}
-                          className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3 w-3 rounded-full ring-2 ring-background transition-transform hover:scale-125 ${color}`}
-                          style={{ left: `${pct}%` }}
-                          title={`${fmt(tag.timestamp_seconds)} — ${tag.notes || tag.technique}`}
-                          aria-label={`${fmt(tag.timestamp_seconds)} ${tag.technique}`}
-                        />
-                      );
-                    })}
-                    {hoverTag && (
-                      <div
-                        className="absolute -top-7 z-10 -translate-x-1/2 px-2 py-0.5 rounded bg-foreground text-background text-[10px] font-mono whitespace-nowrap pointer-events-none shadow-md"
-                        style={{ left: `${Math.min(100, Math.max(0, (hoverTag.timestamp_seconds / duration) * 100))}%` }}
-                      >
-                        {fmt(hoverTag.timestamp_seconds)}{hoverTag.notes ? ` · ${hoverTag.notes}` : ""}
-                      </div>
                     )}
                   </div>
                 )}
@@ -935,7 +907,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
             <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
               {t("videoNoteAdd")} ({notes.length})
             </div>
-            <NotesList notes={notes} onJump={seekToFrame} onDeleted={() => void reloadNotes()} />
+            <NotesList notes={notes} fps={fps} onJump={seekTo} onDeleted={() => void reloadNotes()} />
           </div>
         </CardContent>
       </Card>
