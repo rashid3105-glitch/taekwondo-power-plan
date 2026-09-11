@@ -118,6 +118,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   // A–B loop
   const [loopStart, setLoopStart] = useState<number | null>(null);
   const [loopEnd, setLoopEnd] = useState<number | null>(null);
+  const manualSeekRef = useRef(false);
+
 
   // Per-user notes
   const { notes, reload: reloadNotes } = useVideoNotes(video.id);
