@@ -48,7 +48,8 @@ interface MatchVideoRow {
   __outboxId?: string;
 }
 
-const MAX_BYTES = 200 * 1024 * 1024; // 200 MB
+// Single source of truth, kept in step with the match_videos storage bucket.
+const MAX_BYTES = limitFor("matchVideo");
 
 export default function MatchAnalysis() {
   const { athleteId } = useParams<{ athleteId: string }>();
