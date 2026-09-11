@@ -118,6 +118,8 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
   // A–B loop
   const [loopStart, setLoopStart] = useState<number | null>(null);
   const [loopEnd, setLoopEnd] = useState<number | null>(null);
+  const manualSeekRef = useRef(false);
+
 
   // Per-user notes
   const { notes, reload: reloadNotes } = useVideoNotes(video.id);
@@ -160,6 +162,7 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     if (!v) return;
     const max = duration || v.duration || 0;
     const next = Math.max(0, Math.min(max, seconds));
+    manualSeekRef.current = true;
     v.currentTime = next;
     setCurrentTime(next);
   }
@@ -183,14 +186,21 @@ export function VideoTagger({ video, isCoach, isOwner = false, isOffline = false
     if (videoRef.current) videoRef.current.playbackRate = s;
   }
 
-  // Keep playback inside the A–B loop.
+  // Keep playback inside the A–B loop: only while playing, only when playback
+  // runs past the loop end, and never right after a manual seek.
   useEffect(() => {
     if (loopStart === null || loopEnd === null || loopEnd <= loopStart) return;
-    if (currentTime >= loopEnd || currentTime < loopStart - 0.5) {
+    if (manualSeekRef.current) {
+      manualSeekRef.current = false;
+      return;
+    }
+    if (!isPlaying) return;
+    if (currentTime >= loopEnd && currentTime < loopEnd + 1) {
       seekTo(loopStart);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentTime, loopStart, loopEnd]);
+  }, [currentTime, loopStart, loopEnd, isPlaying]);
+
 
   function openNoteEditor() {
     setNoteTime(videoRef.current?.currentTime ?? currentTime);
