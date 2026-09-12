@@ -2919,6 +2919,7 @@ export type Database = {
           sessions_per_week: number
           sport_start_date: string | null
           superadmin_active: boolean
+          training_log_v2_enabled: boolean
           updated_at: string
           user_id: string
           weekly_schedule: Json | null
@@ -2988,6 +2989,7 @@ export type Database = {
           sessions_per_week?: number
           sport_start_date?: string | null
           superadmin_active?: boolean
+          training_log_v2_enabled?: boolean
           updated_at?: string
           user_id: string
           weekly_schedule?: Json | null
@@ -3057,6 +3059,7 @@ export type Database = {
           sessions_per_week?: number
           sport_start_date?: string | null
           superadmin_active?: boolean
+          training_log_v2_enabled?: boolean
           updated_at?: string
           user_id?: string
           weekly_schedule?: Json | null
