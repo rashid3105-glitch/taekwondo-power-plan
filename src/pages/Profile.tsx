@@ -100,6 +100,8 @@ export default function Profile() {
   const [chatToast, setChatToast] = useState<boolean>(true);
   const [chatSound, setChatSound] = useState<boolean>(true);
   const [chatSaving, setChatSaving] = useState(false);
+  const [trainingLogV2, setTrainingLogV2] = useState<boolean>(false);
+  const [trainingLogSaving, setTrainingLogSaving] = useState(false);
   const [pushSaving, setPushSaving] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [antidopingDraft, setAntidopingDraft] = useState("");
