@@ -24,7 +24,7 @@ import { findPlanDayForToday, normalizeDaySessions, isRestDay } from "@/lib/plan
 import ComplianceAlertsCard from "@/components/ComplianceAlertsCard";
 import { QuickTrainingLog } from "@/components/hub/QuickTrainingLog";
 import { TrainingLogCard } from "@/components/lab/TrainingLogCard";
-import { useSuperadminLab } from "@/hooks/useSuperadminLab";
+import { usePostTrainingLog } from "@/hooks/usePostTrainingLog";
 import { CompetitionWeekCard } from "@/components/hub/CompetitionWeekCard";
 import AnnouncementsCard from "@/components/AnnouncementsCard";
 import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
@@ -90,7 +90,7 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
   const { totalUnread } = useThreads();
-  const { labEnabled } = useSuperadminLab();
+  const { enabled: labEnabled } = usePostTrainingLog();
   const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
 
   const [todayPlan, setTodayPlan] = useState<TodayPlan | null>(null);

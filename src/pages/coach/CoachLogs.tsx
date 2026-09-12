@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
-import { useSuperadminLab } from "@/hooks/useSuperadminLab";
+import { usePostTrainingLog } from "@/hooks/usePostTrainingLog";
 import { CoachLogQueue } from "@/components/lab/CoachLogQueue";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ClipboardList, Loader2 } from "lucide-react";
@@ -18,7 +18,7 @@ interface Athlete { user_id: string; display_name: string; birth_date?: string |
 export default function CoachLogs() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { labEnabled, loading } = useSuperadminLab();
+  const { enabled: labEnabled, loading } = usePostTrainingLog();
   const { activeClubId } = useActiveClub();
   const [athletes, setAthletes] = useState<Athlete[]>([]);
 

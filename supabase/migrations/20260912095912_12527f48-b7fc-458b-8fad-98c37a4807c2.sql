@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS training_log_v2_enabled boolean NOT NULL DEFAULT false;
+COMMENT ON COLUMN public.profiles.training_log_v2_enabled IS 'Opt-in: user has switched on the new post-training log (athlete card + shared coach queue) from their profile.';

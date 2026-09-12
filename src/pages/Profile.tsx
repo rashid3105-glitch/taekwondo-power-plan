@@ -11,7 +11,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell, Shield, Volume2 } from "lucide-react";
+import { LogOut, Pencil, Download, KeyRound, Trash2, ChevronLeft, Apple, Smartphone, ShieldOff, Bell, Shield, Volume2, ClipboardList } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
@@ -100,6 +100,8 @@ export default function Profile() {
   const [chatToast, setChatToast] = useState<boolean>(true);
   const [chatSound, setChatSound] = useState<boolean>(true);
   const [chatSaving, setChatSaving] = useState(false);
+  const [trainingLogV2, setTrainingLogV2] = useState<boolean>(false);
+  const [trainingLogSaving, setTrainingLogSaving] = useState(false);
   const [pushSaving, setPushSaving] = useState(false);
   const [mfaEnabled, setMfaEnabled] = useState(false);
   const [antidopingDraft, setAntidopingDraft] = useState("");
@@ -119,12 +121,13 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, height_cm, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, height_cm, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, training_log_v2_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       setPushEnabled((prof as any)?.push_enabled !== false);
       setChatToast((prof as any)?.chat_toast_enabled !== false);
       setChatSound((prof as any)?.chat_sound_enabled !== false);
+      setTrainingLogV2((prof as any)?.training_log_v2_enabled === true);
 
       const { data: ca } = await supabase
         .from("coach_athletes")
@@ -273,6 +276,26 @@ export default function Profile() {
       toast.error(e?.message || t("error"));
     } finally {
       setChatSaving(false);
+    }
+  };
+
+  const handleToggleTrainingLog = async (next: boolean) => {
+    const prev = trainingLogV2;
+    setTrainingLogSaving(true);
+    setTrainingLogV2(next);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("no user");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ training_log_v2_enabled: next } as any)
+        .eq("user_id", user.id);
+      if (error) throw error;
+    } catch (e: any) {
+      setTrainingLogV2(prev);
+      toast.error(e?.message || t("error"));
+    } finally {
+      setTrainingLogSaving(false);
     }
   };
 
@@ -668,6 +691,21 @@ export default function Profile() {
             checked={chatSound}
             disabled={chatSaving}
             onCheckedChange={(v) => handleToggleChatPref("chat_sound_enabled", v)}
+          />
+        </div>
+        <Separator className="bg-white/10" />
+        <div className="flex items-center justify-between py-3 px-1 gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <ClipboardList className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+            <div className="min-w-0">
+              <div className="text-sm text-white">{t("profileTrainingLogTitle" as any)}</div>
+              <div className="text-xs text-white/60">{t("profileTrainingLogSub" as any)}</div>
+            </div>
+          </div>
+          <Switch
+            checked={trainingLogV2}
+            disabled={trainingLogSaving}
+            onCheckedChange={handleToggleTrainingLog}
           />
         </div>
         <Separator className="bg-white/10" />
