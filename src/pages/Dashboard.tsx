@@ -560,8 +560,13 @@ export default function Dashboard() {
       setCoachReportsUnread(Number((badgeRow as any)?.coach_unread_reports_count) || 0);
     }
 
-    // Check if user has a coach assigned
-    const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
+    // Check if user has a coach assigned (a self-link doesn't count — you manage your own programs)
+    const { data: coachLink } = await supabase
+      .from("coach_athletes")
+      .select("coach_id")
+      .eq("athlete_id", user.id)
+      .neq("coach_id", user.id)
+      .limit(1);
     if (coachLink && coachLink.length > 0) {
       setHasCoach(true);
       const { data: coachProfile } = await supabase.from("profiles").select("display_name").eq("user_id", coachLink[0].coach_id).single();
