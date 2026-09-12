@@ -122,6 +122,7 @@ export default function Dashboard() {
   const [isCoach, setIsCoach] = useState(false);
   const [hasCoach, setHasCoach] = useState(false);
   const [coachName, setCoachName] = useState<string>("");
+  const [coachBannerOpen, setCoachBannerOpen] = useState(false);
   const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
@@ -560,8 +561,13 @@ export default function Dashboard() {
       setCoachReportsUnread(Number((badgeRow as any)?.coach_unread_reports_count) || 0);
     }
 
-    // Check if user has a coach assigned
-    const { data: coachLink } = await supabase.from("coach_athletes").select("coach_id").eq("athlete_id", user.id).limit(1);
+    // Check if user has a coach assigned (a self-link doesn't count — you manage your own programs)
+    const { data: coachLink } = await supabase
+      .from("coach_athletes")
+      .select("coach_id")
+      .eq("athlete_id", user.id)
+      .neq("coach_id", user.id)
+      .limit(1);
     if (coachLink && coachLink.length > 0) {
       setHasCoach(true);
       const { data: coachProfile } = await supabase.from("profiles").select("display_name").eq("user_id", coachLink[0].coach_id).single();
@@ -902,13 +908,25 @@ export default function Dashboard() {
           </div>
         )}
         {hasCoach && (
-          <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/5 p-3 sm:p-4">
-            <Lock className="h-5 w-5 text-accent shrink-0" />
-            <p className="text-sm text-foreground">
-              {coachName
+          <div className="flex items-start gap-3">
+            <button
+              type="button"
+              onClick={() => setCoachBannerOpen((o) => !o)}
+              aria-expanded={coachBannerOpen}
+              title={coachName
                 ? (t("coachManagedBannerNamed") || "").replace("{{coach}}", coachName)
                 : t("coachManagedBanner")}
-            </p>
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/5"
+            >
+              <Lock className="h-4 w-4 text-accent" />
+            </button>
+            {coachBannerOpen && (
+              <p className="flex-1 rounded-xl border border-accent/30 bg-accent/5 p-3 text-sm text-foreground">
+                {coachName
+                  ? (t("coachManagedBannerNamed") || "").replace("{{coach}}", coachName)
+                  : t("coachManagedBanner")}
+              </p>
+            )}
           </div>
         )}
         {activeTab === "hub" ? (
