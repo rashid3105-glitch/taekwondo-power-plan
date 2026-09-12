@@ -121,12 +121,13 @@ export default function Profile() {
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, height_cm, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, clubs:club_id(name)")
+        .select("display_name, avatar_url, discipline, club_id, coach_club_name, roles, birth_date, belt_level, weight_kg, height_cm, goals, license_values, antidoping_course_date, country, push_enabled, chat_toast_enabled, chat_sound_enabled, training_log_v2_enabled, clubs:club_id(name)")
         .eq("user_id", user.id)
         .maybeSingle();
       setPushEnabled((prof as any)?.push_enabled !== false);
       setChatToast((prof as any)?.chat_toast_enabled !== false);
       setChatSound((prof as any)?.chat_sound_enabled !== false);
+      setTrainingLogV2((prof as any)?.training_log_v2_enabled === true);
 
       const { data: ca } = await supabase
         .from("coach_athletes")
