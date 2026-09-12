@@ -13,7 +13,7 @@ import { AttendanceStatsDialog } from "@/components/coach/AttendanceStatsDialog"
 import { CoachTriage } from "@/components/coach/CoachTriage";
 import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
 import { useCoachLogCount } from "@/hooks/useCoachLogCount";
-import { useSuperadminLab } from "@/hooks/useSuperadminLab";
+import { usePostTrainingLog } from "@/hooks/usePostTrainingLog";
 
 interface MiniAthlete {
   user_id: string;
@@ -30,7 +30,7 @@ export default function CoachToday() {
   const [athletes, setAthletes] = useState<MiniAthlete[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
-  const { labEnabled } = useSuperadminLab();
+  const { enabled: labEnabled } = usePostTrainingLog();
   const { count: logCount } = useCoachLogCount(labEnabled);
 
   useEffect(() => {

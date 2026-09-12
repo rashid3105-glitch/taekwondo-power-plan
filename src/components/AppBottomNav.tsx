@@ -10,7 +10,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
 import { useMatchAnalysisEnabled } from "@/hooks/useMatchAnalysisEnabled";
 import { useThreads } from "@/hooks/useThreads";
-import { useSuperadminLab } from "@/hooks/useSuperadminLab";
+import { usePostTrainingLog } from "@/hooks/usePostTrainingLog";
 import { useCoachLogCount } from "@/hooks/useCoachLogCount";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export function AppBottomNav() {
   const { isCoachMode, isCoachRoute } = useCoachMode();
   const { matchAnalysisEnabled } = useMatchAnalysisEnabled();
   const { totalUnread } = useThreads();
-  const { labEnabled } = useSuperadminLab();
+  const { enabled: labEnabled } = usePostTrainingLog();
   const coachModeActive = (isCoachMode || isCoachRoute) && hasCoachRole;
   const { count: logCount } = useCoachLogCount(labEnabled && coachModeActive);
   const [meOpen, setMeOpen] = useState(false);
