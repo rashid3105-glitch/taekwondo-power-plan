@@ -694,6 +694,21 @@ export default function Profile() {
           />
         </div>
         <Separator className="bg-white/10" />
+        <div className="flex items-center justify-between py-3 px-1 gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <ClipboardList className="h-4 w-4 mt-0.5 shrink-0 text-white/70" />
+            <div className="min-w-0">
+              <div className="text-sm text-white">{t("profileTrainingLogTitle" as any)}</div>
+              <div className="text-xs text-white/60">{t("profileTrainingLogSub" as any)}</div>
+            </div>
+          </div>
+          <Switch
+            checked={trainingLogV2}
+            disabled={trainingLogSaving}
+            onCheckedChange={handleToggleTrainingLog}
+          />
+        </div>
+        <Separator className="bg-white/10" />
         <ActionRow
           icon={<Shield className="h-4 w-4" />}
           label={t("mfaTitle" as any)}
