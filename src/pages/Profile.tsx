@@ -279,6 +279,26 @@ export default function Profile() {
     }
   };
 
+  const handleToggleTrainingLog = async (next: boolean) => {
+    const prev = trainingLogV2;
+    setTrainingLogSaving(true);
+    setTrainingLogV2(next);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("no user");
+      const { error } = await supabase
+        .from("profiles")
+        .update({ training_log_v2_enabled: next } as any)
+        .eq("user_id", user.id);
+      if (error) throw error;
+    } catch (e: any) {
+      setTrainingLogV2(prev);
+      toast.error(e?.message || t("error"));
+    } finally {
+      setTrainingLogSaving(false);
+    }
+  };
+
   const handleExport = async () => {
     if (!data) return;
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
