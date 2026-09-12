@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { IOSDevice } from "@/components/prototypes/IOSDevice";
 import "@/styles/prototypes/post-training-log-v2.css";
@@ -6,6 +6,8 @@ import "@/styles/prototypes/post-training-log-v2.css";
 const TITLE = "Step 01 Prototype — Post-training log (v2, multi-coach)";
 const DESC =
   "Interactive two-phone prototype of the 19:45 post-training log: an athlete logs a session, three coaches share one queue, and whoever replies first clears the row.";
+
+const FLAG_KEY = "ptl-v2-prototype-enabled";
 
 const QUICK_REPLIES = [
   "Good — that timing is exactly what we drilled. Keep the same guard on Thursday.",
@@ -51,6 +53,73 @@ const QUESTIONS: { tag: string; accent?: boolean; q: string; a: string }[] = [
 type Status = "Trained" | "Partly" | "Skipped";
 
 export default function PostTrainingLogV2() {
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let on = false;
+    try {
+      on = localStorage.getItem(FLAG_KEY) === "1";
+    } catch {
+      on = false;
+    }
+    setEnabled(on);
+  }, []);
+
+  const setFlag = (on: boolean) => {
+    try {
+      if (on) localStorage.setItem(FLAG_KEY, "1");
+      else localStorage.removeItem(FLAG_KEY);
+    } catch {
+      /* ignore storage errors */
+    }
+    setEnabled(on);
+  };
+
+  const head = (
+    <Helmet>
+      <title>{TITLE}</title>
+      <meta name="description" content={DESC} />
+      <meta name="robots" content="noindex, nofollow" />
+      <meta property="og:title" content={TITLE} />
+      <meta property="og:description" content={DESC} />
+      <meta property="og:type" content="website" />
+      <meta name="twitter:card" content="summary_large_image" />
+    </Helmet>
+  );
+
+  if (enabled === null) {
+    return (
+      <div className="ptl-v2-scope">
+        {head}
+      </div>
+    );
+  }
+
+  if (!enabled) {
+    return (
+      <div className="ptl-v2-scope">
+        {head}
+        <div className="ptl-gate">
+          <div className="ptl-gate-box">
+            <span className="ptl-kicker">Step 01 · Prototype</span>
+            <h1 style={{ marginTop: 8, fontSize: 26 }}>Post-training log — v2</h1>
+            <p>
+              An interactive design prototype of the 19:45 post-training log. It is switched off by default and
+              changes nothing in the app.
+            </p>
+            <button className="ptl-pill solid" onClick={() => setFlag(true)}>
+              Turn the prototype on
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <Prototype onDisable={() => setFlag(false)} head={head} />;
+}
+
+function Prototype({ onDisable, head }: { onDisable: () => void; head: React.ReactNode }) {
   const [step, setStep] = useState(1);
   const [status, setStatus] = useState<Status>("Trained");
   const [effort, setEffort] = useState(7);
@@ -71,109 +140,107 @@ export default function PostTrainingLogV2() {
 
   return (
     <div className="ptl-v2-scope">
-      <Helmet>
-        <title>{TITLE}</title>
-        <meta name="description" content={DESC} />
-        <meta name="robots" content="noindex, nofollow" />
-        <meta property="og:title" content={TITLE} />
-        <meta property="og:description" content={DESC} />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
+      {head}
 
-      <div className="ptl-wrap">
-        <div className="ptl-headrow">
-          <span className="ptl-kicker">Step 01 · Prototype</span>
-          <span className="ptl-tracker">
-            {[1, 2, 3, 4, 5].map((n, i) => (
-              <span key={n}>
-                <span className={n === step ? "on" : undefined}>0{n}</span>
-                {i < 4 ? <span style={{ opacity: 0.4 }}> → </span> : null}
-              </span>
-            ))}
-          </span>
-        </div>
-        <div className="ptl-rule" />
+      <div className="ptl-shell">
+        <button className="ptl-offswitch" onClick={onDisable}>
+          Turn off
+        </button>
 
-        <h1>Post-training log — v2 (multi-coach)</h1>
-        <p className="ptl-deck">
-          19:45 nudges the athlete; three coaches share one queue; whoever replies first clears the row.
-        </p>
+        <div className="ptl-wrap">
+          <div className="ptl-headrow">
+            <span className="ptl-kicker">Step 01 · Prototype</span>
+            <span className="ptl-tracker">
+              {[1, 2, 3, 4, 5].map((n, i) => (
+                <span key={n}>
+                  <span className={n === step ? "on" : undefined}>0{n}</span>
+                  {i < 4 ? <span style={{ opacity: 0.4 }}> → </span> : null}
+                </span>
+              ))}
+            </span>
+          </div>
+          <div className="ptl-rule" />
 
-        <div className="ptl-phones">
-          <div>
-            <IOSDevice dark={step === 1} time={step >= 5 ? "19:53" : "19:45"}>
-              <AthleteScreen
-                step={step}
-                status={status}
-                setStatus={setStatus}
-                effort={effort}
-                setEffort={setEffort}
-                note={note}
-                setNote={setNote}
-                audience={audience}
-                setAudience={setAudience}
-                onSend={() => setStep(3)}
-                reply={reply}
-              />
-            </IOSDevice>
-            <p className="ptl-cap">Athlete — Emil, 14</p>
+          <h1>Post-training log — v2 (multi-coach)</h1>
+          <p className="ptl-deck">
+            19:45 nudges the athlete; three coaches share one queue; whoever replies first clears the row.
+          </p>
+
+          <div className="ptl-phones">
+            <div>
+              <IOSDevice dark={step === 1} time={step >= 5 ? "19:53" : "19:45"}>
+                <AthleteScreen
+                  step={step}
+                  status={status}
+                  setStatus={setStatus}
+                  effort={effort}
+                  setEffort={setEffort}
+                  note={note}
+                  setNote={setNote}
+                  audience={audience}
+                  setAudience={setAudience}
+                  onSend={() => setStep(3)}
+                  reply={reply}
+                />
+              </IOSDevice>
+              <p className="ptl-cap">Athlete — Emil, 14</p>
+            </div>
+
+            <div>
+              <IOSDevice time={step >= 5 ? "19:52" : "19:45"}>
+                <CoachScreen
+                  step={step}
+                  status={status}
+                  effort={effort}
+                  note={note}
+                  reply={reply}
+                  setReply={setReply}
+                  coachAudience={coachAudience}
+                  setCoachAudience={setCoachAudience}
+                  onSend={() => setStep(5)}
+                />
+              </IOSDevice>
+              <p className="ptl-cap">Coach — Sofia (of three)</p>
+            </div>
           </div>
 
-          <div>
-            <IOSDevice time={step >= 5 ? "19:52" : "19:45"}>
-              <CoachScreen
-                step={step}
-                status={status}
-                effort={effort}
-                note={note}
-                reply={reply}
-                setReply={setReply}
-                coachAudience={coachAudience}
-                setCoachAudience={setCoachAudience}
-                onSend={() => setStep(5)}
-              />
-            </IOSDevice>
-            <p className="ptl-cap">Coach — Sofia (of three)</p>
+          <div className="ptl-controls">
+            <button className="ptl-pill" onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1}>
+              ‹ Prev
+            </button>
+            <button className="ptl-pill solid" onClick={() => setStep((s) => Math.min(5, s + 1))} disabled={step === 5}>
+              Next ›
+            </button>
+            <button className="ptl-reset" onClick={reset}>
+              Reset
+            </button>
           </div>
-        </div>
 
-        <div className="ptl-controls">
-          <button className="ptl-pill" onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1}>
-            ‹ Prev
-          </button>
-          <button className="ptl-pill solid" onClick={() => setStep((s) => Math.min(5, s + 1))} disabled={step === 5}>
-            Next ›
-          </button>
-          <button className="ptl-reset" onClick={reset}>
-            Reset
-          </button>
-        </div>
-
-        <span className="ptl-kicker">Open questions</span>
-        <table className="ptl-q">
-          <thead>
-            <tr>
-              <td className="q">
-                <span className="ptl-kicker">Question</span>
-              </td>
-              <td>
-                <span className="ptl-kicker">My answer</span>
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            {QUESTIONS.map((r) => (
-              <tr key={r.tag}>
+          <span className="ptl-kicker">Open questions</span>
+          <table className="ptl-q">
+            <thead>
+              <tr>
                 <td className="q">
-                  <span className={r.accent ? "ptl-tag accent" : "ptl-tag"}>{r.tag}</span>
-                  {r.q}
+                  <span className="ptl-kicker">Question</span>
                 </td>
-                <td className="ptl-ans">{r.a}</td>
+                <td>
+                  <span className="ptl-kicker">My answer</span>
+                </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {QUESTIONS.map((r) => (
+                <tr key={r.tag}>
+                  <td className="q">
+                    <span className={r.accent ? "ptl-tag accent" : "ptl-tag"}>{r.tag}</span>
+                    {r.q}
+                  </td>
+                  <td className="ptl-ans">{r.a}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -404,15 +471,7 @@ function CoachScreen(props: {
     <div className="scr">
       {header}
       {step === 3 && (
-        <QueueRow
-          initial="E"
-          accent
-          name="Emil Hansen"
-          st={status}
-          ef={effort}
-          note={note}
-          time="19:47"
-        />
+        <QueueRow initial="E" accent name="Emil Hansen" st={status} ef={effort} note={note} time="19:47" />
       )}
       {step === 5 && (
         <QueueRow
