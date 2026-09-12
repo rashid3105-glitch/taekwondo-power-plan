@@ -122,6 +122,7 @@ export default function Dashboard() {
   const [isCoach, setIsCoach] = useState(false);
   const [hasCoach, setHasCoach] = useState(false);
   const [coachName, setCoachName] = useState<string>("");
+  const [coachBannerOpen, setCoachBannerOpen] = useState(false);
   const [clubName, setClubName] = useState<string>("");
   const [isDemo, setIsDemo] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
