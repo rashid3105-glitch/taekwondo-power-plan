@@ -163,20 +163,33 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
   return (
     <div className="space-y-2">
       {comments.length > 0 && (
-        <div className="space-y-1.5">
-          {comments.map((comment) => {
+        <div className="space-y-2.5">
+          {comments.map((comment, i) => {
             const isOwner = currentUserId === comment.coach_id;
+            const sameAsPrev = i > 0 && comments[i - 1].coach_id === comment.coach_id;
             return (
-              <div key={comment.id} className="flex items-start gap-2 rounded-md bg-accent/50 px-2.5 py-2">
-                <MessageSquare className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-semibold text-primary">{comment.coach_name}</span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {new Date(comment.created_at).toLocaleDateString(undefined, {
-                        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </span>
+              <div
+                key={comment.id}
+                className="rounded-lg border border-border/60 bg-accent/40 px-3 py-2.5"
+              >
+                <div className="flex items-center gap-2 mb-1.5">
+                  {!sameAsPrev && <MessageSquare className="h-3.5 w-3.5 text-primary shrink-0" />}
+                  {!sameAsPrev && (
+                    <span className="text-xs font-semibold text-primary truncate">{comment.coach_name}</span>
+                  )}
+                  <span className="text-[10px] text-muted-foreground">
+                    {new Date(comment.created_at).toLocaleDateString(undefined, {
+                      day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+
+                <p className="whitespace-pre-line break-words text-sm text-foreground leading-relaxed">
+                  {comment.content}
+                </p>
+
+                {(canComment || isOwner) && (
+                  <div className="mt-2 flex items-center gap-2 flex-wrap">
                     {/* Shared badge — clickable for owner, static for others (only visible to coaches) */}
                     {canComment && (
                       isOwner ? (
@@ -207,8 +220,7 @@ export function DiaryComments({ entryId, canComment = false }: DiaryCommentsProp
                       </button>
                     )}
                   </div>
-                  <p className="text-xs text-foreground leading-relaxed">{comment.content}</p>
-                </div>
+                )}
               </div>
             );
           })}
