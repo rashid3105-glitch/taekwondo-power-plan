@@ -119,6 +119,7 @@ export default function Diary() {
   const [recording, setRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [myUserId, setMyUserId] = useState<string | null>(null);
 
   const toggleRecording = () => {
     if (recording) {
