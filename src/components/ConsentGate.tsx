@@ -62,6 +62,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   // and the submit button stays disabled until the user ticks it.
   const [checked, setChecked] = useState(false);
   const [guardianLink, setGuardianLink] = useState<string | null>(null);
+  const [guardianEmailInput, setGuardianEmailInput] = useState("");
   const [birthDate, setBirthDate] = useState("");
 
 
