@@ -75,10 +75,10 @@ export const SUBPROCESSORS: Subprocessor[] = [
   },
   {
     name: "Apple Health / Health Connect",
-    country: "—",
+    country: "USA / Ireland",
     purposeKey: "privacySubHealth",
-    locationKey: "privacySubLocDevice",
-    basisKey: "privacySubBasisNone",
+    locationKey: "privacySubLocEu",
+    basisKey: "privacySubBasisEu",
     url: "https://www.apple.com/legal/privacy/",
   },
 ];
