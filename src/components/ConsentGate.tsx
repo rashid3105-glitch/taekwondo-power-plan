@@ -279,6 +279,35 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     navigate("/auth", { replace: true });
   };
 
+  // Minor flow: start (or restart) the guardian consent request. Saves the
+  // guardian's email on the profile, creates a consent token and sends the
+  // existing parental-consent-request email.
+  const sendGuardianRequest = async () => {
+    const email = guardianEmailInput.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(t("consentGuardianEmailInvalid"));
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const { data, error: fnErr } = await supabase.functions.invoke("consent-self", {
+        body: { action: "request_guardian", guardian_email: email },
+      });
+      if (fnErr) throw fnErr;
+      if (!(data as any)?.ok) throw new Error((data as any)?.error || "error");
+      toast.success(t("consentGuardianSentToast"));
+      setGuardianEmailInput("");
+      setState({ kind: "loading" });
+      await evaluate();
+    } catch (e: any) {
+      setError(t("consentGuardianSendFailed"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
   // Minor flow: create (or reuse) a guardian invite link the athlete can share.
   const createGuardianInvite = async () => {
     setSubmitting(true);
