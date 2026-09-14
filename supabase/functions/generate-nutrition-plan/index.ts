@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { checkAIEntitlement } from "../_shared/checkEntitlement.ts";
 import { sanitizePromptText, asUserDataBlock } from "../_shared/sanitizePrompt.ts";
+import { containsNumericNutritionTargets } from "../_shared/minorNutritionGuard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -218,15 +219,7 @@ CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in
       delete (plan as Record<string, unknown>).dailyCalorieEstimate;
       delete (plan as Record<string, unknown>).macroSplit;
       const planText = JSON.stringify(plan);
-      const forbidden = [
-        /\d[\d.,]*\s*(kcal|cal\b|calories|kalorier|kalorien|calorías|kj\b|سعرة|سعرات)/i,
-        /(kcal|calories|kalorier|kalorien|calorías)\s*[:=]?\s*\d/i,
-        /\d[\d.,]*\s*(g|gram|grams|gr)\b[^.,;]{0,24}(protein|carb|carbohydrate|kulhydrat|karbohydrat|kohlenhydrat|fedt|fett|fat|fett|grasa|بروتين|دهون)/i,
-        /(protein|carb|carbohydrate|kulhydrat|karbohydrat|kohlenhydrat|fedt|fett|fat|grasa|بروتين|دهون)[^.,;]{0,24}\d[\d.,]*\s*(g\b|gram|grams|%)/i,
-        /\d[\d.,]*\s*%/,
-        /\d[\d.,]*\s*(kg|kilo|kilogram|lbs|pounds)\b/i,
-      ];
-      if (forbidden.some((re) => re.test(planText))) {
+      if (containsNumericNutritionTargets(planText)) {
         console.error("generate-nutrition-plan: youth plan rejected by numeric validation", {
           length: planText.length,
         });
