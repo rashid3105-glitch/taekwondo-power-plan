@@ -14,7 +14,23 @@
 // to parents already promises this, but for now they need to contact the
 // club (the data controller) to action it.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { POLICY_VERSION, isBelowConsentAge, DEFAULT_CONSENT_AGE } from "../_shared/age.ts";
+import {
+  POLICY_VERSION,
+  isBelowConsentAge,
+  DEFAULT_CONSENT_AGE,
+  CONSENT_TOKEN_DAYS,
+} from "../_shared/age.ts";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
+
+const APP_URL = "https://sportstalent.dk";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function randomToken(bytes = 32) {
+  const arr = new Uint8Array(bytes);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
