@@ -211,7 +211,33 @@ CRITICAL: Write ALL text in ${lang}. Every value in the JSON response must be in
       });
     }
 
-    return new Response(JSON.stringify({ success: true, plan }), {
+    // Enforcement layer: the prompt alone cannot be trusted. Any numeric
+    // calorie/macro/weight content in a youth plan invalidates the whole
+    // response — it is discarded, never returned and never stored.
+    if (isMinor) {
+      delete (plan as Record<string, unknown>).dailyCalorieEstimate;
+      delete (plan as Record<string, unknown>).macroSplit;
+      const planText = JSON.stringify(plan);
+      const forbidden = [
+        /\d[\d.,]*\s*(kcal|cal\b|calories|kalorier|kalorien|calorías|kj\b|سعرة|سعرات)/i,
+        /(kcal|calories|kalorier|kalorien|calorías)\s*[:=]?\s*\d/i,
+        /\d[\d.,]*\s*(g|gram|grams|gr)\b[^.,;]{0,24}(protein|carb|carbohydrate|kulhydrat|karbohydrat|kohlenhydrat|fedt|fett|fat|fett|grasa|بروتين|دهون)/i,
+        /(protein|carb|carbohydrate|kulhydrat|karbohydrat|kohlenhydrat|fedt|fett|fat|grasa|بروتين|دهون)[^.,;]{0,24}\d[\d.,]*\s*(g\b|gram|grams|%)/i,
+        /\d[\d.,]*\s*%/,
+        /\d[\d.,]*\s*(kg|kilo|kilogram|lbs|pounds)\b/i,
+      ];
+      if (forbidden.some((re) => re.test(planText))) {
+        console.error("generate-nutrition-plan: youth plan rejected by numeric validation", {
+          length: planText.length,
+        });
+        return new Response(JSON.stringify({ error: "minor_numeric_output_rejected" }), {
+          status: 422,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    return new Response(JSON.stringify({ success: true, plan, is_minor: isMinor }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
