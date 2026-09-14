@@ -364,35 +364,74 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
             {fillPlaceholders(t("privacyConsentMinorBody"), vars)}
           </p>
 
-          {state.guardianLinked ? (
-            <div className="rounded-md border border-border bg-muted/30 p-3 text-sm leading-relaxed">
-              {t("privacyConsentMinorWaiting")}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {state.guardianEmail && (
-                <p className="text-xs text-muted-foreground">{state.guardianEmail}</p>
-              )}
-              {guardianLink ? (
+          {(() => {
+            const tok = state.token;
+            const waiting = (tok && !tok.expired) || (!tok && state.recordStatus === "pending");
+            const expired = !!tok?.expired;
+            return (
+              <div className="space-y-3">
+                <div className="rounded-md border border-border bg-muted/30 p-3 text-sm leading-relaxed">
+                  {waiting
+                    ? t("consentGuardianWaiting")
+                    : expired
+                      ? t("consentGuardianExpired")
+                      : t("consentGuardianNeedEmail")}
+                  {waiting && tok?.sent_at && (
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {t("consentGuardianSentAt")}: {new Date(tok.sent_at).toLocaleDateString()}
+                    </div>
+                  )}
+                  {state.guardianEmail && (
+                    <div className="mt-1 text-xs text-muted-foreground">{state.guardianEmail}</div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
-                  <div className="rounded-md border border-border bg-muted/30 p-3 text-xs break-all">
-                    {guardianLink}
-                  </div>
-                  <Button
-                    variant="secondary"
-                    className="w-full"
-                    onClick={() => navigator.clipboard?.writeText(guardianLink)}
-                  >
-                    {t("privacyConsentMinorCopyLink")}
+                  <label className="text-xs text-muted-foreground" htmlFor="guardian-email">
+                    {t("consentGuardianEmailLabel")}
+                  </label>
+                  <Input
+                    id="guardian-email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={guardianEmailInput}
+                    onChange={(e) => setGuardianEmailInput(e.target.value)}
+                    placeholder="forelder@example.com"
+                  />
+                  <Button onClick={sendGuardianRequest} disabled={submitting} className="w-full">
+                    {submitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : waiting || expired ? (
+                      t("consentGuardianResend")
+                    ) : (
+                      t("consentGuardianSendBtn")
+                    )}
                   </Button>
                 </div>
-              ) : (
-                <Button onClick={createGuardianInvite} disabled={submitting} className="w-full">
-                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentMinorInviteBtn")}
-                </Button>
-              )}
-            </div>
-          )}
+
+                {guardianLink ? (
+                  <div className="space-y-2">
+                    <div className="rounded-md border border-border bg-muted/30 p-3 text-xs break-all">
+                      {guardianLink}
+                    </div>
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      onClick={() => navigator.clipboard?.writeText(guardianLink)}
+                    >
+                      {t("privacyConsentMinorCopyLink")}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={createGuardianInvite} disabled={submitting} variant="outline" className="w-full">
+                    {t("privacyConsentMinorInviteBtn")}
+                  </Button>
+                )}
+              </div>
+            );
+          })()}
+
 
           <p className="text-xs text-muted-foreground">
             <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
