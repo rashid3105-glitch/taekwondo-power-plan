@@ -180,7 +180,11 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
       console.error("generate-nutrition-plan failed", err);
-      toast({ title: t("error"), description: err?.message || "Generation failed", variant: "destructive" });
+      toast({
+        title: t("error"),
+        description: isMinor ? t("minorPlanRejected") : (err?.message || "Generation failed"),
+        variant: "destructive",
+      });
     } finally {
       setGenerating(false);
     }
