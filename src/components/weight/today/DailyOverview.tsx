@@ -38,7 +38,7 @@ function shiftDate(iso: string, days: number): string {
 
 export function DailyOverview({
   userId, goal, currentWeight, dailyTargetKcal, readOnly = false,
-  weighIn, onWeighInChange, onWeighInSave, saving,
+  weighIn, onWeighInChange, onWeighInSave, saving, hideNumbers = false,
 }: Props) {
   const { t, locale } = useLanguage();
   const [date, setDate] = useState(todayISO());
@@ -124,22 +124,30 @@ export function DailyOverview({
         </button>
       </div>
 
-      <Card className="p-5 space-y-5">
-        {loading ? (
-          <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
-        ) : (
-          <>
-            <CalorieRing goalKcal={dailyTargetKcal} intakeKcal={intake.calories} burnedKcal={burned} />
-            <MacroBars targets={targets} intake={intake} />
-          </>
-        )}
-      </Card>
+      {hideNumbers ? (
+        <Card className="p-4">
+          <p className="text-xs text-muted-foreground">{t("minorNumbersHidden")}</p>
+        </Card>
+      ) : (
+        <Card className="p-5 space-y-5">
+          {loading ? (
+            <div className="flex justify-center py-8"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>
+          ) : (
+            <>
+              <CalorieRing goalKcal={dailyTargetKcal} intakeKcal={intake.calories} burnedKcal={burned} />
+              <MacroBars targets={targets} intake={intake} />
+            </>
+          )}
+        </Card>
+      )}
 
-      <WeightProgressBar
-        goal={goal}
-        currentWeight={currentWeight}
-        onAdd={() => (readOnly ? undefined : setWeighOpen(true))}
-      />
+      {!hideNumbers && (
+        <WeightProgressBar
+          goal={goal}
+          currentWeight={currentWeight}
+          onAdd={() => (readOnly ? undefined : setWeighOpen(true))}
+        />
+      )}
 
       <Card className="p-4">
         <MealLogList
@@ -147,6 +155,7 @@ export function DailyOverview({
           canEdit={!readOnly && isToday}
           onDelete={deleteMeal}
           onAdd={() => setScannerOpen(true)}
+          hideNumbers={hideNumbers}
         />
       </Card>
 
