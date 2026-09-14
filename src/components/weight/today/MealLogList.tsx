@@ -15,9 +15,11 @@ interface Props {
   canEdit: boolean;
   onDelete: (id: string) => void;
   onAdd: () => void;
+  /** Under 18: meals are still logged, but calorie/macro figures are hidden. */
+  hideNumbers?: boolean;
 }
 
-export function MealLogList({ meals, canEdit, onDelete, onAdd }: Props) {
+export function MealLogList({ meals, canEdit, onDelete, onAdd, hideNumbers = false }: Props) {
   const { t } = useLanguage();
   return (
     <div className="space-y-2">
