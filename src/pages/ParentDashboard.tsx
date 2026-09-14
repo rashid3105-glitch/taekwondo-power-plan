@@ -17,6 +17,7 @@ import { PHONE_CODES } from "@/data/phoneCodes";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { SupplementChecker } from "@/components/SupplementChecker";
 import { ParentGuideChat } from "@/components/parent/ParentGuideChat";
+import { ParentConsentCard } from "@/components/parent/ParentConsentCard";
 
 interface AthleteProfile {
   user_id: string;
@@ -25,6 +26,7 @@ interface AthleteProfile {
   avatar_url: string | null;
   weekly_schedule: any;
   country: string | null;
+  club_id: string | null;
   club_name?: string | null;
 }
 
@@ -165,7 +167,9 @@ export default function ParentDashboard() {
               avatar_url: p.avatar_url,
               weekly_schedule: p.weekly_schedule,
               country: p.country,
+              club_id: p.club_id ?? null,
               club_name: p.clubs?.name ?? null,
+
             },
             plan: (planRes.data as PlanRow | null) || null,
             competitions: (compsRes.data as CompetitionRow[]) || [],
@@ -252,6 +256,12 @@ export default function ParentDashboard() {
                 {t("parentViewBadge")}
               </span>
             </Card>
+
+            <ParentConsentCard
+              athleteId={a.profile.user_id}
+              athleteName={a.profile.display_name}
+              clubId={a.profile.club_id}
+            />
 
             <TrainingStatusCard athleteUserId={a.profile.user_id} />
 

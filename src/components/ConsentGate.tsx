@@ -7,6 +7,7 @@ import { BirthDatePicker } from "@/components/BirthDatePicker";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShieldCheck, Loader2, AlertTriangle, X } from "lucide-react";
 
@@ -33,7 +34,13 @@ type State =
   | { kind: "loading" }
   | { kind: "ok" }
   | { kind: "banner"; graceUntil: string; clubName: string | null }
-  | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
+  | {
+      kind: "minor";
+      clubName: string | null;
+      guardianEmail: string | null;
+      recordStatus: string | null;
+      token: { sent_at: string; expires_at: string; expired: boolean } | null;
+    }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
   | { kind: "error" };
@@ -55,6 +62,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   // and the submit button stays disabled until the user ticks it.
   const [checked, setChecked] = useState(false);
   const [guardianLink, setGuardianLink] = useState<string | null>(null);
+  const [guardianEmailInput, setGuardianEmailInput] = useState("");
   const [birthDate, setBirthDate] = useState("");
 
 
@@ -170,13 +178,29 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           setState({ kind: "banner", graceUntil: grace as string, clubName });
           return;
         }
-        setState({
-          kind: "minor",
-          clubName,
-          guardianEmail: ((profile as any)?.guardian_email as string | null) ?? null,
-          guardianLinked: Array.isArray(parents) && parents.length > 0,
-        });
+        // Ask the server for the ACTUAL request state (token / pending
+        // record). We must never claim we are waiting for a guardian if
+        // nothing was ever created or sent. On failure we fall back to
+        // "no request yet", which shows the email field — never a false
+        // "waiting" message.
+        let recordStatus: string | null = (status as string | null) ?? null;
+        let token: { sent_at: string; expires_at: string; expired: boolean } | null = null;
+        let guardianEmail = ((profile as any)?.guardian_email as string | null) ?? null;
+        try {
+          const { data: gs } = await supabase.functions.invoke("consent-self", {
+            body: { action: "guardian_status" },
+          });
+          if ((gs as any)?.ok) {
+            recordStatus = (gs as any).record_status ?? recordStatus;
+            token = (gs as any).token ?? null;
+            guardianEmail = (gs as any).guardian_email ?? guardianEmail;
+          }
+        } catch {
+          // keep fallback values
+        }
+        setState({ kind: "minor", clubName, guardianEmail, recordStatus, token });
         return;
+
       }
 
       if (status === "granted") {
@@ -254,6 +278,35 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     await supabase.auth.signOut();
     navigate("/auth", { replace: true });
   };
+
+  // Minor flow: start (or restart) the guardian consent request. Saves the
+  // guardian's email on the profile, creates a consent token and sends the
+  // existing parental-consent-request email.
+  const sendGuardianRequest = async () => {
+    const email = guardianEmailInput.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(t("consentGuardianEmailInvalid"));
+      return;
+    }
+    setSubmitting(true);
+    setError(null);
+    try {
+      const { data, error: fnErr } = await supabase.functions.invoke("consent-self", {
+        body: { action: "request_guardian", guardian_email: email },
+      });
+      if (fnErr) throw fnErr;
+      if (!(data as any)?.ok) throw new Error((data as any)?.error || "error");
+      toast.success(t("consentGuardianSentToast"));
+      setGuardianEmailInput("");
+      setState({ kind: "loading" });
+      await evaluate();
+    } catch (e: any) {
+      setError(t("consentGuardianSendFailed"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
 
   // Minor flow: create (or reuse) a guardian invite link the athlete can share.
   const createGuardianInvite = async () => {
@@ -342,35 +395,74 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
             {fillPlaceholders(t("privacyConsentMinorBody"), vars)}
           </p>
 
-          {state.guardianLinked ? (
-            <div className="rounded-md border border-border bg-muted/30 p-3 text-sm leading-relaxed">
-              {t("privacyConsentMinorWaiting")}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {state.guardianEmail && (
-                <p className="text-xs text-muted-foreground">{state.guardianEmail}</p>
-              )}
-              {guardianLink ? (
+          {(() => {
+            const tok = state.token;
+            const waiting = (tok && !tok.expired) || (!tok && state.recordStatus === "pending");
+            const expired = !!tok?.expired;
+            return (
+              <div className="space-y-3">
+                <div className="rounded-md border border-border bg-muted/30 p-3 text-sm leading-relaxed">
+                  {waiting
+                    ? t("consentGuardianWaiting")
+                    : expired
+                      ? t("consentGuardianExpired")
+                      : t("consentGuardianNeedEmail")}
+                  {waiting && tok?.sent_at && (
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      {t("consentGuardianSentAt")}: {new Date(tok.sent_at).toLocaleDateString()}
+                    </div>
+                  )}
+                  {state.guardianEmail && (
+                    <div className="mt-1 text-xs text-muted-foreground">{state.guardianEmail}</div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
-                  <div className="rounded-md border border-border bg-muted/30 p-3 text-xs break-all">
-                    {guardianLink}
-                  </div>
-                  <Button
-                    variant="secondary"
-                    className="w-full"
-                    onClick={() => navigator.clipboard?.writeText(guardianLink)}
-                  >
-                    {t("privacyConsentMinorCopyLink")}
+                  <label className="text-xs text-muted-foreground" htmlFor="guardian-email">
+                    {t("consentGuardianEmailLabel")}
+                  </label>
+                  <Input
+                    id="guardian-email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    value={guardianEmailInput}
+                    onChange={(e) => setGuardianEmailInput(e.target.value)}
+                    placeholder="forelder@example.com"
+                  />
+                  <Button onClick={sendGuardianRequest} disabled={submitting} className="w-full">
+                    {submitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : waiting || expired ? (
+                      t("consentGuardianResend")
+                    ) : (
+                      t("consentGuardianSendBtn")
+                    )}
                   </Button>
                 </div>
-              ) : (
-                <Button onClick={createGuardianInvite} disabled={submitting} className="w-full">
-                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentMinorInviteBtn")}
-                </Button>
-              )}
-            </div>
-          )}
+
+                {guardianLink ? (
+                  <div className="space-y-2">
+                    <div className="rounded-md border border-border bg-muted/30 p-3 text-xs break-all">
+                      {guardianLink}
+                    </div>
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      onClick={() => navigator.clipboard?.writeText(guardianLink)}
+                    >
+                      {t("privacyConsentMinorCopyLink")}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button onClick={createGuardianInvite} disabled={submitting} variant="outline" className="w-full">
+                    {t("privacyConsentMinorInviteBtn")}
+                  </Button>
+                )}
+              </div>
+            );
+          })()}
+
 
           <p className="text-xs text-muted-foreground">
             <Link to="/privacy" className="underline">{t("privacyConsentPolicyLink")}</Link>
