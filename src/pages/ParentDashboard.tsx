@@ -167,7 +167,9 @@ export default function ParentDashboard() {
               avatar_url: p.avatar_url,
               weekly_schedule: p.weekly_schedule,
               country: p.country,
+              club_id: p.club_id ?? null,
               club_name: p.clubs?.name ?? null,
+
             },
             plan: (planRes.data as PlanRow | null) || null,
             competitions: (compsRes.data as CompetitionRow[]) || [],
