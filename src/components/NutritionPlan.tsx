@@ -9,6 +9,7 @@ import jsPDF from "jspdf";
 import { getMealImage } from "@/data/recipeImages";
 import { AssistantDisclosure } from "@/components/AssistantDisclosure";
 import type { WeightGoal } from "@/lib/weightPlanner";
+import { useIsMinor } from "@/hooks/useIsMinor";
 
 interface NutritionPlanProps {
   profile: {
@@ -55,7 +56,9 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
   const [savedPlanId, setSavedPlanId] = useState<string | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
 
-  const selectedGoals = deriveGoals(goal);
+  // Fixed 18-year product-safety limit: youth plans are qualitative only.
+  const { isMinor } = useIsMinor(userId);
+  const selectedGoals = isMinor ? ["Improve performance"] : deriveGoals(goal);
 
 
   // Load saved plan on mount
@@ -144,7 +147,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       if (m < 0 || (m === 0 && today.getDate() < bd.getDate())) a--;
       if (a > 0) age = a;
     }
-    if (!profile || age == null || profile.weight_kg == null) {
+    if (!isMinor && (!profile || age == null || profile.weight_kg == null)) {
       toast({ title: t("error"), description: t("profileRequired") || "Udfyld din profil (alder og vægt) først", variant: "destructive" });
       return;
     }
@@ -159,7 +162,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
           profile: { ...profile, age },
           goals: selectedGoals,
           language: locale,
-          custom_calories: dailyTargetKcal ?? profile?.custom_calories ?? null,
+          custom_calories: isMinor ? null : (dailyTargetKcal ?? profile?.custom_calories ?? null),
         },
       });
 
@@ -167,7 +170,12 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       if (data?.error) throw new Error(data.error);
       if (!data?.plan) throw new Error("No plan returned");
       setPlan(data.plan);
-      const id = await savePlan(data.plan, selectedGoals, customCalories ? parseInt(customCalories) : null, savedPlanId);
+      const id = await savePlan(
+        data.plan,
+        selectedGoals,
+        isMinor ? null : (customCalories ? parseInt(customCalories) : null),
+        savedPlanId,
+      );
       if (id) setSavedPlanId(id);
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
@@ -224,18 +232,20 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
 
 
 
-    // Macros overview
+    // Macros overview (never printed for athletes under 18)
     doc.setFontSize(11);
     doc.setFont("helvetica", "bold");
-    checkPage(12);
-    doc.text(`${t("calories")}: ${plan.dailyCalorieEstimate || "—"}`, margin, y);
-    y += 6;
-    if (customCalories) {
+    if (!isMinor) {
+      checkPage(12);
+      doc.text(`${t("calories")}: ${plan.dailyCalorieEstimate || "—"}`, margin, y);
+      y += 6;
+    }
+    if (!isMinor && customCalories) {
       doc.setFont("helvetica", "normal");
       doc.text(`${t("customCalories")}: ${customCalories} ${t("kcalPerDay")}`, margin, y);
       y += 6;
     }
-    if (plan.macroSplit) {
+    if (!isMinor && plan.macroSplit) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.text(`${t("protein")}: ${plan.macroSplit.protein}  |  ${t("carbs")}: ${plan.macroSplit.carbs}  |  ${t("fats")}: ${plan.macroSplit.fats}`, margin, y);
@@ -326,7 +336,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
                     {t(g) || g}
                   </span>
                 ))}
-                {dailyTargetKcal ? (
+                {!isMinor && dailyTargetKcal ? (
                   <span className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground">
                     {dailyTargetKcal} kcal
                   </span>
@@ -375,6 +385,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
                 )}
               </div>
             </div>
+            {!isMinor && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-lg bg-muted/50 p-3 text-center">
                 <Flame className="h-4 w-4 mx-auto text-primary mb-1" />
@@ -398,16 +409,17 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
                 </>
               )}
             </div>
+            )}
 
             {/* Custom Calorie Display (from profile) */}
-            {profile?.custom_calories && (
+            {!isMinor && profile?.custom_calories && (
               <div className="rounded-lg border border-border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">{t("dailyCalorieTarget")}</p>
                 <p className="text-sm font-bold text-card-foreground">{profile.custom_calories} {t("kcalPerDay")}</p>
               </div>
             )}
             {/* Backward compat: show saved custom_calories from plan if no profile value */}
-            {!profile?.custom_calories && customCalories && (
+            {!isMinor && !profile?.custom_calories && customCalories && (
               <div className="rounded-lg border border-border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">{t("customCalories")}</p>
                 <p className="text-sm font-bold text-card-foreground">{customCalories} {t("kcalPerDay")}</p>
