@@ -26,6 +26,8 @@ interface Props {
   onWeighInChange: (v: string) => void;
   onWeighInSave: () => void;
   saving?: boolean;
+  /** Under 18: meals are still logged, but calorie/macro figures are hidden. */
+  hideNumbers?: boolean;
 }
 
 const DAY = 86400000;
