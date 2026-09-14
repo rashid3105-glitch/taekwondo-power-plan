@@ -13,6 +13,7 @@ import { CompetitionWeightCard } from "./CompetitionWeightCard";
 import { WeightOnboarding } from "./onboarding/WeightOnboarding";
 import { DailyOverview } from "./today/DailyOverview";
 import { NutritionPlan } from "@/components/NutritionPlan";
+import { useIsMinor } from "@/hooks/useIsMinor";
 import {
   dailyCalorieDelta,
   estimateMaintenanceCalories, milestones, movingAverage, todayISO,
@@ -132,7 +133,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
     void load();
   };
 
-  const stones = goal && currentWeight != null ? milestones(goal, currentWeight) : [];
+  const stones = !isMinor && goal && currentWeight != null ? milestones(goal, currentWeight) : [];
   const setByCoach = !!(goal?.set_by && resolvedId && goal.set_by !== resolvedId);
 
   if (loading) {
