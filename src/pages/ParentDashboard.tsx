@@ -257,6 +257,12 @@ export default function ParentDashboard() {
               </span>
             </Card>
 
+            <ParentConsentCard
+              athleteId={a.profile.user_id}
+              athleteName={a.profile.display_name}
+              clubId={a.profile.club_id}
+            />
+
             <TrainingStatusCard athleteUserId={a.profile.user_id} />
 
             {/* Training plan */}
