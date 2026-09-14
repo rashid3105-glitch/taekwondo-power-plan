@@ -176,13 +176,29 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           setState({ kind: "banner", graceUntil: grace as string, clubName });
           return;
         }
-        setState({
-          kind: "minor",
-          clubName,
-          guardianEmail: ((profile as any)?.guardian_email as string | null) ?? null,
-          guardianLinked: Array.isArray(parents) && parents.length > 0,
-        });
+        // Ask the server for the ACTUAL request state (token / pending
+        // record). We must never claim we are waiting for a guardian if
+        // nothing was ever created or sent. On failure we fall back to
+        // "no request yet", which shows the email field — never a false
+        // "waiting" message.
+        let recordStatus: string | null = (status as string | null) ?? null;
+        let token: { sent_at: string; expires_at: string; expired: boolean } | null = null;
+        let guardianEmail = ((profile as any)?.guardian_email as string | null) ?? null;
+        try {
+          const { data: gs } = await supabase.functions.invoke("consent-self", {
+            body: { action: "guardian_status" },
+          });
+          if ((gs as any)?.ok) {
+            recordStatus = (gs as any).record_status ?? recordStatus;
+            token = (gs as any).token ?? null;
+            guardianEmail = (gs as any).guardian_email ?? guardianEmail;
+          }
+        } catch {
+          // keep fallback values
+        }
+        setState({ kind: "minor", clubName, guardianEmail, recordStatus, token });
         return;
+
       }
 
       if (status === "granted") {
