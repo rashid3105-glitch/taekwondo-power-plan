@@ -42,6 +42,8 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   const [saving, setSaving] = useState(false);
   const [goalOpen, setGoalOpen] = useState(false);
   const [rerunOnboarding, setRerunOnboarding] = useState(false);
+  // Fixed 18-year product-safety limit: no numeric weight/calorie targets.
+  const { isMinor, loading: minorLoading } = useIsMinor(resolvedId);
 
   useEffect(() => {
     if (userId) { setResolvedId(userId); return; }
