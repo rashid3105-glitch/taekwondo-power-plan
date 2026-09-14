@@ -50,6 +50,14 @@ export const SUBPROCESSORS: Subprocessor[] = [
     url: "https://stripe.com/privacy",
   },
   {
+    name: "Resend (Plus Five Five, Inc.)",
+    country: "USA",
+    purposeKey: "privacySubResend",
+    locationKey: "privacySubLocEuUs",
+    basisKey: "privacySubBasisScc",
+    url: "https://resend.com/legal/privacy-policy",
+  },
+  {
     name: "Google LLC (Firebase Cloud Messaging)",
     country: "USA",
     purposeKey: "privacySubFcm",
