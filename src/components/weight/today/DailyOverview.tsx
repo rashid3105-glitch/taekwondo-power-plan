@@ -125,8 +125,13 @@ export function DailyOverview({
       </div>
 
       {hideNumbers ? (
-        <Card className="p-4">
+        <Card className="p-4 space-y-3">
           <p className="text-xs text-muted-foreground">{t("minorNumbersHidden")}</p>
+          {!readOnly && (
+            <Button variant="outline" size="sm" className="h-10" onClick={() => setWeighOpen(true)}>
+              {t("wpLogWeight")}
+            </Button>
+          )}
         </Card>
       ) : (
         <Card className="p-5 space-y-5">
