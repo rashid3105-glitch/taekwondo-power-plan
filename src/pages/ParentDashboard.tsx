@@ -17,6 +17,7 @@ import { PHONE_CODES } from "@/data/phoneCodes";
 import { PlanViewDialog } from "@/components/PlanViewDialog";
 import { SupplementChecker } from "@/components/SupplementChecker";
 import { ParentGuideChat } from "@/components/parent/ParentGuideChat";
+import { ParentConsentCard } from "@/components/parent/ParentConsentCard";
 
 interface AthleteProfile {
   user_id: string;
@@ -25,6 +26,7 @@ interface AthleteProfile {
   avatar_url: string | null;
   weekly_schedule: any;
   country: string | null;
+  club_id: string | null;
   club_name?: string | null;
 }
 
