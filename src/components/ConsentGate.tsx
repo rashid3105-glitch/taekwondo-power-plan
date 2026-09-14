@@ -33,7 +33,13 @@ type State =
   | { kind: "loading" }
   | { kind: "ok" }
   | { kind: "banner"; graceUntil: string; clubName: string | null }
-  | { kind: "minor"; clubName: string | null; guardianEmail: string | null; guardianLinked: boolean }
+  | {
+      kind: "minor";
+      clubName: string | null;
+      guardianEmail: string | null;
+      recordStatus: string | null;
+      token: { sent_at: string; expires_at: string; expired: boolean } | null;
+    }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
   | { kind: "error" };
