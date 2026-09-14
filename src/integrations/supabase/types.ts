@@ -1895,6 +1895,7 @@ export type Database = {
       }
       diary_comments: {
         Row: {
+          author_role: string
           club_id: string | null
           coach_id: string
           content: string
@@ -1906,6 +1907,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          author_role?: string
           club_id?: string | null
           coach_id: string
           content?: string
@@ -1917,6 +1919,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          author_role?: string
           club_id?: string | null
           coach_id?: string
           content?: string
