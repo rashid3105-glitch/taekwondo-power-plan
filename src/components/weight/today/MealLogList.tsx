@@ -15,9 +15,11 @@ interface Props {
   canEdit: boolean;
   onDelete: (id: string) => void;
   onAdd: () => void;
+  /** Under 18: meals are still logged, but calorie/macro figures are hidden. */
+  hideNumbers?: boolean;
 }
 
-export function MealLogList({ meals, canEdit, onDelete, onAdd }: Props) {
+export function MealLogList({ meals, canEdit, onDelete, onAdd, hideNumbers = false }: Props) {
   const { t } = useLanguage();
   return (
     <div className="space-y-2">
@@ -39,11 +41,15 @@ export function MealLogList({ meals, canEdit, onDelete, onAdd }: Props) {
             <li key={m.id} className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/60 px-3 py-2">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold truncate">{m.meal_name}</p>
-                <p className="text-[11px] text-muted-foreground tabular-nums">
-                  {Math.round(m.protein_g ?? 0)}P · {Math.round(m.carbs_g ?? 0)}K · {Math.round(m.fat_g ?? 0)}F
-                </p>
+                {!hideNumbers && (
+                  <p className="text-[11px] text-muted-foreground tabular-nums">
+                    {Math.round(m.protein_g ?? 0)}P · {Math.round(m.carbs_g ?? 0)}K · {Math.round(m.fat_g ?? 0)}F
+                  </p>
+                )}
               </div>
-              <span className="text-sm font-bold tabular-nums shrink-0">{Math.round(m.calories)}</span>
+              {!hideNumbers && (
+                <span className="text-sm font-bold tabular-nums shrink-0">{Math.round(m.calories)}</span>
+              )}
               {canEdit && (
                 <button
                   onClick={() => onDelete(m.id)}

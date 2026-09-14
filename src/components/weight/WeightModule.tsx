@@ -13,6 +13,7 @@ import { CompetitionWeightCard } from "./CompetitionWeightCard";
 import { WeightOnboarding } from "./onboarding/WeightOnboarding";
 import { DailyOverview } from "./today/DailyOverview";
 import { NutritionPlan } from "@/components/NutritionPlan";
+import { useIsMinor } from "@/hooks/useIsMinor";
 import {
   dailyCalorieDelta,
   estimateMaintenanceCalories, milestones, movingAverage, todayISO,
@@ -41,6 +42,8 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   const [saving, setSaving] = useState(false);
   const [goalOpen, setGoalOpen] = useState(false);
   const [rerunOnboarding, setRerunOnboarding] = useState(false);
+  // Fixed 18-year product-safety limit: no numeric weight/calorie targets.
+  const { isMinor, loading: minorLoading } = useIsMinor(resolvedId);
 
   useEffect(() => {
     if (userId) { setResolvedId(userId); return; }
@@ -132,11 +135,53 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
     void load();
   };
 
-  const stones = goal && currentWeight != null ? milestones(goal, currentWeight) : [];
+  const stones = !isMinor && goal && currentWeight != null ? milestones(goal, currentWeight) : [];
   const setByCoach = !!(goal?.set_by && resolvedId && goal.set_by !== resolvedId);
 
-  if (loading) {
+  if (loading || minorLoading) {
     return <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin text-primary" /></div>;
+  }
+
+  // Under 18: weight goals and calorie targets are not offered at all.
+  if (isMinor) {
+    return (
+      <div className="space-y-4">
+        <Card className="p-4">
+          <p className="text-xs text-muted-foreground">{t("minorNumbersHidden")}</p>
+        </Card>
+        <Tabs defaultValue="today">
+          <TabsList className="grid grid-cols-2 w-full">
+            <TabsTrigger value="today">{t("wpTabToday")}</TabsTrigger>
+            <TabsTrigger value="plan">{t("wpTabPlan")}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="today" className="mt-4">
+            {resolvedId && (
+              <DailyOverview
+                userId={resolvedId}
+                goal={null}
+                currentWeight={currentWeight}
+                dailyTargetKcal={0}
+                readOnly={readOnly}
+                weighIn={weighIn}
+                onWeighInChange={setWeighIn}
+                onWeighInSave={saveWeighIn}
+                saving={saving}
+                hideNumbers
+              />
+            )}
+          </TabsContent>
+          <TabsContent value="plan" className="mt-4">
+            <NutritionPlan
+              profile={profile}
+              readOnly={readOnly}
+              userId={resolvedId ?? undefined}
+              goal={null}
+              dailyTargetKcal={null}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+    );
   }
 
   const showOnboarding = canEditGoal && !readOnly && (rerunOnboarding || !goal);
