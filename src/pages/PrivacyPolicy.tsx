@@ -3,6 +3,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
+import { SUBPROCESSORS } from "@/data/subprocessors";
 
 const GOLD = "#D4AF37";
 
@@ -122,6 +123,55 @@ export default function PrivacyPolicy() {
         <section style={section}>
           <h2 style={h2}>{t("privacyCookies")}</h2>
           <p style={p}>{t("privacyCookiesDesc")}</p>
+        </section>
+
+        <section style={section}>
+          <h2 style={h2}>{t("privacySubprocessorsTitle")}</h2>
+          <p style={{ ...p, marginBottom: 14 }}>{t("privacySubprocessorsDesc")}</p>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5, minWidth: 560 }}>
+              <thead>
+                <tr>
+                  {[t("privacySubCol1"), t("privacySubCol2"), t("privacySubCol3"), t("privacySubCol4")].map((h) => (
+                    <th
+                      key={h}
+                      style={{
+                        textAlign: "start",
+                        padding: "8px 10px",
+                        borderBottom: `1px solid ${GOLD}`,
+                        color: GOLD,
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {SUBPROCESSORS.map((s) => (
+                  <tr key={s.name}>
+                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "#fff", verticalAlign: "top" }}>
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", textDecoration: "underline" }}>
+                        {s.name}
+                      </a>
+                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginTop: 2 }}>{s.country}</div>
+                    </td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.78)", verticalAlign: "top", lineHeight: 1.6 }}>
+                      {t(s.purposeKey)}
+                    </td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.78)", verticalAlign: "top" }}>
+                      {t(s.locationKey)}
+                    </td>
+                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.78)", verticalAlign: "top" }}>
+                      {t(s.basisKey)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <section style={section}>
