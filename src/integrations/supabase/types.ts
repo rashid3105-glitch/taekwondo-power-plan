@@ -4960,6 +4960,7 @@ export type Database = {
       }
       is_coach_of_club: { Args: { _club: string }; Returns: boolean }
       is_member_of_club: { Args: { _club: string }; Returns: boolean }
+      is_minor: { Args: { _user_id: string }; Returns: boolean }
       is_parent_of: {
         Args: { _athlete: string; _parent: string }
         Returns: boolean
@@ -4998,6 +4999,10 @@ export type Database = {
         Returns: undefined
       }
       normalize_country: { Args: { _country: string }; Returns: string }
+      nutrition_plan_has_numeric_targets: {
+        Args: { _custom_calories: number; _plan_data: Json }
+        Returns: boolean
+      }
       recompute_wearable_summary: {
         Args: { _from: string; _to: string; _user_id: string }
         Returns: undefined
