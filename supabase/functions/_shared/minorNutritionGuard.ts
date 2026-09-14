@@ -24,7 +24,7 @@ const WEIGHT_UNITS = "kg|kilo|kilogram|kilogrammes|lbs|pounds|pund";
 
 const FORBIDDEN: RegExp[] = [
   // number followed by an energy unit/word — "2400 kcal", "2.400 calorías"
-  new RegExp(`${NUM}\\s*(?:${CALORIE_WORDS})\\b`, "iu"),
+  new RegExp(`${NUM}\\s*(?:${CALORIE_WORDS})(?![\\p{L}\\p{N}])`, "iu"),
   // energy word followed by a number — "kcal: 2400"
   new RegExp(`(?:${CALORIE_WORDS})\\s*[:=]?\\s*${NUM}`, "iu"),
   // number + gram unit near a macro word, and the reverse
@@ -33,7 +33,7 @@ const FORBIDDEN: RegExp[] = [
   // any percentage
   new RegExp(`${NUM}\\s*%`, "u"),
   // any body-weight figure — target weight or rate of change
-  new RegExp(`${NUM}\\s*(?:${WEIGHT_UNITS})\\b`, "iu"),
+  new RegExp(`${NUM}\\s*(?:${WEIGHT_UNITS})(?![\\p{L}\\p{N}])`, "iu"),
 ];
 
 /**
