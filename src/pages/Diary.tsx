@@ -119,6 +119,7 @@ export default function Diary() {
   const [recording, setRecording] = useState(false);
   const recognitionRef = useRef<any>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [myUserId, setMyUserId] = useState<string | null>(null);
 
   const toggleRecording = () => {
     if (recording) {
@@ -152,6 +153,7 @@ export default function Diary() {
     void (async () => {
       const user = await getCurrentUser();
       if (!user) { navigate("/auth"); return; }
+      setMyUserId(user.id);
       const { data } = await supabase
         .from("profiles")
         .select("weight_kg")
@@ -812,7 +814,7 @@ export default function Diary() {
                           ))}
                         </div>
                       )}
-                      <DiaryComments entryId={entry.id} />
+                      <DiaryComments entryId={entry.id} entryOwnerId={myUserId ?? undefined} />
                     </div>
                   );
                 })}
