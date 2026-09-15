@@ -104,6 +104,11 @@ export default function PrivacyPolicy() {
         </section>
 
         <section style={section}>
+          <h2 style={h2}>{t("privacyMinorsNumericTitle")}</h2>
+          <p style={p}>{t("privacyMinorsNumericDesc")}</p>
+        </section>
+
+        <section style={section}>
           <h2 style={h2}>{t("privacyRetention")}</h2>
           <p style={p}>{t("privacyRetentionDesc")}</p>
         </section>
