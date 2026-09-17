@@ -101,7 +101,7 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
       if (!user) return null;
 
       if (existingId) {
-        await supabase
+        const { data: updated, error: updateError } = await supabase
           .from("nutrition_plans")
           .update({
             plan_data: planData,
@@ -109,9 +109,15 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
             custom_calories: calories,
             name: planData?.planName || "Nutrition Plan",
           })
-          .eq("id", existingId);
-        return existingId;
-      } else {
+          .eq("id", existingId)
+          .select("id");
+        if (updateError) throw updateError;
+        if (updated && updated.length > 0) return existingId;
+        // The existing row could not be updated (e.g. a legacy plan with numeric
+        // targets on a youth account). Deactivate it and store the new plan instead.
+        await supabase.from("nutrition_plans").update({ is_active: false }).eq("id", existingId);
+      }
+      {
         const { data, error } = await supabase
           .from("nutrition_plans")
           .insert({
@@ -176,7 +182,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
         isMinor ? null : (customCalories ? parseInt(customCalories) : null),
         savedPlanId,
       );
-      if (id) setSavedPlanId(id);
+      if (!id) throw new Error(t("error"));
+      setSavedPlanId(id);
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
       console.error("generate-nutrition-plan failed", err);
