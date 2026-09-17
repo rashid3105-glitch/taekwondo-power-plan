@@ -430,15 +430,28 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "inactive_chat_threads": {
-      const { data: rows } = await admin
+      const { data: threadRows } = await admin
         .from("chat_threads")
         .select("id, last_message_at, created_at")
         .or(`last_message_at.lt.${cutoff},and(last_message_at.is.null,created_at.lt.${cutoff})`)
         .limit(limit);
-      r.candidates = (rows ?? []).length;
+
+      // A thread only goes when no participant is still an active club member.
+      const rows: any[] = [];
+      for (const t of threadRows ?? []) {
+        const { data: members } = await admin
+          .from("chat_thread_members").select("user_id").eq("thread_id", t.id);
+        let keep = false;
+        for (const mem of members ?? []) {
+          if (await hasActiveMembership(admin, mem.user_id)) { keep = true; break; }
+        }
+        if (!keep) rows.push(t);
+      }
+      r.candidates = rows.length;
       if (policy.dry_run || r.candidates === 0) return r;
 
-      for (const t of rows ?? []) {
+      for (const t of rows) {
+
         const { data: msgs } = await admin.from("chat_messages").select("id, attachment_path").eq("thread_id", t.id);
         const ids = (msgs ?? []).map((m: any) => m.id);
         const paths = (msgs ?? []).map((m: any) => m.attachment_path).filter(Boolean);
