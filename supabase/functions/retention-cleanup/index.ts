@@ -543,20 +543,57 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "consent_documentation": {
-      const { data: rows } = await admin
+      // 1) Withdrawn consents past the deadline.
+      const { data: withdrawn } = await admin
         .from("consent_records")
-        .select("id, status, withdrawn_at")
+        .select("id")
         .eq("status", "withdrawn")
         .lt("withdrawn_at", cutoff)
         .limit(limit);
-      r.candidates = (rows ?? []).length;
+      const deleteIds = new Set<string>((withdrawn ?? []).map((c: any) => c.id));
+
+      // 2) Records whose athlete no longer exists: scrub the guardian's email
+      //    immediately, delete the row once it is past the deadline.
+      const { data: candidates } = await admin
+        .from("consent_records")
+        .select("id, athlete_id, granted_at, updated_at, granted_by_email")
+        .limit(2000);
+      const athleteIds = [...new Set((candidates ?? []).map((c: any) => c.athlete_id).filter(Boolean))];
+      const existing = new Set<string>();
+      for (let i = 0; i < athleteIds.length; i += 500) {
+        const { data: profs } = await admin
+          .from("profiles").select("user_id").in("user_id", athleteIds.slice(i, i + 500));
+        for (const p of profs ?? []) existing.add(p.user_id);
+      }
+      const scrubIds: string[] = [];
+      for (const c of candidates ?? []) {
+        if (c.athlete_id && existing.has(c.athlete_id)) continue;
+        const ref = c.updated_at ?? c.granted_at;
+        if (ref && new Date(ref).getTime() < new Date(cutoff).getTime()) {
+          if (deleteIds.size < limit) deleteIds.add(c.id);
+        } else if (c.granted_by_email) {
+          scrubIds.push(c.id);
+        }
+      }
+
+      r.candidates = deleteIds.size + scrubIds.length;
       if (policy.dry_run || r.candidates === 0) return r;
-      const ids = (rows ?? []).map((c: any) => c.id);
-      const { count, error } = await admin.from("consent_records").delete({ count: "exact" }).in("id", ids);
-      if (error) r.errors.push("consent_delete_failed");
-      r.processed = count ?? 0;
+
+      if (scrubIds.length > 0) {
+        const { error } = await admin
+          .from("consent_records").update({ granted_by_email: null }).in("id", scrubIds.slice(0, limit));
+        if (error) r.errors.push("consent_scrub_failed");
+        else r.processed += Math.min(scrubIds.length, limit);
+      }
+      if (deleteIds.size > 0) {
+        const { count, error } = await admin
+          .from("consent_records").delete({ count: "exact" }).in("id", [...deleteIds]);
+        if (error) r.errors.push("consent_delete_failed");
+        r.processed += count ?? 0;
+      }
       return r;
     }
+
   }
 
   return r;
