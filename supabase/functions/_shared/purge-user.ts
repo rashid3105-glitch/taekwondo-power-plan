@@ -111,7 +111,11 @@ export async function purgeUser(admin: any, uid: string): Promise<PurgeResult> {
   return result;
 }
 
-/** Deletes only the health-related data of an athlete who left the club; the account stays. */
+/**
+ * Deletes the health-related data of an athlete who left the club; the account stays.
+ * Covers both structured health tables and free-text that can carry health details
+ * (diary, reflections, coach feedback).
+ */
 export async function purgeHealthData(admin: any, uid: string): Promise<{ deleted_rows: number; errors: string[] }> {
   const HEALTH_TABLES: Array<{ table: string; column: string }> = [
     { table: "health_data", column: "user_id" },
@@ -128,9 +132,36 @@ export async function purgeHealthData(admin: any, uid: string): Promise<{ delete
     { table: "supplement_checks", column: "user_id" },
     { table: "physical_test_results", column: "user_id" },
     { table: "form_curve_weekly", column: "user_id" },
+    // Free text that can contain health information about the athlete.
+    // coach_mental_assessments.user_id is the assessment's subject row owner;
+    // coach_reflection_comments / workout_log_feedback are keyed by athlete_id,
+    // so the coach's authorship is irrelevant here — the athlete decides.
+    { table: "competition_reflections", column: "user_id" },
+    { table: "coach_mental_assessments", column: "user_id" },
+    { table: "coach_reflection_comments", column: "athlete_id" },
+    { table: "workout_log_feedback", column: "athlete_id" },
   ];
   let deleted_rows = 0;
   const errors: string[] = [];
+
+  // Diary comments first (children of the athlete's own diary entries), then the entries.
+  try {
+    const { data: entries } = await admin.from("diary_entries").select("id").eq("user_id", uid);
+    const entryIds = (entries ?? []).map((r: any) => r.id);
+    if (entryIds.length > 0) {
+      const { count, error } = await admin
+        .from("diary_comments").delete({ count: "exact" }).in("diary_entry_id", entryIds);
+      if (error) throw error;
+      deleted_rows += count ?? 0;
+    }
+    const { count: entryCount, error: entryErr } = await admin
+      .from("diary_entries").delete({ count: "exact" }).eq("user_id", uid);
+    if (entryErr) throw entryErr;
+    deleted_rows += entryCount ?? 0;
+  } catch (e) {
+    errors.push("health:diary_entries");
+  }
+
   for (const { table, column } of HEALTH_TABLES) {
     try {
       const { count, error } = await admin.from(table).delete({ count: "exact" }).eq(column, uid);
@@ -142,3 +173,4 @@ export async function purgeHealthData(admin: any, uid: string): Promise<{ delete
   }
   return { deleted_rows, errors };
 }
+
