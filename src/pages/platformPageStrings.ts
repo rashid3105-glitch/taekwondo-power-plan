@@ -751,7 +751,7 @@ const no: typeof en = {
       intro:
         "Daglig puls på hvordan utøveren restituerer. Søvn, hvilepuls, HRV og skritt — manuelt eller auto-hentet fra Apple Health på iPhone.",
       bullets: [
-        "Auto-synk fra Apple Health på iPhone; på Android hentes træningspas og aktive kalorier fra Health Connect",
+        "Auto-synk fra Apple Health på iPhone; på Android hentes treningsøkter og aktive kalorier fra Health Connect",
         "7-dagers rullende baseline flagger lav restitusjon før skade",
         "Treneren ser en restitusjons-sparkline direkte i lagvisningen",
         "Manuell registrering for utøvere uten wearable",
