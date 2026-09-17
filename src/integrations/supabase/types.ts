@@ -854,6 +854,7 @@ export type Database = {
         Row: {
           club_id: string
           created_at: string
+          ended_at: string | null
           id: string
           role_in_club: Database["public"]["Enums"]["membership_role"]
           status: Database["public"]["Enums"]["membership_status"]
@@ -862,6 +863,7 @@ export type Database = {
         Insert: {
           club_id: string
           created_at?: string
+          ended_at?: string | null
           id?: string
           role_in_club: Database["public"]["Enums"]["membership_role"]
           status?: Database["public"]["Enums"]["membership_status"]
@@ -870,6 +872,7 @@ export type Database = {
         Update: {
           club_id?: string
           created_at?: string
+          ended_at?: string | null
           id?: string
           role_in_club?: Database["public"]["Enums"]["membership_role"]
           status?: Database["public"]["Enums"]["membership_status"]
