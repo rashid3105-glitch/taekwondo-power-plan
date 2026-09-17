@@ -61,14 +61,18 @@ Deno.serve(async (req) => {
   const admin = createClient(supabaseUrl, serviceKey);
 
   // ---- authorisation -------------------------------------------------
-  // Either the scheduler secret (nightly cron) or a platform admin JWT.
-  const cronSecret = Deno.env.get("RETENTION_CRON_SECRET") ?? "";
+  // Either the scheduler key (nightly cron) or a platform admin JWT.
   const presentedSecret = req.headers.get("x-retention-secret") ?? "";
+  let cronSecret = "";
+  if (presentedSecret) {
+    const { data: cfg } = await admin.from("retention_config").select("cron_secret").maybeSingle();
+    cronSecret = cfg?.cron_secret ?? "";
+  }
   const authHeader = req.headers.get("Authorization") ?? "";
   const token = authHeader.replace("Bearer ", "").trim();
   let manual = false;
 
-  if (!(cronSecret && presentedSecret && presentedSecret === cronSecret)) {
+  if (!(cronSecret && presentedSecret === cronSecret)) {
     if (!token) return json({ error: "unauthorized" }, 401);
     if (token !== serviceKey) {
       const userClient = createClient(supabaseUrl, anonKey);
@@ -79,6 +83,7 @@ Deno.serve(async (req) => {
       manual = true;
     }
   }
+
 
 
   // ---- single flight -------------------------------------------------
