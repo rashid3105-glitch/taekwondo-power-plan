@@ -40,6 +40,7 @@ import {
   Image as ImageIcon,
   Megaphone,
   UserPlus,
+  Trash2,
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -477,6 +478,7 @@ export function GlobalAppMenu() {
                       { to: "/admin/stats", icon: BarChart3, label: t("adminStats"), color: "text-sky-400" },
                       { to: "/admin/klubanalyser", icon: ClipboardList, label: "Klubanalyser", color: "text-amber-500", badge: newAssessments },
                       { to: "/admin/leads", icon: UserPlus, label: t("adminLeads"), color: "text-amber-500", badge: newLeads },
+                      { to: "/admin/retention", icon: Trash2, label: t("adminRetention"), color: "text-rose-400" },
 
 
                     ].map((it: any) => (

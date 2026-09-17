@@ -25,6 +25,7 @@ import { template as complianceAlert } from './compliance-alert.tsx'
 import { template as clubAssessmentNotification } from './club-assessment-notification.tsx'
 import { template as stripeSubscriptionNotification } from './stripe-subscription-notification.tsx'
 import { template as demoSignupNotification } from './demo-signup-notification.tsx'
+import { template as retentionDeletionWarning } from './retention-deletion-warning.tsx'
 
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
@@ -44,5 +45,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'club-assessment-notification': clubAssessmentNotification,
   'stripe-subscription-notification': stripeSubscriptionNotification,
   'demo-signup-notification': demoSignupNotification,
+  'retention-deletion-warning': retentionDeletionWarning,
 }
 
