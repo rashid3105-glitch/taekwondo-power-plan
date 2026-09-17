@@ -133,13 +133,15 @@ export async function purgeHealthData(admin: any, uid: string): Promise<{ delete
     { table: "physical_test_results", column: "user_id" },
     { table: "form_curve_weekly", column: "user_id" },
     // Free text that can contain health information about the athlete.
-    // coach_mental_assessments.user_id is the assessment's subject row owner;
-    // coach_reflection_comments / workout_log_feedback are keyed by athlete_id,
-    // so the coach's authorship is irrelevant here — the athlete decides.
+    // coach_reflection_comments / workout_log_feedback both carry coach_id and
+    // athlete_id — we key on athlete_id, so the coach keeps the comments written
+    // for their other athletes.
+    // coach_mental_assessments is deliberately NOT here: it is the coach's own
+    // self-review (user_id = the coach), not an assessment of an athlete.
     { table: "competition_reflections", column: "user_id" },
-    { table: "coach_mental_assessments", column: "user_id" },
     { table: "coach_reflection_comments", column: "athlete_id" },
     { table: "workout_log_feedback", column: "athlete_id" },
+
   ];
   let deleted_rows = 0;
   const errors: string[] = [];
