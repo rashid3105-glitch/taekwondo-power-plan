@@ -182,7 +182,8 @@ export function NutritionPlan({ profile, readOnly = false, userId, goal = null, 
         isMinor ? null : (customCalories ? parseInt(customCalories) : null),
         savedPlanId,
       );
-      if (id) setSavedPlanId(id);
+      if (!id) throw new Error(t("error"));
+      setSavedPlanId(id);
       toast({ title: t("nutritionPlanGenerated") });
     } catch (err: any) {
       console.error("generate-nutrition-plan failed", err);
