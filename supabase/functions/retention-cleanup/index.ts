@@ -266,6 +266,42 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "left_club_health_data": {
+      // Warn first so the athlete can export the diary before it goes.
+      if (policy.warn_days > 0) {
+        const warnCutoff = daysAgo(policy.retention_days - policy.warn_days);
+        const { data: warnRows } = await admin
+          .from("club_memberships")
+          .select("user_id, ended_at")
+          .eq("status", "removed")
+          .lt("ended_at", warnCutoff)
+          .gte("ended_at", cutoff)
+          .limit(limit);
+        for (const m of warnRows ?? []) {
+          if (await hasActiveMembership(admin, m.user_id)) continue;
+          if (await alreadyNotified(admin, policy.category, m.user_id, "pre_delete")) continue;
+          if (policy.dry_run) { r.warned++; continue; }
+          const email = await emailFor(admin, m.user_id);
+          if (!email) continue;
+          const { data: prof } = await admin
+            .from("profiles").select("display_name").eq("user_id", m.user_id).maybeSingle();
+          try {
+            await sendTemplateEmail("retention-deletion-warning", email, {
+              templateData: {
+                kind: "health_data",
+                recipientName: prof?.display_name ?? "",
+                deleteOn: dateIn(policy.warn_days),
+                locale: "da",
+              },
+              idempotencyKey: `retention-health-${m.user_id}`,
+            });
+            await admin.from("retention_notices").insert({
+              category: policy.category, subject_id: m.user_id, notice_type: "pre_delete",
+            });
+            r.warned++;
+          } catch { r.errors.push("health_warn_email_failed"); }
+        }
+      }
+
       const { data: rows } = await admin
         .from("club_memberships")
         .select("user_id, ended_at, status")
@@ -275,13 +311,11 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
       for (const m of rows ?? []) {
         // Skip athletes who are still active somewhere else.
-        const { count } = await admin
-          .from("club_memberships")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", m.user_id)
-          .eq("status", "active");
-        if ((count ?? 0) > 0) continue;
+        if (await hasActiveMembership(admin, m.user_id)) continue;
         if (await alreadyNotified(admin, policy.category, m.user_id, "purged")) continue;
+        // Never delete without a warning having been sent first.
+        if (policy.warn_days > 0 && !policy.dry_run &&
+            !(await alreadyNotified(admin, policy.category, m.user_id, "pre_delete"))) continue;
         r.candidates++;
         if (policy.dry_run) continue;
         const res = await purgeHealthData(admin, m.user_id);
@@ -293,6 +327,7 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
       }
       return r;
     }
+
 
     // ------------------------------------------------------------------
     case "terminated_club_data": {
