@@ -111,6 +111,7 @@ export default function PrivacyPolicy() {
         <section style={section}>
           <h2 style={h2}>{t("privacyRetention")}</h2>
           <p style={p}>{t("privacyRetentionDesc")}</p>
+          <p style={p}>{t("privacyRetentionPeriods")}</p>
         </section>
 
         <section style={section}>

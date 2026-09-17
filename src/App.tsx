@@ -100,6 +100,7 @@ import AdminLeads from "./pages/AdminLeads";
 
 import AdminAnnouncements from "./pages/AdminAnnouncements";
 import AdminStats from "./pages/AdminStats";
+import AdminRetention from "./pages/AdminRetention";
 
 import Contact from "./pages/Contact";
 import Kostplan from "./pages/Kostplan";
@@ -257,6 +258,7 @@ const AnimatedRoutes = () => {
 
         <Route path="/admin/announcements" element={<Page><AdminAnnouncements /></Page>} />
         <Route path="/admin/stats" element={<Page><AdminStats /></Page>} />
+        <Route path="/admin/retention" element={<Page><AdminRetention /></Page>} />
 
         <Route path="/coach" element={<Page><CoachDashboard /></Page>} />
         <Route path="/coach/consents" element={<Page><CoachConsents /></Page>} />
