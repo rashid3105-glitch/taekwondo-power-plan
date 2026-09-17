@@ -3250,6 +3250,24 @@ export type Database = {
           },
         ]
       }
+      retention_config: {
+        Row: {
+          created_at: string
+          cron_secret: string
+          id: boolean
+        }
+        Insert: {
+          created_at?: string
+          cron_secret?: string
+          id?: boolean
+        }
+        Update: {
+          created_at?: string
+          cron_secret?: string
+          id?: boolean
+        }
+        Relationships: []
+      }
       retention_locks: {
         Row: {
           lock_name: string
