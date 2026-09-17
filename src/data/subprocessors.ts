@@ -82,11 +82,19 @@ export const SUBPROCESSORS: Subprocessor[] = [
     url: "https://policies.google.com/privacy",
   },
   {
-    name: "Apple Health / Health Connect",
+    name: "Apple Inc. (HealthKit / Apple Health, iOS)",
     country: "USA / Ireland",
-    purposeKey: "privacySubHealth",
+    purposeKey: "privacySubHealthIos",
     locationKey: "privacySubLocEu",
     basisKey: "privacySubBasisEu",
     url: "https://www.apple.com/legal/privacy/",
+  },
+  {
+    name: "Google LLC (Health Connect, Android)",
+    country: "USA / Ireland",
+    purposeKey: "privacySubHealthAndroid",
+    locationKey: "privacySubLocEu",
+    basisKey: "privacySubBasisEu",
+    url: "https://policies.google.com/privacy",
   },
 ];
