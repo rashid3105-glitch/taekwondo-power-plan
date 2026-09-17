@@ -114,16 +114,16 @@ const en: { ui: PlatformUI; content: Record<PlatformSlug, PlatformContent> } = {
     readiness: {
       title: "Readiness Check",
       intro:
-        "A daily pulse on how the athlete is recovering. Sleep, resting HR, HRV, and steps — entered manually or pulled automatically from Apple Health / Health Connect.",
+        "A daily pulse on how the athlete is recovering. Sleep, resting HR, HRV, and steps — entered manually or pulled automatically from Apple Health on iPhone.",
       bullets: [
-        "Auto-syncs from iPhone HealthBridge or Android Health Connect",
+        "Auto-syncs from Apple Health on iPhone; on Android, workouts and active calories from Health Connect",
         "7-day rolling baselines flag low recovery before injury",
         "Coach sees a recovery sparkline directly in the squad view",
         "Manual entry for athletes without a wearable",
       ],
       imageAlt: "Daily readiness check with sleep, HR, HRV inputs",
       metaDesc:
-        "Daily readiness check with sleep, HRV, RHR — auto-synced from Apple Health and Health Connect.",
+        "Daily readiness check with sleep, HRV, RHR — auto-synced from Apple Health on iPhone.",
     },
     progress: {
       title: "Progress Tracking",
@@ -241,16 +241,16 @@ const da: typeof en = {
     readiness: {
       title: "Parathed",
       intro:
-        "Daglig puls på hvordan atleten restituerer. Søvn, hvilepuls, HRV og skridt — manuelt indtastet eller automatisk hentet fra Apple Health / Health Connect.",
+        "Daglig puls på hvordan atleten restituerer. Søvn, hvilepuls, HRV og skridt — manuelt indtastet eller automatisk hentet fra Apple Health på iPhone.",
       bullets: [
-        "Auto-synk fra iPhone HealthBridge eller Android Health Connect",
+        "Auto-synk fra Apple Health på iPhone; på Android hentes træningspas og aktive kalorier fra Health Connect",
         "7-dages rullende baseline flagger lav restitution før skader",
         "Træneren ser en restitutions-sparkline direkte i holdvisningen",
         "Manuel indtastning for atleter uden wearable",
       ],
       imageAlt: "Dagligt parathedscheck med søvn, puls og HRV",
       metaDesc:
-        "Dagligt parathedscheck med søvn, HRV og hvilepuls — auto-synk fra Apple Health og Health Connect.",
+        "Dagligt parathedscheck med søvn, HRV og hvilepuls — auto-synk fra Apple Health på iPhone.",
     },
     progress: {
       title: "Fremgang",
@@ -368,16 +368,16 @@ const sv: typeof en = {
     readiness: {
       title: "Beredskap",
       intro:
-        "En daglig puls på hur atleten återhämtar sig. Sömn, vilopuls, HRV och steg — manuellt eller auto-hämtat från Apple Health / Health Connect.",
+        "En daglig puls på hur atleten återhämtar sig. Sömn, vilopuls, HRV och steg — manuellt eller auto-hämtat från Apple Health på iPhone.",
       bullets: [
-        "Auto-synk från iPhone HealthBridge eller Android Health Connect",
+        "Auto-synk från Apple Health på iPhone; på Android hämtas träningspass och aktiva kalorier från Health Connect",
         "7-dagars rullande baslinje flaggar låg återhämtning före skada",
         "Tränaren ser en återhämtnings-sparkline direkt i lagvyn",
         "Manuell inmatning för atleter utan wearable",
       ],
       imageAlt: "Daglig beredskapscheck med sömn, puls och HRV",
       metaDesc:
-        "Daglig beredskapscheck med sömn, HRV och vilopuls — auto-synk från Apple Health och Health Connect.",
+        "Daglig beredskapscheck med sömn, HRV och vilopuls — auto-synk från Apple Health på iPhone.",
     },
     progress: {
       title: "Framsteg",
@@ -495,16 +495,16 @@ const de: typeof en = {
     readiness: {
       title: "Bereitschaft",
       intro:
-        "Täglicher Puls zur Erholung des Athleten. Schlaf, Ruhepuls, HRV und Schritte — manuell oder automatisch aus Apple Health / Health Connect.",
+        "Täglicher Puls zur Erholung des Athleten. Schlaf, Ruhepuls, HRV und Schritte — manuell oder automatisch aus Apple Health auf dem iPhone.",
       bullets: [
-        "Auto-Sync von iPhone HealthBridge oder Android Health Connect",
+        "Auto-Sync von Apple Health auf dem iPhone; unter Android werden Trainingseinheiten und aktive Kalorien aus Health Connect gelesen",
         "7-Tage-Baseline flaggt geringe Erholung vor Verletzungen",
         "Trainer sieht Erholungs-Sparkline direkt in der Teamansicht",
         "Manuelle Eingabe für Athleten ohne Wearable",
       ],
       imageAlt: "Täglicher Bereitschaftscheck mit Schlaf, Puls und HRV",
       metaDesc:
-        "Täglicher Bereitschaftscheck mit Schlaf, HRV und Ruhepuls — Auto-Sync mit Apple Health und Health Connect.",
+        "Täglicher Bereitschaftscheck mit Schlaf, HRV und Ruhepuls — Auto-Sync mit Apple Health auf dem iPhone.",
     },
     progress: {
       title: "Fortschritt",
@@ -622,16 +622,16 @@ const ar: typeof en = {
     readiness: {
       title: "الجاهزية",
       intro:
-        "نبض يومي لكيفية تعافي الرياضي. النوم ومعدل ضربات القلب وHRV والخطوات — يدويًا أو تلقائيًا من Apple Health / Health Connect.",
+        "نبض يومي لكيفية تعافي الرياضي. النوم ومعدل ضربات القلب وHRV والخطوات — يدويًا أو تلقائيًا من Apple Health على iPhone.",
       bullets: [
-        "مزامنة تلقائية من iPhone HealthBridge أو Android Health Connect",
+        "مزامنة تلقائية من Apple Health على iPhone؛ وعلى Android تُقرأ جلسات التدريب والسعرات النشطة من Health Connect",
         "خط أساس متحرك لـ 7 أيام يضع علامة على التعافي المنخفض قبل الإصابة",
         "يرى المدرب خطًا بيانيًا للتعافي مباشرة في عرض الفريق",
         "إدخال يدوي للرياضيين بدون جهاز قابل للارتداء",
       ],
       imageAlt: "فحص الجاهزية اليومي مع النوم والنبض وHRV",
       metaDesc:
-        "فحص جاهزية يومي مع النوم وHRV ومعدل ضربات القلب — مزامنة تلقائية مع Apple Health وHealth Connect.",
+        "فحص جاهزية يومي مع النوم وHRV ومعدل ضربات القلب — مزامنة تلقائية مع Apple Health على iPhone.",
     },
     progress: {
       title: "التقدم",
@@ -749,16 +749,16 @@ const no: typeof en = {
     readiness: {
       title: "Beredskap",
       intro:
-        "Daglig puls på hvordan utøveren restituerer. Søvn, hvilepuls, HRV og skritt — manuelt eller auto-hentet fra Apple Health / Health Connect.",
+        "Daglig puls på hvordan utøveren restituerer. Søvn, hvilepuls, HRV og skritt — manuelt eller auto-hentet fra Apple Health på iPhone.",
       bullets: [
-        "Auto-synk fra iPhone HealthBridge eller Android Health Connect",
+        "Auto-synk fra Apple Health på iPhone; på Android hentes træningspas og aktive kalorier fra Health Connect",
         "7-dagers rullende baseline flagger lav restitusjon før skade",
         "Treneren ser en restitusjons-sparkline direkte i lagvisningen",
         "Manuell registrering for utøvere uten wearable",
       ],
       imageAlt: "Daglig beredskapssjekk med søvn, puls og HRV",
       metaDesc:
-        "Daglig beredskapssjekk med søvn, HRV og hvilepuls — auto-synk fra Apple Health og Health Connect.",
+        "Daglig beredskapssjekk med søvn, HRV og hvilepuls — auto-synk fra Apple Health på iPhone.",
     },
     progress: {
       title: "Fremgang",
