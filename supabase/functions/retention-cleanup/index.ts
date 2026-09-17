@@ -61,18 +61,25 @@ Deno.serve(async (req) => {
   const admin = createClient(supabaseUrl, serviceKey);
 
   // ---- authorisation -------------------------------------------------
+  // Either the scheduler secret (nightly cron) or a platform admin JWT.
+  const cronSecret = Deno.env.get("RETENTION_CRON_SECRET") ?? "";
+  const presentedSecret = req.headers.get("x-retention-secret") ?? "";
   const authHeader = req.headers.get("Authorization") ?? "";
   const token = authHeader.replace("Bearer ", "").trim();
   let manual = false;
-  if (!token) return json({ error: "unauthorized" }, 401);
-  if (token !== serviceKey) {
-    const userClient = createClient(supabaseUrl, anonKey);
-    const { data: { user } } = await userClient.auth.getUser(token);
-    if (!user) return json({ error: "unauthorized" }, 401);
-    const { data: isAdmin } = await admin.rpc("is_admin", { _user_id: user.id });
-    if (!isAdmin) return json({ error: "forbidden" }, 403);
-    manual = true;
+
+  if (!(cronSecret && presentedSecret && presentedSecret === cronSecret)) {
+    if (!token) return json({ error: "unauthorized" }, 401);
+    if (token !== serviceKey) {
+      const userClient = createClient(supabaseUrl, anonKey);
+      const { data: { user } } = await userClient.auth.getUser(token);
+      if (!user) return json({ error: "unauthorized" }, 401);
+      const { data: isAdmin } = await admin.rpc("is_admin", { _user_id: user.id });
+      if (!isAdmin) return json({ error: "forbidden" }, 403);
+      manual = true;
+    }
   }
+
 
   // ---- single flight -------------------------------------------------
   const lockUntil = new Date(Date.now() + LOCK_MINUTES * 60_000).toISOString();
