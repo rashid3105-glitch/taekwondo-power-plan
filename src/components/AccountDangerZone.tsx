@@ -29,6 +29,38 @@ export function AccountDangerZone() {
   const [deleting, setDeleting] = useState(false);
   const [confirmation, setConfirmation] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [leftClub, setLeftClub] = useState(false);
+  const [purging, setPurging] = useState(false);
+  const [purgeOpen, setPurgeOpen] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: rows } = await supabase
+        .from("club_memberships")
+        .select("status")
+        .eq("user_id", user.id);
+      const list = rows ?? [];
+      setLeftClub(list.length > 0 && !list.some((m: any) => m.status === "active"));
+    })();
+  }, []);
+
+  const handlePurgeHealthData = async () => {
+    setPurging(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-my-health-data", {
+        body: { confirmation: "DELETE MY HEALTH DATA" },
+      });
+      if (error || !data?.success) throw error ?? new Error("failed");
+      toast({ title: t("leftClubDataDeleted") });
+      setPurgeOpen(false);
+    } catch {
+      toast({ title: t("error"), variant: "destructive" });
+    }
+    setPurging(false);
+  };
+
 
   const handleExport = async () => {
     setExporting(true);
