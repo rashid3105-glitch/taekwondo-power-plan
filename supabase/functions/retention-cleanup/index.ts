@@ -266,6 +266,42 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "left_club_health_data": {
+      // Warn first so the athlete can export the diary before it goes.
+      if (policy.warn_days > 0) {
+        const warnCutoff = daysAgo(policy.retention_days - policy.warn_days);
+        const { data: warnRows } = await admin
+          .from("club_memberships")
+          .select("user_id, ended_at")
+          .eq("status", "removed")
+          .lt("ended_at", warnCutoff)
+          .gte("ended_at", cutoff)
+          .limit(limit);
+        for (const m of warnRows ?? []) {
+          if (await hasActiveMembership(admin, m.user_id)) continue;
+          if (await alreadyNotified(admin, policy.category, m.user_id, "pre_delete")) continue;
+          if (policy.dry_run) { r.warned++; continue; }
+          const email = await emailFor(admin, m.user_id);
+          if (!email) continue;
+          const { data: prof } = await admin
+            .from("profiles").select("display_name").eq("user_id", m.user_id).maybeSingle();
+          try {
+            await sendTemplateEmail("retention-deletion-warning", email, {
+              templateData: {
+                kind: "health_data",
+                recipientName: prof?.display_name ?? "",
+                deleteOn: dateIn(policy.warn_days),
+                locale: "da",
+              },
+              idempotencyKey: `retention-health-${m.user_id}`,
+            });
+            await admin.from("retention_notices").insert({
+              category: policy.category, subject_id: m.user_id, notice_type: "pre_delete",
+            });
+            r.warned++;
+          } catch { r.errors.push("health_warn_email_failed"); }
+        }
+      }
+
       const { data: rows } = await admin
         .from("club_memberships")
         .select("user_id, ended_at, status")
@@ -275,13 +311,11 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
       for (const m of rows ?? []) {
         // Skip athletes who are still active somewhere else.
-        const { count } = await admin
-          .from("club_memberships")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", m.user_id)
-          .eq("status", "active");
-        if ((count ?? 0) > 0) continue;
+        if (await hasActiveMembership(admin, m.user_id)) continue;
         if (await alreadyNotified(admin, policy.category, m.user_id, "purged")) continue;
+        // Never delete without a warning having been sent first.
+        if (policy.warn_days > 0 && !policy.dry_run &&
+            !(await alreadyNotified(admin, policy.category, m.user_id, "pre_delete"))) continue;
         r.candidates++;
         if (policy.dry_run) continue;
         const res = await purgeHealthData(admin, m.user_id);
@@ -293,6 +327,7 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
       }
       return r;
     }
+
 
     // ------------------------------------------------------------------
     case "terminated_club_data": {
@@ -395,15 +430,28 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "inactive_chat_threads": {
-      const { data: rows } = await admin
+      const { data: threadRows } = await admin
         .from("chat_threads")
         .select("id, last_message_at, created_at")
         .or(`last_message_at.lt.${cutoff},and(last_message_at.is.null,created_at.lt.${cutoff})`)
         .limit(limit);
-      r.candidates = (rows ?? []).length;
+
+      // A thread only goes when no participant is still an active club member.
+      const rows: any[] = [];
+      for (const t of threadRows ?? []) {
+        const { data: members } = await admin
+          .from("chat_thread_members").select("user_id").eq("thread_id", t.id);
+        let keep = false;
+        for (const mem of members ?? []) {
+          if (await hasActiveMembership(admin, mem.user_id)) { keep = true; break; }
+        }
+        if (!keep) rows.push(t);
+      }
+      r.candidates = rows.length;
       if (policy.dry_run || r.candidates === 0) return r;
 
-      for (const t of rows ?? []) {
+      for (const t of rows) {
+
         const { data: msgs } = await admin.from("chat_messages").select("id, attachment_path").eq("thread_id", t.id);
         const ids = (msgs ?? []).map((m: any) => m.id);
         const paths = (msgs ?? []).map((m: any) => m.attachment_path).filter(Boolean);
@@ -495,20 +543,57 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "consent_documentation": {
-      const { data: rows } = await admin
+      // 1) Withdrawn consents past the deadline.
+      const { data: withdrawn } = await admin
         .from("consent_records")
-        .select("id, status, withdrawn_at")
+        .select("id")
         .eq("status", "withdrawn")
         .lt("withdrawn_at", cutoff)
         .limit(limit);
-      r.candidates = (rows ?? []).length;
+      const deleteIds = new Set<string>((withdrawn ?? []).map((c: any) => c.id));
+
+      // 2) Records whose athlete no longer exists: scrub the guardian's email
+      //    immediately, delete the row once it is past the deadline.
+      const { data: candidates } = await admin
+        .from("consent_records")
+        .select("id, athlete_id, granted_at, updated_at, granted_by_email")
+        .limit(2000);
+      const athleteIds = [...new Set((candidates ?? []).map((c: any) => c.athlete_id).filter(Boolean))];
+      const existing = new Set<string>();
+      for (let i = 0; i < athleteIds.length; i += 500) {
+        const { data: profs } = await admin
+          .from("profiles").select("user_id").in("user_id", athleteIds.slice(i, i + 500));
+        for (const p of profs ?? []) existing.add(p.user_id);
+      }
+      const scrubIds: string[] = [];
+      for (const c of candidates ?? []) {
+        if (c.athlete_id && existing.has(c.athlete_id)) continue;
+        const ref = c.updated_at ?? c.granted_at;
+        if (ref && new Date(ref).getTime() < new Date(cutoff).getTime()) {
+          if (deleteIds.size < limit) deleteIds.add(c.id);
+        } else if (c.granted_by_email) {
+          scrubIds.push(c.id);
+        }
+      }
+
+      r.candidates = deleteIds.size + scrubIds.length;
       if (policy.dry_run || r.candidates === 0) return r;
-      const ids = (rows ?? []).map((c: any) => c.id);
-      const { count, error } = await admin.from("consent_records").delete({ count: "exact" }).in("id", ids);
-      if (error) r.errors.push("consent_delete_failed");
-      r.processed = count ?? 0;
+
+      if (scrubIds.length > 0) {
+        const { error } = await admin
+          .from("consent_records").update({ granted_by_email: null }).in("id", scrubIds.slice(0, limit));
+        if (error) r.errors.push("consent_scrub_failed");
+        else r.processed += Math.min(scrubIds.length, limit);
+      }
+      if (deleteIds.size > 0) {
+        const { count, error } = await admin
+          .from("consent_records").delete({ count: "exact" }).in("id", [...deleteIds]);
+        if (error) r.errors.push("consent_delete_failed");
+        r.processed += count ?? 0;
+      }
       return r;
     }
+
   }
 
   return r;
@@ -517,7 +602,20 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 // ----------------------------------------------------------------------
 // Helpers
 // ----------------------------------------------------------------------
+/** True when the user is still an active member of at least one club. */
+async function hasActiveMembership(admin: any, uid: string) {
+  const { count } = await admin
+    .from("club_memberships")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", uid)
+    .eq("status", "active");
+  return (count ?? 0) > 0;
+}
+
 async function alreadyNotified(admin: any, category: string, subjectId: string, noticeType: string) {
+
+
+
   const { count } = await admin
     .from("retention_notices")
     .select("*", { count: "exact", head: true })
