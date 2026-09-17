@@ -603,6 +603,17 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 // Helpers
 // ----------------------------------------------------------------------
 async function alreadyNotified(admin: any, category: string, subjectId: string, noticeType: string) {
+/** True when the user is still an active member of at least one club. */
+async function hasActiveMembership(admin: any, uid: string) {
+  const { count } = await admin
+    .from("club_memberships")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", uid)
+    .eq("status", "active");
+  return (count ?? 0) > 0;
+}
+
+
   const { count } = await admin
     .from("retention_notices")
     .select("*", { count: "exact", head: true })
