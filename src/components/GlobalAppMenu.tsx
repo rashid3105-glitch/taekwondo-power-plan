@@ -40,6 +40,7 @@ import {
   Image as ImageIcon,
   Megaphone,
   UserPlus,
+  Trash2,
 } from "lucide-react";
 import { BracketIcon } from "@/components/icons/BracketIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
