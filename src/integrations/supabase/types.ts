@@ -1229,6 +1229,7 @@ export type Database = {
           digital_consent_age: number | null
           id: string
           license_active: boolean
+          license_ended_at: string | null
           logo_url: string | null
           max_athletes: number
           name: string
@@ -1247,6 +1248,7 @@ export type Database = {
           digital_consent_age?: number | null
           id?: string
           license_active?: boolean
+          license_ended_at?: string | null
           logo_url?: string | null
           max_athletes?: number
           name: string
@@ -1265,6 +1267,7 @@ export type Database = {
           digital_consent_age?: number | null
           id?: string
           license_active?: boolean
+          license_ended_at?: string | null
           logo_url?: string | null
           max_athletes?: number
           name?: string
@@ -3243,6 +3246,87 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      retention_locks: {
+        Row: {
+          lock_name: string
+          locked_at: string
+          locked_until: string
+        }
+        Insert: {
+          lock_name: string
+          locked_at?: string
+          locked_until: string
+        }
+        Update: {
+          lock_name?: string
+          locked_at?: string
+          locked_until?: string
+        }
+        Relationships: []
+      }
+      retention_notices: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          notice_type: string
+          sent_at: string
+          subject_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          notice_type: string
+          sent_at?: string
+          subject_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          notice_type?: string
+          sent_at?: string
+          subject_id?: string
+        }
+        Relationships: []
+      }
+      retention_policies: {
+        Row: {
+          batch_limit: number
+          category: string
+          created_at: string
+          description: string | null
+          dry_run: boolean
+          enabled: boolean
+          retention_days: number
+          updated_at: string
+          warn_days: number
+        }
+        Insert: {
+          batch_limit?: number
+          category: string
+          created_at?: string
+          description?: string | null
+          dry_run?: boolean
+          enabled?: boolean
+          retention_days: number
+          updated_at?: string
+          warn_days?: number
+        }
+        Update: {
+          batch_limit?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          dry_run?: boolean
+          enabled?: boolean
+          retention_days?: number
+          updated_at?: string
+          warn_days?: number
+        }
+        Relationships: []
       }
       running_program_enrollments: {
         Row: {
