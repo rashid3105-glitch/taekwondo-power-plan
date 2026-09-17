@@ -127,6 +127,44 @@ export function AccountDangerZone() {
         </Button>
       </div>
 
+      {/* Delete health data now (membership ended) */}
+      {leftClub && (
+        <div className="space-y-2 pt-2 border-t border-destructive/20">
+          <p className="text-sm font-semibold">{t("leftClubDataTitle")}</p>
+          <p className="text-sm text-muted-foreground">{t("leftClubDataDesc")}</p>
+          <AlertDialog open={purgeOpen} onOpenChange={setPurgeOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t("leftClubDeleteNow")}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-destructive flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5" />
+                  {t("leftClubConfirmTitle")}
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-3">
+                  <span className="block">{t("leftClubConfirmDesc")}</span>
+                  <span className="block font-bold text-destructive">{t("deleteAccountIrreversible")}</span>
+                  <span className="block text-sm">{t("deleteAccountExportFirst")}</span>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                <Button variant="destructive" onClick={handlePurgeHealthData} disabled={purging}>
+                  {purging ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
+                  {t("permanentlyDelete")}
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
+
+
+
       {/* Delete account */}
       <div className="space-y-2 pt-2 border-t border-destructive/20">
         <p className="text-sm text-muted-foreground">{t("deleteAccountDesc")}</p>
