@@ -21,3 +21,17 @@ export function isNativeApp(): boolean {
     return false;
   }
 }
+
+// Public web origin. Inside the native app `window.location.origin` is
+// `capacitor://localhost`, which is unusable in any link shared with people
+// outside the app (guardian invites, share links). Always build such links
+// with this helper.
+export const PUBLIC_APP_URL = "https://sportstalent.dk";
+
+export function publicAppOrigin(): string {
+  if (isNativeApp()) return PUBLIC_APP_URL;
+  if (typeof window === "undefined") return PUBLIC_APP_URL;
+  const origin = window.location.origin;
+  if (!origin || !/^https?:$/.test(window.location.protocol)) return PUBLIC_APP_URL;
+  return origin;
+}

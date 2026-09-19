@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShieldCheck, Loader2, AlertTriangle, X } from "lucide-react";
+import { publicAppOrigin } from "@/lib/platform";
 
 // Routes where the gate must never appear (public / pre-login / consent flows).
 const PUBLIC_PREFIXES = [
@@ -332,7 +333,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .insert({ athlete_id: uid, code });
         if (insErr) throw insErr;
       }
-      setGuardianLink(`${window.location.origin}/parent-join/${code}`);
+      setGuardianLink(`${publicAppOrigin()}/parent-join/${code}`);
     } catch (e: any) {
       setError(e.message || t("error"));
     } finally {
