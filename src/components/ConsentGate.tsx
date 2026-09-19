@@ -332,7 +332,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .insert({ athlete_id: uid, code });
         if (insErr) throw insErr;
       }
-      setGuardianLink(`${window.location.origin}/parent-join/${code}`);
+      setGuardianLink(`${publicAppOrigin()}/parent-join/${code}`);
     } catch (e: any) {
       setError(e.message || t("error"));
     } finally {
