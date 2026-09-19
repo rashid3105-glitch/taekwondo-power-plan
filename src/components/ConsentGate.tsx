@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShieldCheck, Loader2, AlertTriangle, X } from "lucide-react";
+import { publicAppOrigin } from "@/lib/platform";
 
 // Routes where the gate must never appear (public / pre-login / consent flows).
 const PUBLIC_PREFIXES = [
