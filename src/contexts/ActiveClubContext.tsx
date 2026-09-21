@@ -77,7 +77,8 @@ export function ActiveClubProvider({ children }: { children: ReactNode }) {
       if (isSuper) {
         const { data: allClubs } = await supabase
           .from("clubs" as any)
-          .select("id, name");
+          .select("id, name, deleted_at")
+          .is("deleted_at", null);
         for (const c of ((allClubs as any[] | null) ?? [])) {
           if (!byClub.has(c.id as string)) {
             byClub.set(c.id as string, {

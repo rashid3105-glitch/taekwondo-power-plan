@@ -73,13 +73,16 @@ export function LicenseGate({ children }: { children: React.ReactNode }) {
 
       const { data: club, error: clubErr } = await supabase
         .from("clubs" as any)
-        .select("name, license_active")
+        .select("name, license_active, deleted_at")
         .eq("id", clubId)
         .maybeSingle();
       if (clubErr || !club) { setState({ kind: "ok" }); return; } // (f) fail open
 
-      // (d) Licensed → through.
-      if ((club as any).license_active === true) { setState({ kind: "ok" }); return; }
+      // (d) Licensed and not deactivated → through.
+      if ((club as any).license_active === true && (club as any).deleted_at == null) {
+        setState({ kind: "ok" });
+        return;
+      }
 
       // (e) Unlicensed — coaches/club admins get a buy path, everyone else does not.
       const { data: memberships, error: memErr } = await supabase
