@@ -3,12 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, ArrowLeft, Building, Plus, Save, Trophy } from "lucide-react";
+import { Loader2, ArrowLeft, Building, Plus, Save, Trophy, PauseCircle, PlayCircle, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
 
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ClubBrandingSection } from "@/components/admin/ClubBrandingSection";
 
 
@@ -18,20 +28,31 @@ interface Club {
   max_athletes: number;
   share_coach_notes: boolean;
   license_active: boolean;
+  deleted_at: string | null;
 }
+
+const REACTIVATION_DAYS = 30;
+
+type PendingAction =
+  | { kind: "deactivate" | "reactivate" | "delete"; club: Club }
+  | null;
 
 export default function AdminClubs() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [originalClubs, setOriginalClubs] = useState<Record<string, Club>>({});
   const [brandingEnabled, setBrandingEnabled] = useState<Record<string, boolean>>({});
+  const [memberCounts, setMemberCounts] = useState<Record<string, number>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [pending, setPending] = useState<PendingAction>(null);
+  const [confirmName, setConfirmName] = useState("");
+  const [working, setWorking] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [newClubName, setNewClubName] = useState("");
   const [newClubMax, setNewClubMax] = useState(5);
   const [creating, setCreating] = useState(false);
-  const [licenseFilter, setLicenseFilter] = useState<"active" | "inactive" | "all">("active");
+  const [licenseFilter, setLicenseFilter] = useState<"active" | "inactive" | "deactivated" | "all">("active");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -51,7 +72,7 @@ export default function AdminClubs() {
   const loadClubs = async () => {
     const { data, error } = await supabase
       .from("clubs" as any)
-      .select("id, name, max_athletes, share_coach_notes, license_active")
+      .select("id, name, max_athletes, share_coach_notes, license_active, deleted_at")
       .order("name");
 
     if (error) {
@@ -74,6 +95,19 @@ export default function AdminClubs() {
     }
     setBrandingEnabled(flags);
 
+    // How many people are still attached to each club — a club can only be
+    // deleted when nobody is left (active membership or profile pointer).
+    const [memberRes, profileRes] = await Promise.all([
+      supabase.from("club_memberships" as any).select("club_id").eq("status", "active"),
+      supabase.from("profiles").select("club_id").not("club_id", "is", null),
+    ]);
+    const counts: Record<string, number> = {};
+    for (const row of (((memberRes.data as any[]) ?? []).concat((profileRes.data as any[]) ?? []))) {
+      const id = row.club_id as string | null;
+      if (id) counts[id] = (counts[id] ?? 0) + 1;
+    }
+    setMemberCounts(counts);
+
     setLoading(false);
 
   };
@@ -93,6 +127,7 @@ export default function AdminClubs() {
     ) {
       return t("clubNameExists") || "A club with that name already exists";
     }
+    if (raw.includes("club_not_empty")) return t("clubDeleteBlockedMembers");
     return err?.message ?? String(err);
   };
 
@@ -145,6 +180,57 @@ export default function AdminClubs() {
     }
   };
 
+  const deletableFrom = (club: Club): Date | null => {
+    if (!club.deleted_at) return null;
+    const d = new Date(club.deleted_at);
+    d.setDate(d.getDate() + REACTIVATION_DAYS);
+    return d;
+  };
+
+  const fmtDate = (d: Date | string) =>
+    new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+
+  // Club logo and other club files live under a `<clubId>/` prefix in storage,
+  // which SQL cannot touch — clean it up right after the row is gone.
+  const removeClubFiles = async (clubId: string) => {
+    try {
+      const { data } = await supabase.storage.from("club-logos").list(clubId);
+      const paths = ((data as any[]) ?? []).map((f) => `${clubId}/${f.name}`);
+      if (paths.length > 0) await supabase.storage.from("club-logos").remove(paths);
+    } catch {
+      // Files left behind are harmless; the club data itself is deleted.
+    }
+  };
+
+  const runPending = async () => {
+    if (!pending) return;
+    const { kind, club } = pending;
+    setWorking(true);
+    try {
+      if (kind === "deactivate") {
+        const { error } = await supabase.rpc("admin_deactivate_club" as any, { _club_id: club.id } as any);
+        if (error) throw error;
+        toast({ title: t("clubDeactivatedToast") });
+      } else if (kind === "reactivate") {
+        const { error } = await supabase.rpc("admin_reactivate_club" as any, { _club_id: club.id } as any);
+        if (error) throw error;
+        toast({ title: t("clubReactivatedToast") });
+      } else {
+        const { error } = await supabase.rpc("admin_delete_club" as any, { _club_id: club.id } as any);
+        if (error) throw error;
+        await removeClubFiles(club.id);
+        toast({ title: t("clubDeletedToast") });
+      }
+      setPending(null);
+      setConfirmName("");
+      await loadClubs();
+    } catch (err: any) {
+      toast({ title: t("error"), description: describeError(err), variant: "destructive" });
+    } finally {
+      setWorking(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -155,11 +241,16 @@ export default function AdminClubs() {
 
   if (!isAdmin) return null;
 
-  const activeCount = clubs.filter(c => c.license_active === true).length;
-  const inactiveCount = clubs.length - activeCount;
-  const visibleClubs = licenseFilter === "all"
-    ? clubs
-    : clubs.filter(c => (c.license_active === true) === (licenseFilter === "active"));
+  const liveClubs = clubs.filter(c => !c.deleted_at);
+  const activeCount = liveClubs.filter(c => c.license_active === true).length;
+  const inactiveCount = liveClubs.length - activeCount;
+  const deactivatedCount = clubs.filter(c => !!c.deleted_at).length;
+  const visibleClubs =
+    licenseFilter === "all"
+      ? clubs
+      : licenseFilter === "deactivated"
+        ? clubs.filter(c => !!c.deleted_at)
+        : liveClubs.filter(c => (c.license_active === true) === (licenseFilter === "active"));
 
   return (
     <div className="min-h-screen bg-background">
@@ -215,6 +306,7 @@ export default function AdminClubs() {
           <SelectContent>
             <SelectItem value="active">{t("licenseFilterActive")} ({activeCount})</SelectItem>
             <SelectItem value="inactive">{t("licenseFilterInactive")} ({inactiveCount})</SelectItem>
+            <SelectItem value="deactivated">{t("licenseFilterDeactivated")} ({deactivatedCount})</SelectItem>
             <SelectItem value="all">{t("licenseFilterAll")} ({clubs.length})</SelectItem>
           </SelectContent>
         </Select>
@@ -223,8 +315,12 @@ export default function AdminClubs() {
           {visibleClubs.map(club => {
             const dirty = isDirty(club);
             const saving = savingId === club.id;
+            const deactivated = !!club.deleted_at;
+            const members = memberCounts[club.id] ?? 0;
+            const from = deletableFrom(club);
+            const ready = !!from && from.getTime() <= Date.now();
             return (
-            <div key={club.id} className="rounded-lg border border-border bg-card p-4 space-y-3">
+            <div key={club.id} className={`rounded-lg border p-4 space-y-3 ${deactivated ? "border-destructive/40 bg-destructive/5" : "border-border bg-card"}`}>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm font-medium text-card-foreground truncate">{club.name}</span>
                 <div className="flex items-center gap-2 shrink-0">
@@ -241,9 +337,26 @@ export default function AdminClubs() {
                       }
                     }}
                     className="w-16 h-8 text-xs text-center"
+                    disabled={deactivated}
                   />
                 </div>
               </div>
+
+              {deactivated && (
+                <div className="rounded-md border border-destructive/30 bg-background/60 px-3 py-2 space-y-1">
+                  <div className="text-[11px] font-semibold text-destructive">
+                    {t("clubDeactivatedBadge")}{ready ? ` · ${t("clubReadyForDeletion")}` : ""}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground">
+                    {t("clubDeactivatedSince")} {fmtDate(club.deleted_at as string)}
+                    {from ? ` · ${t("clubDeletableFrom")} ${fmtDate(from)}` : ""}
+                  </div>
+                  {members > 0 && (
+                    <div className="text-[10px] text-muted-foreground">{t("clubDeleteBlockedMembers")}</div>
+                  )}
+                </div>
+              )}
+
               <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
                 <div className="min-w-0">
                   <div className="text-xs font-medium text-card-foreground">{t("shareCoachNotes")}</div>
@@ -252,6 +365,7 @@ export default function AdminClubs() {
                 <Switch
                   checked={!!club.share_coach_notes}
                   onCheckedChange={(v) => updateLocal(club.id, { share_coach_notes: v })}
+                  disabled={deactivated}
                 />
               </div>
               <div className="flex items-start justify-between gap-3 border-t border-border pt-3">
@@ -262,19 +376,52 @@ export default function AdminClubs() {
                 <Switch
                   checked={!!club.license_active}
                   onCheckedChange={(v) => updateLocal(club.id, { license_active: v })}
+                  disabled={deactivated}
                 />
               </div>
-              <ClubBrandingSection
-                clubId={club.id}
-                clubName={club.name}
-                enabled={!!brandingEnabled[club.id]}
-              />
-              <div className="flex justify-end border-t border-border pt-3">
+              {!deactivated && (
+                <ClubBrandingSection
+                  clubId={club.id}
+                  clubName={club.name}
+                  enabled={!!brandingEnabled[club.id]}
+                />
+              )}
+              <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-3">
+                {deactivated ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setPending({ kind: "reactivate", club })}
+                    >
+                      <PlayCircle className="h-4 w-4 mr-1" />
+                      {t("clubReactivate")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={members > 0}
+                      onClick={() => { setConfirmName(""); setPending({ kind: "delete", club }); }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      {t("clubDeletePermanently")}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setPending({ kind: "deactivate", club })}
+                  >
+                    <PauseCircle className="h-4 w-4 mr-1" />
+                    {t("clubDeactivate")}
+                  </Button>
+                )}
 
                 <Button
                   size="sm"
                   onClick={() => saveClub(club)}
-                  disabled={!dirty || saving}
+                  disabled={!dirty || saving || deactivated}
                 >
                   {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
                   {t("save") || "Save"}
@@ -289,6 +436,51 @@ export default function AdminClubs() {
           <p className="text-sm text-muted-foreground text-center py-8">No clubs found.</p>
         )}
       </div>
+
+      <AlertDialog open={!!pending} onOpenChange={(o) => { if (!o && !working) { setPending(null); setConfirmName(""); } }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {pending?.kind === "delete"
+                ? t("clubDeleteConfirmTitle")
+                : pending?.kind === "reactivate"
+                  ? t("clubReactivateConfirmTitle")
+                  : t("clubDeactivateConfirmTitle")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {pending?.club.name}
+              {" — "}
+              {pending?.kind === "delete"
+                ? t("clubDeleteConfirmDesc")
+                : pending?.kind === "reactivate"
+                  ? t("clubReactivateConfirmDesc")
+                  : t("clubDeactivateConfirmDesc")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {pending?.kind === "delete" && (
+            <Input
+              value={confirmName}
+              onChange={(e) => setConfirmName(e.target.value)}
+              placeholder={pending.club.name}
+              autoFocus
+            />
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={working}>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={working || (pending?.kind === "delete" && confirmName.trim() !== pending.club.name)}
+              onClick={(e) => { e.preventDefault(); runPending(); }}
+            >
+              {working ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {pending?.kind === "delete"
+                ? t("clubDeletePermanently")
+                : pending?.kind === "reactivate"
+                  ? t("clubReactivate")
+                  : t("clubDeactivate")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

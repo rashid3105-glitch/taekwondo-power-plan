@@ -1227,6 +1227,7 @@ export type Database = {
           background_color: string | null
           country: string | null
           created_at: string
+          deactivated_by: string | null
           default_weekly_schedule: Json | null
           deleted_at: string | null
           digital_consent_age: number | null
@@ -1246,6 +1247,7 @@ export type Database = {
           background_color?: string | null
           country?: string | null
           created_at?: string
+          deactivated_by?: string | null
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
           digital_consent_age?: number | null
@@ -1265,6 +1267,7 @@ export type Database = {
           background_color?: string | null
           country?: string | null
           created_at?: string
+          deactivated_by?: string | null
           default_weekly_schedule?: Json | null
           deleted_at?: string | null
           digital_consent_age?: number | null
@@ -4916,6 +4919,9 @@ export type Database = {
           requires_guardian: number
         }[]
       }
+      admin_deactivate_club: { Args: { _club_id: string }; Returns: Json }
+      admin_delete_club: { Args: { _club_id: string }; Returns: Json }
+      admin_reactivate_club: { Args: { _club_id: string }; Returns: Json }
       admin_reject_with_reason: {
         Args: { _athlete_id: string; _reason: string }
         Returns: Json
