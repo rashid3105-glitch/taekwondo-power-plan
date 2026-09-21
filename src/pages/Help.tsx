@@ -545,6 +545,7 @@ export default function Help() {
 // Build numbers start at v1.0.0 on 2026-05-29 (first build with semantic versioning).
 // MINOR bumps for new features, PATCH bumps for small tweaks/fixes. Older releases left unversioned.
 const CHANGELOG: { dateKey: string; entries: string[]; build?: string }[] = [
+  { dateKey: "changelog_2026_09_21", entries: ["changelogEntry257"], build: "v1.5.74" },
   { dateKey: "changelog_2026_09_17", entries: ["changelogEntry256", "changelogEntry255", "changelogEntry254", "changelogEntry253"], build: "v1.5.73" },
   { dateKey: "changelog_2026_09_15", entries: ["changelogEntry252", "changelogEntry251"], build: "v1.5.69" },
   { dateKey: "changelog_2026_09_14", entries: ["changelogEntry250", "changelogEntry249", "changelogEntry248", "changelogEntry247", "changelogEntry246", "changelogEntry245"], build: "v1.5.68" },
