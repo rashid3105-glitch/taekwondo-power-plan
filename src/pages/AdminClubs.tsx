@@ -400,7 +400,7 @@ export default function AdminClubs() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      disabled={members > 0 || !ready}
+                      disabled={members > 0}
                       onClick={() => { setConfirmName(""); setPending({ kind: "delete", club }); }}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
