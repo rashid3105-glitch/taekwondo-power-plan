@@ -1233,6 +1233,7 @@ export type Database = {
           digital_consent_age: number | null
           id: string
           license_active: boolean
+          license_active_before_deactivation: boolean | null
           license_ended_at: string | null
           logo_url: string | null
           max_athletes: number
@@ -1253,6 +1254,7 @@ export type Database = {
           digital_consent_age?: number | null
           id?: string
           license_active?: boolean
+          license_active_before_deactivation?: boolean | null
           license_ended_at?: string | null
           logo_url?: string | null
           max_athletes?: number
@@ -1273,6 +1275,7 @@ export type Database = {
           digital_consent_age?: number | null
           id?: string
           license_active?: boolean
+          license_active_before_deactivation?: boolean | null
           license_ended_at?: string | null
           logo_url?: string | null
           max_athletes?: number

@@ -79,6 +79,7 @@ export default function Onboarding() {
         .from("clubs" as any)
         .select("id, name")
         .ilike("name", `%${clubName.trim()}%`)
+        .is("deleted_at", null)
         .limit(5);
       const results = (data as any[] ?? []) as {id: string; name: string}[];
       setClubSearchResults(results);
