@@ -1,0 +1,1 @@
+- [GDPR deploy](mem://preferences/gdpr-deploy) — Deploy edge functions in GDPR samtykke-serien uden at spørge
