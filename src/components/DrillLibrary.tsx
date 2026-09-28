@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { ChevronDown, ChevronUp, Youtube, Plus, Pencil, Trash2, Video } from "lucide-react";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -249,28 +250,7 @@ function DrillRow({
           {isUpload && signedUrl && (
             <video src={signedUrl} controls playsInline className="w-full rounded-lg border border-border bg-black aspect-video" />
           )}
-          {!isUpload && ytId && (
-            <a
-              href={drill.video_url!}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-lg overflow-hidden border border-border bg-black aspect-video relative group"
-              aria-label={t("drillsPlay" as TranslationKey)}
-            >
-              <img
-                src={`https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`}
-                alt=""
-                loading="lazy"
-                className="w-full h-full object-cover"
-                onError={(e) => { (e.currentTarget as HTMLImageElement).src = `https://i.ytimg.com/vi/${ytId}/mqdefault.jpg`; }}
-              />
-              <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                <span className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                  <svg viewBox="0 0 24 24" className="w-6 h-6 ml-0.5 fill-black"><path d="M8 5v14l11-7z" /></svg>
-                </span>
-              </span>
-            </a>
-          )}
+          {!isUpload && ytId && <YouTubeEmbed videoId={ytId} title={drill.title} />}
         </div>
       )}
     </div>

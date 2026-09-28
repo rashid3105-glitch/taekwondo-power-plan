@@ -2,6 +2,8 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 const translations = {
   en: {
+    videoConsentNotice: "This video plays from {provider}. When you click, data is sent to {provider}.",
+    videoConsentPlay: "Play video",
     trainStatusTitle: "Training status",
     trainStatusDesc: "Say whether you can train right now. Your coach can see this.",
     trainStatusCleared: "Can train fully",
@@ -4734,6 +4736,8 @@ const translations = {
     homeFaq6A: "You can export the club's data at any time. If you cancel, we delete the data as agreed and no later than the end of the retention period. We do not sell data and use it only to run the platform.",
   },
   da: {
+    videoConsentNotice: "Videoen afspilles fra {provider}. Når du klikker, sendes data til {provider}.",
+    videoConsentPlay: "Afspil video",
     trainStatusTitle: "Træningsstatus",
     trainStatusDesc: "Fortæl om du kan træne lige nu. Din træner kan se det.",
     trainStatusCleared: "Kan træne fuldt ud",
@@ -9449,6 +9453,8 @@ const translations = {
     homeFaq6A: "I kan til enhver tid eksportere klubbens data. Siger I op, sletter vi data efter aftale og senest når opbevaringsfristen udløber. Vi sælger ikke data og bruger dem ikke til andet end at drive platformen.",
   },
   sv: {
+    videoConsentNotice: "Videon spelas upp från {provider}. När du klickar skickas data till {provider}.",
+    videoConsentPlay: "Spela upp video",
     trainStatusTitle: "Träningsstatus",
     trainStatusDesc: "Berätta om du kan träna just nu. Din tränare kan se det.",
     trainStatusCleared: "Kan träna fullt ut",
@@ -14123,6 +14129,8 @@ const translations = {
     homeFaq6A: "Ni kan när som helst exportera klubbens data. Om ni säger upp avtalet raderar vi data enligt överenskommelse och senast när lagringstiden löper ut. Vi säljer inte data och använder dem bara för att driva plattformen.",
   },
   de: {
+    videoConsentNotice: "Das Video wird von {provider} abgespielt. Wenn du klickst, werden Daten an {provider} gesendet.",
+    videoConsentPlay: "Video abspielen",
     trainStatusTitle: "Trainingsstatus",
     trainStatusDesc: "Gib an, ob du gerade trainieren kannst. Dein Trainer sieht das.",
     trainStatusCleared: "Kann voll trainieren",
@@ -18747,6 +18755,8 @@ const translations = {
     homeFaq6A: "Ihr könnt die Vereinsdaten jederzeit exportieren. Bei einer Kündigung löschen wir die Daten wie vereinbart, spätestens nach Ablauf der Aufbewahrungsfrist. Wir verkaufen keine Daten und nutzen sie nur für den Betrieb der Plattform.",
   },
   ar: {
+    videoConsentNotice: "يتم تشغيل الفيديو من {provider}. عند النقر، يتم إرسال البيانات إلى {provider}.",
+    videoConsentPlay: "تشغيل الفيديو",
     trainStatusTitle: "حالة التدريب",
     trainStatusDesc: "وضّح ما إذا كان بإمكانك التدريب الآن. يمكن لمدربك رؤية ذلك.",
     trainStatusCleared: "يمكن التدريب بالكامل",
@@ -23372,6 +23382,8 @@ const translations = {
     homeFaq6A: "يمكنكم تصدير بيانات النادي في أي وقت. وعند الإنهاء نحذف البيانات وفق الاتفاق وبحد أقصى عند انتهاء مدة الاحتفاظ. لا نبيع البيانات ولا نستخدمها إلا لتشغيل المنصة.",
   },
   no: {
+    videoConsentNotice: "Videoen spilles av fra {provider}. Når du klikker, sendes data til {provider}.",
+    videoConsentPlay: "Spill av video",
     trainStatusTitle: "Treningsstatus",
     trainStatusDesc: "Si fra om du kan trene nå. Treneren din kan se det.",
     trainStatusCleared: "Kan trene fullt",
@@ -28056,6 +28068,8 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  videoConsentNotice: "El vídeo se reproduce desde {provider}. Al hacer clic, se envían datos a {provider}.",
+  videoConsentPlay: "Reproducir vídeo",
   trainStatusTitle: "Estado de entrenamiento",
   trainStatusDesc: "Indica si puedes entrenar ahora mismo. Tu entrenador puede verlo.",
   trainStatusCleared: "Puede entrenar con normalidad",
