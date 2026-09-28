@@ -17,8 +17,8 @@ export interface DiaryOutboxIntent {
   server_id?: string;
   entry_date: string;
   content: string;
-  mood: number;
-  energy: number;
+  mood: number | null;
+  energy: number | null;
   tags: string[];
   entry_type: DiaryEntryType;
   entry_types?: string[] | null;
@@ -37,8 +37,8 @@ export interface CachedDiaryEntry {
   user_id: string;
   entry_date: string;
   content: string;
-  mood: number;
-  energy: number;
+  mood: number | null;
+  energy: number | null;
   tags: string[];
   entry_type: DiaryEntryType;
   entry_types?: string[] | null;

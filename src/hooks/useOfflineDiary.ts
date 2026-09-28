@@ -19,8 +19,8 @@ import { getCurrentUser } from "@/lib/authSession";
 interface NewEntry {
   entry_date: string;
   content: string;
-  mood: number;
-  energy: number;
+  mood: number | null;
+  energy: number | null;
   tags: string[];
   entry_type: DiaryEntryType;
   entry_types?: string[] | null;
@@ -222,8 +222,8 @@ export function useOfflineDiary() {
         server_id: id,
         entry_date: existing?.entry_date || new Date().toISOString().slice(0, 10),
         content: existing?.content || "",
-        mood: existing?.mood || 3,
-        energy: existing?.energy || 3,
+        mood: existing?.mood ?? null,
+        energy: existing?.energy ?? null,
         tags: existing?.tags || [],
         entry_type: existing?.entry_type || "general",
         queued_at: Date.now(),
