@@ -49,6 +49,9 @@ Deno.serve(async (req) => {
       ...(clubId ? { club_id: clubId } : {}),
     }, { onConflict: "user_id,checkin_date" }).select().single();
 
+    if (error && (error.code === "42501" || /row-level security/i.test(error.message))) {
+      return new Response(JSON.stringify({ error: "consent_required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
     if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     return new Response(JSON.stringify(data), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e: any) {

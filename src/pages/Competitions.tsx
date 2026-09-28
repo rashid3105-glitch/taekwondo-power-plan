@@ -55,6 +55,8 @@ export default function Competitions() {
 
   // weight log
   const [todayWeight, setTodayWeight] = useState("");
+  const weightConsent = useHealthConsent();
+  const [weightConsentBlocked, setWeightConsentBlocked] = useState(false);
 
   useEffect(() => { void load(); }, []);
 
@@ -113,7 +115,10 @@ export default function Competitions() {
     if (!user) return;
     const today = new Date().toISOString().slice(0, 10);
     const { error } = await supabase.from("weight_logs").upsert({ user_id: user.id, log_date: today, weight_kg: w, ...(activeClubId ? { club_id: activeClubId } : {}) }, { onConflict: "user_id,log_date" });
-    if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
+    if (error) {
+      if (isHealthConsentError(error)) { setWeightConsentBlocked(true); return; }
+      toast({ title: t("error"), description: error.message, variant: "destructive" }); return;
+    }
     setTodayWeight("");
     toast({ title: t("competitionsWeightLogged") });
     void load();
