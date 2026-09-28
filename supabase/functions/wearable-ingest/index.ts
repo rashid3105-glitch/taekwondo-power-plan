@@ -72,6 +72,24 @@ Deno.serve(async (req) => {
     if (userErr || !userRes.user) return json({ error: "unauthorized" }, 401);
     const userId = userRes.user.id;
 
+    const svc = createClient(SUPABASE_URL, SERVICE_ROLE, {
+      auth: { persistSession: false },
+    });
+
+    // Consent gate: service role bypasses RLS (has_health_consent), so check
+    // explicitly BEFORE any write. Fail closed on RPC error.
+    const { data: hasConsent, error: consentErr } = await svc.rpc(
+      "has_health_consent",
+      { _athlete: userId },
+    );
+    if (consentErr) {
+      console.error("has_health_consent failed", consentErr);
+      return json({ error: "consent_check_unavailable" }, 503);
+    }
+    if (hasConsent !== true) {
+      return json({ error: "consent_required" }, 403);
+    }
+
     const body = await req.json().catch(() => null);
     const samples: SampleIn[] = Array.isArray(body?.samples) ? body.samples : [];
     const deviceLabel: string | null = body?.device_label ?? null;
@@ -146,10 +164,6 @@ Deno.serve(async (req) => {
         });
       }
     }
-
-    const svc = createClient(SUPABASE_URL, SERVICE_ROLE, {
-      auth: { persistSession: false },
-    });
 
     let inserted = 0;
     if (rows.length > 0) {
