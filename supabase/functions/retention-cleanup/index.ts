@@ -579,6 +579,7 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
           await del("health_data");
           await del("mental_assessments");
           await del("readiness_checkins");
+          await del("weight_logs");
           const moodFilter = (q: any) => q.or("mood.not.is.null,energy.not.is.null");
           if (policy.dry_run) {
             const { count } = await moodFilter(admin.from("diary_entries")
