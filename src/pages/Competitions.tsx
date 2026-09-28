@@ -16,6 +16,8 @@ import { AppFooter } from "@/components/AppFooter";
 import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { isHealthConsentError, useHealthConsent } from "@/lib/healthConsent";
+import { HealthConsentNotice } from "@/components/HealthConsentNotice";
 
 interface Competition {
   id: string;
@@ -196,6 +198,9 @@ export default function Competitions() {
         {!isPoomsae && (
           <Card>
             <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
+            {weightConsent === false || weightConsentBlocked ? (
+              <CardContent><HealthConsentNotice /></CardContent>
+            ) : (
             <CardContent className="flex gap-2 items-end">
               <div className="flex-1">
                 <Label className="text-xs">{t("competitionsWeightKg")}</Label>
@@ -203,6 +208,7 @@ export default function Competitions() {
               </div>
               <Button onClick={logWeight}>{t("competitionsLog")}</Button>
             </CardContent>
+            )}
           </Card>
         )}
 
