@@ -9,6 +9,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { AppFooter } from "@/components/AppFooter";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { getSportProfile } from "@/config/sportProfiles";
 import { formatGrade } from "@/lib/sportGrade";
 
@@ -37,20 +38,20 @@ interface Bundle {
 
 const MEDAL_EMOJI: Record<string, string> = { gold: "🥇", silver: "🥈", bronze: "🥉" };
 
-function getEmbedUrl(url: string): string | null {
+function getEmbed(url: string): { provider: "youtube" | "vimeo"; id: string } | null {
   try {
     const u = new URL(url);
     if (u.hostname.includes("youtu.be")) {
       const id = u.pathname.slice(1);
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+      return id ? { provider: "youtube", id } : null;
     }
     if (u.hostname.includes("youtube.com")) {
       const id = u.searchParams.get("v");
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+      return id ? { provider: "youtube", id } : null;
     }
     if (u.hostname.includes("vimeo.com")) {
       const id = u.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://player.vimeo.com/video/${id}` : null;
+      return id ? { provider: "vimeo", id } : null;
     }
   } catch { /* ignore */ }
   return null;

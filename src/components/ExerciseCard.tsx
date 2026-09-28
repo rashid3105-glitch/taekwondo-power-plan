@@ -7,6 +7,7 @@ import { ExerciseIllustration } from "./ExerciseIllustration";
 import { getExerciseGoals, getRiskLevel, RISK_STYLES } from "@/lib/exerciseClassification";
 import { EXERCISE_CATEGORY_STYLE } from "@/lib/exerciseCategoryStyle";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import type { TranslationKey } from "@/i18n/translations";
 
 const GOAL_LABEL_KEY: Record<string, TranslationKey> = {
@@ -114,16 +115,7 @@ export function ExerciseCard({ exercise, index }: ExerciseCardProps) {
           {/* Embedded YouTube short-form demo */}
           {exercise.videoId && (
             <div className="space-y-2">
-              <div className="rounded-lg overflow-hidden border border-border bg-black aspect-video">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${exercise.videoId}?rel=0&modestbranding=1`}
-                  title={`${exercise.name} — ${t("videoDemo")}`}
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              </div>
+              <YouTubeEmbed videoId={exercise.videoId} title={`${exercise.name} — ${t("videoDemo")}`} />
               {CUES_KEY[exercise.category] && (
                 <div className="rounded-md border border-border bg-muted/50 p-3 space-y-1.5">
                   <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1">
