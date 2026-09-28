@@ -28321,7 +28321,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   squadPlanActive: "Plan activo",
   squadReadinessLabel: "Preparación",
   squadConsentMissing: "Falta consentimiento",
-  healthConsentRequiredReadinessWeight: "Readiness og vekt krever samtykke til helsedata.",
+  healthConsentRequiredReadinessWeight: "La preparación y el peso requieren consentimiento para datos de salud.",
   consentsParentEmailMissing: "Falta el correo del padre/madre",
   homeSeoTitle: "Sportstalent — sistema de talento para clubes",
   homeSeoDesc: "Planes de entrenamiento, carga, pruebas, lesiones y forma mental en un perfil de atleta propiedad del club. RGPD, datos en la UE.",
