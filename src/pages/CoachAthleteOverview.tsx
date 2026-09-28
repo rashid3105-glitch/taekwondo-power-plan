@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { attachDiaryHealth } from "@/lib/diaryHealth";
 import { AppFooter } from "@/components/AppFooter";
 import { Watermark } from "@/components/Watermark";
 import { AvatarImg } from "@/components/AvatarImg";
@@ -204,12 +205,12 @@ export default function CoachAthleteOverview() {
     setDiaryLoading(true);
     let q: any = supabase
       .from("diary_entries")
-      .select("id, entry_date, content, mood, energy, tags, entry_type, club_id")
+      .select("id, entry_date, content, tags, entry_type, club_id")
       .eq("user_id", athleteId)
       .order("entry_date", { ascending: false });
     if (activeClubId) q = q.or(`club_id.eq.${activeClubId},club_id.is.null`);
     const { data } = await q;
-    setDiaryEntries(data || []);
+    setDiaryEntries(await attachDiaryHealth((data as any[]) || []));
     setDiaryLoading(false);
   }
 

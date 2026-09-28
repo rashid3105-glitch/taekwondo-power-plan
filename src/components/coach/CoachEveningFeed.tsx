@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { attachDiaryHealth } from "@/lib/diaryHealth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Moon, Loader2, Send, ThumbsUp, Check } from "lucide-react";
 
@@ -36,12 +37,13 @@ export function CoachEveningFeed({ coachId, athletes, activeClubId }: Props) {
       const today = new Date().toISOString().slice(0, 10);
       const { data } = await supabase
         .from("diary_entries")
-        .select("id, user_id, content, created_at, mood, tags, is_private")
+        .select("id, user_id, content, created_at, tags, is_private")
         .eq("entry_date", today)
         .in("user_id", ids)
         .order("created_at", { ascending: false });
+      const withHealth = await attachDiaryHealth((data as any[]) || []);
       if (cancelled) return;
-      setEntries((((data as any[]) || []).filter((e) => e.is_private !== true)) as FeedEntry[]);
+      setEntries(((withHealth).filter((e) => e.is_private !== true)) as FeedEntry[]);
     })();
     return () => { cancelled = true; };
   }, [athletes]);

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { attachDiaryHealth } from "@/lib/diaryHealth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import {
@@ -110,7 +111,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
       (() => {
         let q: any = supabase
           .from("diary_entries")
-          .select("entry_date, mood, energy")
+          .select("id, entry_date")
           .eq("user_id", athleteId)
           .gte("entry_date", isoStart)
           .order("entry_date", { ascending: false });
@@ -153,7 +154,7 @@ export function AthleteOverviewTab({ athleteId, athleteName, plannedSessionsPerW
     setSessions(buckets);
     const comps = (compRes.data as UpcomingComp[]) || [];
     setUpcoming(comps);
-    setDiary((diaryRes.data as DiaryRow[]) || []);
+    setDiary((await attachDiaryHealth((diaryRes.data as any[]) || [])) as unknown as DiaryRow[]);
 
     // Latest logged weight for the athlete
     const { data: wl } = await supabase
