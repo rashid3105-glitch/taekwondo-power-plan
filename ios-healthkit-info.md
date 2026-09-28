@@ -59,12 +59,9 @@ once (Xcode sometimes needs a manual add for new files that appeared via
   30 days. Sync is throttled to at most once per hour and runs
   automatically on app open and on app resume.
 
-## 5. Shortcut path still works
-The legacy iOS Shortcut → `health-sync-simple` → `resync-health` path is
-untouched. Users who don't grant HealthKit access keep the Shortcut flow
-as before. For users with both paths active, HealthKit wins: since it
-populates `wearable_samples`, `recompute_wearable_summary` re-aggregates
-`wearable_daily_summary` from those samples.
+## 5. Shortcut path removed
+The legacy iOS Shortcut path (`health-sync-simple`) was removed in v1.5.75 because it sent
+email and password in the request body. HealthKit via `wearable-ingest` is the only iOS path.
 
 ## 6. Dev hot-reload vs native build
 Do NOT re-add `server.url` to `capacitor.config.ts` when testing HealthKit —
