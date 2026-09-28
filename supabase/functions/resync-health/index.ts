@@ -47,6 +47,16 @@ Deno.serve(async (req) => {
 
     const admin = createClient(SUPABASE_URL, SERVICE);
 
+    // Consent gate (same rule as wearable-ingest). Fail closed.
+    const { data: hasConsent, error: consentErr } = await admin.rpc("has_health_consent", { _athlete: userId });
+    if (consentErr) {
+      console.error("has_health_consent failed", consentErr);
+      return json({ error: "consent_check_unavailable" }, 503);
+    }
+    if (hasConsent !== true) {
+      return json({ error: "consent_required" }, 403);
+    }
+
     // Pull raw HealthKit rows
     const { data: rows, error: readErr } = await admin
       .from("health_data")
