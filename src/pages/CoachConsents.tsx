@@ -29,6 +29,7 @@ type Row = {
   granted_by_relation: "self" | "parent" | null;
   policy_version: string | null;
   is_minor: boolean;
+  consent_age: number;
   age_known: boolean;
   birth_date: string | null;
   parent_email_on_token: string | null;
@@ -161,6 +162,7 @@ export default function CoachConsents() {
           granted_by_relation: c?.granted_by_relation ?? null,
           policy_version: c?.policy_version ?? null,
           is_minor: isMinor,
+          consent_age: threshold,
           age_known: verdict !== "unknown",
           birth_date: m.birth_date ?? null,
           parent_email_on_token: parentEmailByAthlete.get(m.user_id) ?? null,
@@ -342,7 +344,7 @@ export default function CoachConsents() {
                             onSaved={(iso, age) =>
                               setRows((rs) => rs.map((x) =>
                                 x.athlete_id === r.athlete_id
-                                  ? { ...x, birth_date: iso, age, age_known: true, is_minor: age < 18 }
+                                  ? { ...x, birth_date: iso, age, age_known: true, is_minor: age < x.consent_age }
                                   : x))
                             }
                           />
