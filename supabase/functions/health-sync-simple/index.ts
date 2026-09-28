@@ -1,5 +1,4 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
-import { isBelowConsentAge } from "../_shared/age.ts";
 
 
 const cors = {
@@ -41,35 +40,16 @@ Deno.serve(async (req) => {
     const userId = authData.user.id;
     const today = new Date().toISOString().slice(0, 10);
 
-    // ─── Parental consent gate (minors only) ───
+    // Consent gate (same rule as wearable-ingest). Fail closed.
     const admin0 = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: prof } = await admin0
-      .from("profiles")
-      .select("birth_date, age")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (isBelowConsentAge(prof?.birth_date as any) === true) {
-      const { data: consent } = await admin0
-        .from("consent_records")
-        .select("status, grace_until")
-        .eq("athlete_id", userId)
-        .eq("consent_type", "health_data_processing")
-        .maybeSingle();
-      const granted = consent?.status === "granted";
-      const inGrace =
-        consent?.grace_until && new Date(consent.grace_until).getTime() > Date.now();
-      if (!granted && !inGrace) {
-        return new Response(
-          JSON.stringify({
-            error: "parental_consent_required",
-            message:
-              "This athlete is under 18 and parental consent for health data processing has not been granted yet.",
-          }),
-          { status: 403, headers: { ...cors, "Content-Type": "application/json" } },
-        );
-      }
+    const { data: hasConsent, error: consentErr } = await admin0.rpc("has_health_consent", { _athlete: userId });
+    if (consentErr) {
+      console.error("has_health_consent failed", consentErr);
+      return new Response(JSON.stringify({ error: "consent_check_unavailable" }), { status: 503, headers: { ...cors, "Content-Type": "application/json" } });
     }
-
+    if (hasConsent !== true) {
+      return new Response(JSON.stringify({ error: "consent_required" }), { status: 403, headers: { ...cors, "Content-Type": "application/json" } });
+    }
 
     // Step 2 — aggregate into daily buckets
     const byDate: Record<string, { steps: number; sleep_seconds: number; hr: number[]; hrv_vals: number[] }> = {};

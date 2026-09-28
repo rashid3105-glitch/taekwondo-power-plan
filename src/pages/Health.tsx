@@ -1,3 +1,4 @@
+import { detectConsentRequired } from "@/lib/wearableConsent";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -165,7 +166,11 @@ export default function Health() {
         }
       }
       const { data, error } = await supabase.functions.invoke("resync-health", { body: { days: 30 } });
-      if (error) throw error;
+      if (error) {
+        // Missing consent: ConsentGate explains it; stop silently.
+        if (await detectConsentRequired(error)) return;
+        throw error;
+      }
       const n = (data as any)?.days_synced ?? 0;
       toast.success(t("healthForceSyncDone").replace("{n}", String(n)));
       await load();
