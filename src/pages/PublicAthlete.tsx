@@ -257,20 +257,16 @@ export default function PublicAthlete() {
               </h2>
               <div className="grid sm:grid-cols-2 gap-3">
                 {videos.map((v) => {
-                  const embed = getEmbedUrl(v.url);
+                  const embed = getEmbed(v.url);
                   if (!embed) return null;
                   return (
                     <div key={v.id} className="space-y-1">
-                      <div className="aspect-video rounded-md overflow-hidden bg-muted">
-                        <iframe
-                          src={embed}
-                          title={v.title || "Highlight"}
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          loading="lazy"
-                        />
-                      </div>
+                      <YouTubeEmbed
+                        videoId={embed.id}
+                        provider={embed.provider}
+                        title={v.title || "Highlight"}
+                        className="rounded-md"
+                      />
                       {v.title && <p className="text-xs text-muted-foreground">{v.title}</p>}
                     </div>
                   );
