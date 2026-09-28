@@ -94,8 +94,8 @@ interface DiaryEntry {
   id: string;
   entry_date: string;
   content: string;
-  mood: number;
-  energy: number;
+  mood: number | null;
+  energy: number | null;
   tags: string[];
   entry_type?: string | null;
 }

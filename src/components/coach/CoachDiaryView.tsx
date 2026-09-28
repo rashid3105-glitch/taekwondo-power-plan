@@ -266,8 +266,8 @@ export function CoachDiaryView({ entries }: Props) {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground">
                               <span>{dateStr}</span>
-                              <span className={MOOD_COLORS[(entry.mood || 3) - 1]}><EntryMood className="h-3 w-3 inline" /></span>
-                              <span className="text-primary"><EntryEnergy className="h-3 w-3 inline" /></span>
+                              {entry.mood != null && <span className={MOOD_COLORS[entry.mood - 1]}><EntryMood className="h-3 w-3 inline" /></span>}
+                              {entry.energy != null && <span className="text-primary"><EntryEnergy className="h-3 w-3 inline" /></span>}
                             </div>
                             <p className="text-sm text-card-foreground line-clamp-2 mt-0.5 break-words min-w-0">{entry.content}</p>
                           </div>
@@ -285,12 +285,16 @@ export function CoachDiaryView({ entries }: Props) {
                           {t(meta.i18nKey as any)}
                         </span>
                         <span className="text-xs font-bold text-muted-foreground">{dateStr}</span>
-                        <span className={MOOD_COLORS[(entry.mood || 3) - 1]} title={MOOD_LABELS[(entry.mood || 3) - 1]}>
-                          <EntryMood className="h-4 w-4" />
-                        </span>
-                        <span className="text-primary" title={ENERGY_LABELS[(entry.energy || 3) - 1]}>
-                          <EntryEnergy className="h-4 w-4" />
-                        </span>
+                        {entry.mood != null && (
+                          <span className={MOOD_COLORS[entry.mood - 1]} title={MOOD_LABELS[entry.mood - 1]}>
+                            <EntryMood className="h-4 w-4" />
+                          </span>
+                        )}
+                        {entry.energy != null && (
+                          <span className="text-primary" title={ENERGY_LABELS[entry.energy - 1]}>
+                            <EntryEnergy className="h-4 w-4" />
+                          </span>
+                        )}
                         {viewMode === "compact" && (
                           <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={() => toggleExpand(entry.id)} aria-label={t("iconHintExpand")} title={t("iconHintExpand")}>
                             <ChevronDown className="h-3.5 w-3.5 rotate-180" />

@@ -75,7 +75,7 @@ Write the entire response in ${lang}. Return ONLY the summary text — no JSON, 
           ? d.tags.map((t: unknown) => sanitizePromptText(t, 40)).filter(Boolean).slice(0, 6)
           : [];
         const content = sanitizePromptText(d.content, 240);
-        return `- ${sanitizePromptText(d.entry_date, 20)} [${sanitizePromptText(d.entry_type, 20)}] mood ${Number(d.mood) || 0}/5, energy ${Number(d.energy) || 0}/5${tagList.length ? ` (${tagList.join(", ")})` : ""}: ${content}`;
+        return `- ${sanitizePromptText(d.entry_date, 20)} [${sanitizePromptText(d.entry_type, 20)}] mood ${d.mood != null ? `${Number(d.mood)}/5` : "n/a"}, energy ${d.energy != null ? `${Number(d.energy)}/5` : "n/a"}${tagList.length ? ` (${tagList.join(", ")})` : ""}: ${content}`;
       }).join("\n");
 
     const readinessText = readinessArr.length === 0 ? "(none)" :

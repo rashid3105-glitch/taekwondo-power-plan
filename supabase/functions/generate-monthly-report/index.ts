@@ -109,9 +109,9 @@ async function collectMetrics(
   const avg = (xs: number[]) =>
     xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
 
-  const moodAvg = avg(diaryRows.map((d) => Number(d.mood)).filter((n) => !isNaN(n)));
+  const moodAvg = avg(diaryRows.filter((d) => d.mood != null).map((d) => Number(d.mood)).filter((n) => !isNaN(n)));
   const energyAvg = avg(
-    diaryRows.map((d) => Number(d.energy)).filter((n) => !isNaN(n)),
+    diaryRows.filter((d) => d.energy != null).map((d) => Number(d.energy)).filter((n) => !isNaN(n)),
   );
 
   // Workout type breakdown
