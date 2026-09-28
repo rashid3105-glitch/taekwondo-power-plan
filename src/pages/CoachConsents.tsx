@@ -125,6 +125,7 @@ export default function CoachConsents() {
 
       // Parent-email hints from previously issued consent tokens (minor athletes)
       const parentEmailByAthlete = new Map<string, string>();
+      const parentEmailMissing = new Set<string>();
       try {
         const { data: missingData } = await supabase.functions.invoke("consent-coach-actions", {
           body: { action: "list_missing", club_id: activeClubId },
