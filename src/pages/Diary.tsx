@@ -747,7 +747,7 @@ export default function Diary() {
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground">
                               <span>{dateStr}</span>
-                              <span className={MOOD_COLORS[(entry.mood || 3) - 1]}><EntryMood className="h-3 w-3 inline" /></span>
+                              {entry.mood != null && <span className={MOOD_COLORS[entry.mood - 1]}><EntryMood className="h-3 w-3 inline" /></span>}
                               <span className="text-primary"><EntryEnergy className="h-3 w-3 inline" /></span>
                               {entry.pending && (
                                 <Badge variant="outline" className="text-[9px] border-amber-500/40 text-amber-500 px-1 py-0">
@@ -782,12 +782,16 @@ export default function Diary() {
                               weekday: "short", day: "numeric", month: "short", year: "numeric",
                             })}
                           </span>
-                          <span className={MOOD_COLORS[(entry.mood || 3) - 1]} title={MOOD_LABELS[(entry.mood || 3) - 1]}>
-                            <EntryMood className="h-4 w-4" />
-                          </span>
-                          <span className="text-primary" title={ENERGY_LABELS[(entry.energy || 3) - 1]}>
-                            <EntryEnergy className="h-4 w-4" />
-                          </span>
+                          {entry.mood != null && (
+                            <span className={MOOD_COLORS[entry.mood - 1]} title={MOOD_LABELS[entry.mood - 1]}>
+                              <EntryMood className="h-4 w-4" />
+                            </span>
+                          )}
+                          {entry.energy != null && (
+                            <span className="text-primary" title={ENERGY_LABELS[entry.energy - 1]}>
+                              <EntryEnergy className="h-4 w-4" />
+                            </span>
+                          )}
                           {entry.pending && (
                             <Badge variant="outline" className="text-[9px] border-amber-500/40 text-amber-500">
                               {t("workoutLogPending")}
