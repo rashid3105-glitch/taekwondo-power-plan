@@ -26,6 +26,7 @@
 // MainActivity explicitly registers it in the native Capacitor registry
 // before bridge init.
 
+import { isWearableConsentBlocked, detectConsentRequired } from "./wearableConsent";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { supabase } from "@/integrations/supabase/client";
@@ -185,6 +186,7 @@ export async function syncHealthConnect(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
   if (!isHealthConnectAvailable()) return { ok: false, reason: "not_android" };
+  if (isWearableConsentBlocked()) return { ok: false, reason: "consent_required" };
 
   logHealthConnectBridgeStatus("syncHealthConnect");
 
@@ -360,6 +362,9 @@ export async function syncHealthConnect(
         },
       });
       if (error) {
+        if (await detectConsentRequired(error)) {
+          return { ok: false, reason: "consent_required" };
+        }
         console.error("wearable-ingest failed", error);
         return { ok: false, reason: `ingest_error:${error.message ?? "unknown"}` };
       }

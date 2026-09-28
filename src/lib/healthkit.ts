@@ -11,6 +11,7 @@
 // (`ios/App/App/SportstalentHealthKit.swift`). MainViewController explicitly
 // registers it in the native Capacitor registry during capacitorDidLoad().
 
+import { isWearableConsentBlocked, detectConsentRequired } from "./wearableConsent";
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { supabase } from "@/integrations/supabase/client";
@@ -169,6 +170,7 @@ export async function syncHealthKit(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
   if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
+  if (isWearableConsentBlocked()) return { ok: false, reason: "consent_required" };
 
   logHealthKitBridgeStatus("syncHealthKit");
 
@@ -377,6 +379,9 @@ export async function syncHealthKit(
       },
     });
     if (error) {
+      if (await detectConsentRequired(error)) {
+        return { ok: false, reason: "consent_required" };
+      }
       console.error("wearable-ingest failed", error);
       return { ok: false, reason: "ingest_error" };
     }

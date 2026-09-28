@@ -94,6 +94,8 @@ export default function Health() {
       }
       const res = await syncHealthKit({ force: true });
       if (!res.ok) {
+        // Missing health-data consent: ConsentGate explains it; no error toast.
+        if (res.reason === "consent_required") return;
         toast.error(`${t("healthAppleHealthSyncFailed")} [${res.reason ?? "unknown"}]`);
         return;
       }
@@ -124,6 +126,8 @@ export default function Health() {
       const res = await syncHealthConnect({ force: true });
       console.info("HC UI: syncHealthConnect (connect) →", res);
       if (!res.ok) {
+        // Missing health-data consent: ConsentGate explains it; no error toast.
+        if (res.reason === "consent_required") return;
         toast.error(`${t("healthHcSyncFailed")} [${res.reason ?? "unknown"}]`);
         return;
       }
