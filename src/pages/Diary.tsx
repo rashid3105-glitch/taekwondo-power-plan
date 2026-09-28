@@ -197,8 +197,8 @@ export default function Diary() {
   const startEdit = (entry: DiaryEntry) => {
     setDate(entry.entry_date);
     setContent(entry.content);
-    setMood(entry.mood);
-    setEnergy(entry.energy);
+    setMood(entry.mood ?? 3);
+    setEnergy(entry.energy ?? 3);
     setTags(entry.tags || []);
     setIsPrivate(entry.is_private === true);
     setEntryTypes(entry.entry_types && entry.entry_types.length > 0 ? (entry.entry_types as DiaryEntryType[]) : [entry.entry_type || "general"]);
