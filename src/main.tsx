@@ -1,6 +1,18 @@
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";
+// Self-hosted fonts (GDPR: no requests to Google Fonts)
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/inter/800.css";
+import "@fontsource/inter/900.css";
+import "@fontsource/archivo/400.css";
+import "@fontsource/archivo/500.css";
+import "@fontsource/archivo/600.css";
+import "@fontsource/archivo/700.css";
+import "@fontsource/archivo/800.css";
 import "./index.css";
 import { initNative, isNative } from "./lib/nativeInit";
 import {
