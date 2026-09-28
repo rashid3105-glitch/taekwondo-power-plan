@@ -16,6 +16,8 @@ import { AppFooter } from "@/components/AppFooter";
 import { CompetitionPlanDialog } from "@/components/CompetitionPlanDialog";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
+import { isHealthConsentError, useHealthConsent } from "@/lib/healthConsent";
+import { HealthConsentNotice } from "@/components/HealthConsentNotice";
 
 interface Competition {
   id: string;
@@ -55,6 +57,8 @@ export default function Competitions() {
 
   // weight log
   const [todayWeight, setTodayWeight] = useState("");
+  const weightConsent = useHealthConsent();
+  const [weightConsentBlocked, setWeightConsentBlocked] = useState(false);
 
   useEffect(() => { void load(); }, []);
 
@@ -113,7 +117,10 @@ export default function Competitions() {
     if (!user) return;
     const today = new Date().toISOString().slice(0, 10);
     const { error } = await supabase.from("weight_logs").upsert({ user_id: user.id, log_date: today, weight_kg: w, ...(activeClubId ? { club_id: activeClubId } : {}) }, { onConflict: "user_id,log_date" });
-    if (error) { toast({ title: t("error"), description: error.message, variant: "destructive" }); return; }
+    if (error) {
+      if (isHealthConsentError(error)) { setWeightConsentBlocked(true); return; }
+      toast({ title: t("error"), description: error.message, variant: "destructive" }); return;
+    }
     setTodayWeight("");
     toast({ title: t("competitionsWeightLogged") });
     void load();
@@ -191,6 +198,9 @@ export default function Competitions() {
         {!isPoomsae && (
           <Card>
             <CardHeader className="pb-3"><CardTitle className="flex items-center gap-2 text-base"><Scale className="h-4 w-4" /> {t("competitionsTodayWeight")}</CardTitle></CardHeader>
+            {weightConsent === false || weightConsentBlocked ? (
+              <CardContent><HealthConsentNotice /></CardContent>
+            ) : (
             <CardContent className="flex gap-2 items-end">
               <div className="flex-1">
                 <Label className="text-xs">{t("competitionsWeightKg")}</Label>
@@ -198,6 +208,7 @@ export default function Competitions() {
               </div>
               <Button onClick={logWeight}>{t("competitionsLog")}</Button>
             </CardContent>
+            )}
           </Card>
         )}
 

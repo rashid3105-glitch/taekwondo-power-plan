@@ -14,6 +14,8 @@ import { WeightOnboarding } from "./onboarding/WeightOnboarding";
 import { DailyOverview } from "./today/DailyOverview";
 import { NutritionPlan } from "@/components/NutritionPlan";
 import { useIsMinor } from "@/hooks/useIsMinor";
+import { isHealthConsentError, useHealthConsent } from "@/lib/healthConsent";
+import { HealthConsentNotice } from "@/components/HealthConsentNotice";
 import {
   dailyCalorieDelta,
   estimateMaintenanceCalories, milestones, movingAverage, todayISO,
@@ -44,6 +46,12 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   const [rerunOnboarding, setRerunOnboarding] = useState(false);
   // Fixed 18-year product-safety limit: no numeric weight/calorie targets.
   const { isMinor, loading: minorLoading } = useIsMinor(resolvedId);
+  const consent = useHealthConsent(resolvedId);
+  const [consentBlocked, setConsentBlocked] = useState(false);
+  const [viewerId, setViewerId] = useState<string | null>(null);
+  useEffect(() => { supabase.auth.getUser().then(({ data }) => setViewerId(data.user?.id ?? null)); }, []);
+  const noConsent = consent === false || consentBlocked;
+  const viewingOther = !!viewerId && !!resolvedId && viewerId !== resolvedId;
 
   useEffect(() => {
     if (userId) { setResolvedId(userId); return; }
@@ -89,6 +97,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
 
   const saveWeighIn = async () => {
     if (!resolvedId) return;
+    if (noConsent) { setConsentBlocked(true); return; }
     const w = parseFloat(weighIn.replace(",", "."));
     if (isNaN(w) || w < 20 || w > 250) { toast.error(t("wpInvalidWeight")); return; }
     setSaving(true);
@@ -98,7 +107,10 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
       { onConflict: "user_id,log_date" },
     );
     setSaving(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      if (isHealthConsentError(error)) { setConsentBlocked(true); return; }
+      toast.error(error.message); return;
+    }
     setWeighIn("");
     toast.success(t("wpWeightSaved"));
     void load();
@@ -146,6 +158,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   if (isMinor) {
     return (
       <div className="space-y-4">
+        {noConsent && <HealthConsentNotice coach={viewingOther} />}
         <Card className="p-4">
           <p className="text-xs text-muted-foreground">{t("minorNumbersHidden")}</p>
         </Card>
@@ -185,7 +198,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   }
 
   const showOnboarding = canEditGoal && !readOnly && (rerunOnboarding || !goal);
-  if (showOnboarding) {
+  if (showOnboarding && !noConsent) {
     return (
       <div className="max-w-md mx-auto py-2">
         <WeightOnboarding
@@ -236,6 +249,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
 
   return (
     <div className="space-y-4">
+      {noConsent && <HealthConsentNotice coach={viewingOther} />}
       {compact ? statusView : (
         <Tabs defaultValue="today">
           <TabsList className="grid grid-cols-3 w-full">

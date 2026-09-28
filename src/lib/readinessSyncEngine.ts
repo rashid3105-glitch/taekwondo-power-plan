@@ -7,6 +7,7 @@ import {
   removeReadinessIntent,
   putCachedCheckin,
 } from "./readinessOfflineDB";
+import { isHealthConsentError } from "./healthConsent";
 
 export interface ReadinessSyncResult {
   flushed: number;
@@ -34,7 +35,18 @@ export async function syncReadiness(): Promise<ReadinessSyncResult> {
           },
         });
         if (error || (data as any)?.error) {
-          throw new Error((data as any)?.error || error?.message);
+          const msg = (data as any)?.error || error?.message;
+          let body: any = null;
+          try { body = await (error as any)?.context?.json?.(); } catch { /* ignore */ }
+          if (isHealthConsentError(msg) || body?.error === "consent_required") {
+            // No consent: drop the queued check-in so it never retries in a loop.
+            console.info("[readiness-sync] dropped queued check-in: consent_required");
+            await removeReadinessIntent(intent.key);
+            result.failed += 1;
+            result.errors.push("consent_required");
+            continue;
+          }
+          throw new Error(msg);
         }
         const row = data as { score: number; recommendation: string; checkin_date: string };
         await putCachedCheckin(intent.user_id, row.checkin_date, {

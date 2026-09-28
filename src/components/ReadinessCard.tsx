@@ -18,6 +18,8 @@ import {
 } from "@/lib/readinessOfflineDB";
 import { syncReadiness } from "@/lib/readinessSyncEngine";
 import { getCurrentUser } from "@/lib/authSession";
+import { isHealthConsentError, useHealthConsent } from "@/lib/healthConsent";
+import { HealthConsentNotice } from "@/components/HealthConsentNotice";
 
 interface Checkin {
   id?: string;
@@ -38,6 +40,8 @@ export function ReadinessCard() {
   const [motivation, setMotivation] = useState([4]);
   const [sick, setSick] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const consent = useHealthConsent();
+  const [consentBlocked, setConsentBlocked] = useState(false);
   // Auto-prefill from wearable summary (yesterday's sleep + HRV).
   const [prefilledFromWatch, setPrefilledFromWatch] = useState(false);
   const [hrvFromWatch, setHrvFromWatch] = useState<number | null>(null);
@@ -125,7 +129,12 @@ export function ReadinessCard() {
 
       if (navigator.onLine) {
         const { data, error } = await supabase.functions.invoke("submit-readiness", { body: payload });
-        if (error || (data as any)?.error) throw new Error((data as any)?.error || error?.message);
+        if (error || (data as any)?.error) {
+          let body: any = null;
+          try { body = await (error as any)?.context?.json?.(); } catch { /* ignore */ }
+          const msg = body?.error || (data as any)?.error || error?.message;
+          throw new Error(msg);
+        }
         const row = data as Checkin;
         await putCachedCheckin(user.id, row.checkin_date, {
           score: row.score,
@@ -149,7 +158,8 @@ export function ReadinessCard() {
       }
       setOpen(false);
     } catch (e: any) {
-      toast({ title: t("error"), description: e.message, variant: "destructive" });
+      if (isHealthConsentError(e)) { setConsentBlocked(true); setOpen(false); }
+      else toast({ title: t("error"), description: e.message, variant: "destructive" });
     } finally { setSubmitting(false); }
   }
 
@@ -171,6 +181,16 @@ export function ReadinessCard() {
             </div>
             <div className={`text-xs ${tier.color}`}>{tier.label}</div>
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (consent === false || consentBlocked) {
+    return (
+      <Card>
+        <CardContent className="pt-4 pb-4">
+          <HealthConsentNotice />
         </CardContent>
       </Card>
     );
