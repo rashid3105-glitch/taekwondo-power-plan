@@ -31,6 +31,7 @@ import {
   type DateRange, type ViewMode,
 } from "@/lib/diaryFilters";
 import { getCurrentUser } from "@/lib/authSession";
+import { fetchOwnHealthConsent } from "@/lib/diaryHealth";
 
 type DiaryEntry = CachedDiaryEntry;
 
@@ -83,6 +84,15 @@ export default function Diary() {
   const [content, setContent] = useState("");
   const [mood, setMood] = useState(3);
   const [energy, setEnergy] = useState(3);
+  // Mood/energy are health data (art. 9) — only offered with consent.
+  const [hasHealthConsent, setHasHealthConsent] = useState<boolean | null>(null);
+  useEffect(() => {
+    (async () => {
+      const u = await getCurrentUser();
+      if (!u) { setHasHealthConsent(false); return; }
+      setHasHealthConsent(await fetchOwnHealthConsent(u.id));
+    })();
+  }, []);
   const [tags, setTags] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [entryTypes, setEntryTypes] = useState<DiaryEntryType[]>(["general"]);
@@ -216,8 +226,8 @@ export default function Diary() {
     const payload = {
       entry_date: date,
       content: content.trim().slice(0, 5000),
-      mood,
-      energy,
+      mood: hasHealthConsent ? mood : null,
+      energy: hasHealthConsent ? energy : null,
       tags,
       entry_type: entryTypes[0],
       entry_types: entryTypes,
@@ -496,6 +506,15 @@ export default function Diary() {
               </button>
             </div>
 
+            {hasHealthConsent === false ? (
+              <p className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+                {t("diaryMoodNeedsConsent")}{" "}
+                <button type="button" onClick={() => navigate("/profile")} className="underline underline-offset-2 text-primary">
+                  {t("diaryMoodConsentLink")}
+                </button>
+              </p>
+            ) : hasHealthConsent ? (
+              <>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {t("diaryMood")} — {MOOD_LABELS[mood - 1]}
@@ -539,6 +558,9 @@ export default function Diary() {
                 })}
               </div>
             </div>
+
+              </>
+            ) : null}
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("diaryTags")}</label>
