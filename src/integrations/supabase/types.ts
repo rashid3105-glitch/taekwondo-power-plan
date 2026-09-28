@@ -1796,6 +1796,8 @@ export type Database = {
           granted_by_email: string | null
           granted_by_relation: string | null
           id: string
+          parent_email_missing: boolean
+          parent_link_needed: boolean
           policy_version: string | null
           status: string
           updated_at: string
@@ -1813,6 +1815,8 @@ export type Database = {
           granted_by_email?: string | null
           granted_by_relation?: string | null
           id?: string
+          parent_email_missing?: boolean
+          parent_link_needed?: boolean
           policy_version?: string | null
           status?: string
           updated_at?: string
@@ -1830,6 +1834,8 @@ export type Database = {
           granted_by_email?: string | null
           granted_by_relation?: string | null
           id?: string
+          parent_email_missing?: boolean
+          parent_link_needed?: boolean
           policy_version?: string | null
           status?: string
           updated_at?: string
@@ -1846,7 +1852,7 @@ export type Database = {
           id: string
           meta: Json
           occurred_at: string
-          token_id: string
+          token_id: string | null
         }
         Insert: {
           athlete_id?: string | null
@@ -1856,7 +1862,7 @@ export type Database = {
           id?: string
           meta?: Json
           occurred_at?: string
-          token_id: string
+          token_id?: string | null
         }
         Update: {
           athlete_id?: string | null
@@ -1866,7 +1872,7 @@ export type Database = {
           id?: string
           meta?: Json
           occurred_at?: string
-          token_id?: string
+          token_id?: string | null
         }
         Relationships: [
           {
@@ -5150,6 +5156,10 @@ export type Database = {
       nutrition_plan_has_numeric_targets: {
         Args: { _custom_calories: number; _plan_data: Json }
         Returns: boolean
+      }
+      recompute_consent_requirement: {
+        Args: { _athlete: string }
+        Returns: string
       }
       recompute_wearable_summary: {
         Args: { _from: string; _to: string; _user_id: string }
