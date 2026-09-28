@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { ChevronDown, ChevronUp, Youtube, Plus, Pencil, Trash2, Video } from "lucide-react";
+import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
