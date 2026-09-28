@@ -5030,6 +5030,14 @@ export type Database = {
         Returns: string
       }
       delete_chat_message: { Args: { _id: string }; Returns: undefined }
+      diary_health_fields: {
+        Args: { _entry_ids: string[] }
+        Returns: {
+          energy: number
+          id: string
+          mood: number
+        }[]
+      }
       edit_chat_message: {
         Args: { _body: string; _id: string }
         Returns: undefined

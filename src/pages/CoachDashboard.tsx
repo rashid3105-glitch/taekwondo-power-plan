@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import { useClubBranding } from "@/components/ClubThemeProvider";
 import { supabase } from "@/integrations/supabase/client";
+import { attachDiaryHealth } from "@/lib/diaryHealth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -344,12 +345,12 @@ export default function CoachDashboard() {
     setDiaryEntries([]);
     let q: any = supabase
       .from("diary_entries")
-      .select("id, entry_date, content, mood, energy, tags, entry_type")
+      .select("id, entry_date, content, tags, entry_type")
       .eq("user_id", athleteId)
       .order("entry_date", { ascending: false });
     if (activeClubId) q = q.eq("club_id", activeClubId);
     const { data } = await q;
-    setDiaryEntries((data as DiaryEntry[]) || []);
+    setDiaryEntries((await attachDiaryHealth((data as any[]) || [])) as DiaryEntry[]);
     setDiaryLoading(false);
   };
 

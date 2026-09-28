@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { attachDiaryHealth } from "@/lib/diaryHealth";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { useToast } from "@/hooks/use-toast";
@@ -59,12 +60,12 @@ export function CoachLogQueue({ athletes, bare }: Props) {
 
     const { data: entries } = await supabase
       .from("diary_entries")
-      .select("id, user_id, content, mood, energy, entry_date, is_private, entry_type, entry_types")
+      .select("id, user_id, content, entry_date, is_private, entry_type, entry_types")
       .eq("entry_date", today)
       .in("user_id", ids)
       .order("created_at", { ascending: true });
 
-    const list = ((entries as any[]) || []).filter(
+    const list = (await attachDiaryHealth((entries as any[]) || [])).filter(
       (e) => e.is_private !== true &&
         (e.entry_type === "training" || ((e.entry_types as string[]) || []).includes("training")),
     );

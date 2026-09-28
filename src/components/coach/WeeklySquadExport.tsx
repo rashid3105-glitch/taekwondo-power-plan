@@ -7,6 +7,7 @@ import { useMySportProfile } from "@/hooks/useMySportProfile";
 import { formatGrade } from "@/lib/sportGrade";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { attachDiaryHealth } from "@/lib/diaryHealth";
 
 interface Athlete {
   user_id: string;
@@ -54,7 +55,7 @@ export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
           const [diaryRes, readinessRes, workoutRes] = await Promise.all([
             supabase
               .from("diary_entries")
-              .select("entry_date, content, mood, energy, entry_type, tags")
+              .select("id, entry_date, content, entry_type, tags")
               .eq("user_id", a.user_id)
               .gte("entry_date", weekStart)
               .lte("entry_date", weekEnd)
@@ -90,7 +91,7 @@ export function WeeklySquadExport({ athletes, variant = "icon" }: Props) {
 
           return {
             athlete: a,
-            diary: diaryRes.data || [],
+            diary: await attachDiaryHealth((diaryRes.data as any[]) || []),
             readiness: (readinessRes.data || []).map((r: any) => ({
               date: r.checkin_date, mood: r.mood, energy: r.motivation, sleep_hours: r.sleep_hours,
             })),
