@@ -8,11 +8,9 @@
 //   { action: "withdraw" }    → set consent to withdrawn (status='withdrawn',
 //                               withdrawn_at=now, granted_at=null)
 //
-// TODO(parent-withdraw): we also need a parallel public/token-based
-// endpoint that lets a parent withdraw consent they previously granted
-// on a minor's behalf, without going through the club. The wording shown
-// to parents already promises this, but for now they need to contact the
-// club (the data controller) to action it.
+// Withdrawal side effects (wearable revoke + 30-day health-data deletion
+// date) are applied by the trg_consent_withdrawal_effects DB trigger.
+// Parents withdraw without login via consent-confirm action="withdraw".
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   POLICY_VERSION,
@@ -236,7 +234,9 @@ Deno.serve(async (req) => {
         .eq("id", existing.id)
         .eq("athlete_id", user.id);
       if (error) return json({ ok: false, error: error.message }, 500);
-      return json({ ok: true, withdrawn: true });
+      const { data: after } = await admin.from("consent_records")
+        .select("health_data_delete_after").eq("id", existing.id).maybeSingle();
+      return json({ ok: true, withdrawn: true, delete_after: (after as any)?.health_data_delete_after ?? null });
     }
 
     // action === "grant"
