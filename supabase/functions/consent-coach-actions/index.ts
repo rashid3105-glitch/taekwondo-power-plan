@@ -9,6 +9,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { isBelowConsentAge, CONSENT_TOKEN_DAYS } from "../_shared/age.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
+import { processPendingParentLinks } from "../_shared/parent-consent-link.ts";
 
 const APP_URL = "https://sportstalent.dk";
 
@@ -150,8 +151,12 @@ Deno.serve(async (req) => {
 
       // Include verified minors AND athletes whose age cannot be verified
       // (missing birth_date) — coaches need to see and fix those too.
+      const { data: ages } = await admin.rpc("consent_ages_for_athletes", {
+        _ids: (profiles || []).map((p: any) => p.user_id),
+      });
+      const ageMap = new Map<string, number>((ages || []).map((a: any) => [a.athlete_id, a.applicable_age]));
       const minorProfiles = (profiles || []).filter((p: any) =>
-        isBelowConsentAge(p.birth_date) !== false,
+        isBelowConsentAge(p.birth_date, ageMap.get(p.user_id) ?? 18) !== false,
       );
       if (minorProfiles.length === 0) return [];
 
@@ -159,7 +164,7 @@ Deno.serve(async (req) => {
 
       const { data: consents } = await admin
         .from("consent_records")
-        .select("athlete_id, status, grace_until")
+        .select("athlete_id, status, grace_until, parent_email_missing")
         .eq("consent_type", "health_data_processing")
         .in("athlete_id", minorIds);
       const consentByAthlete = new Map<string, any>();
@@ -188,12 +193,20 @@ Deno.serve(async (req) => {
           status: c?.status || "none",
           grace_until: c?.grace_until || null,
           parent_email_on_token: tok?.parent_email || null,
+          parent_email_missing: !!c?.parent_email_missing,
         };
       });
     }
 
     // ─── Action: list_missing ───
     if (action === "list_missing") {
+      // Send any guardian links flagged by the consent recompute (incl. backfill).
+      const { data: flagged } = await admin
+        .from("consent_records").select("athlete_id")
+        .eq("parent_link_needed", true).in("club_id", effectiveClubIds);
+      if ((flagged || []).length > 0) {
+        await processPendingParentLinks(admin, (flagged || []).map((r: any) => r.athlete_id), "recompute_list");
+      }
       const all = await loadMinorsWithStatus();
       const missing = all.filter((a) => a.status !== "granted");
       return jsonResponse({ missing });
@@ -225,7 +238,12 @@ Deno.serve(async (req) => {
 
       // Verified adults cannot get a guardian request. Unknown age is allowed:
       // asking a guardian is the safe action while the birth date is missing.
-      if (isBelowConsentAge(athleteRow.birth_date) === false) {
+      let reqAge = 18;
+      try {
+        const { data: ca } = await admin.rpc("consent_age_for_athlete", { _athlete_id: athleteId });
+        if (typeof ca === "number") reqAge = ca;
+      } catch (_) { /* fail safe 18 */ }
+      if (isBelowConsentAge(athleteRow.birth_date, reqAge) === false) {
         return jsonResponse({ error: "not_a_minor" }, 400);
       }
 
@@ -251,6 +269,9 @@ Deno.serve(async (req) => {
         consent_type: "health_data_processing",
         expires_at: expiresAt,
       }).select("id").maybeSingle();
+      await admin.from("consent_records")
+        .update({ parent_email_missing: false, parent_link_needed: false, granted_by_relation: "parent" })
+        .eq("athlete_id", athleteId).eq("consent_type", "health_data_processing").eq("status", "pending");
       if (tokenRow?.id) {
         await admin.from("consent_token_events").insert({
           token_id: tokenRow.id,
@@ -447,7 +468,9 @@ Deno.serve(async (req) => {
         new_birth_date: birthDate, source: oldBirthDate ? "admin_override" : "coach_initial",
       });
       if (auditErr) console.error("birth_date_audit insert failed", auditErr);
-      return jsonResponse({ ok: true, birth_date: birthDate, age: Math.floor(years) });
+      // Trigger on profiles has recomputed the requirement; send guardian link if flagged.
+      const linkRes = await processPendingParentLinks(admin, [athleteId], "coach_set_birth_date");
+      return jsonResponse({ ok: true, birth_date: birthDate, age: Math.floor(years), parent_link: linkRes });
     }
 
     return jsonResponse({ error: "unknown_action" }, 400);
