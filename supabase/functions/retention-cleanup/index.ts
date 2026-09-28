@@ -122,6 +122,7 @@ Deno.serve(async (req) => {
       "inactive_chat_threads",
       "match_videos",
       "operational_logs",
+      "withdrawn_consent_health_data",
       "consent_documentation",
     ]) {
       const policy = byCategory.get(category);
@@ -542,6 +543,68 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
     }
 
     // ------------------------------------------------------------------
+    case "withdrawn_consent_health_data": {
+      // GDPR art. 7(3)/17: 30 days after withdrawal (health_data_delete_after,
+      // set by trigger) delete the athlete's health data unless consent was
+      // given again (re-grant clears health_data_delete_after).
+      const { data: due } = await admin
+        .from("consent_records")
+        .select("id, athlete_id")
+        .eq("consent_type", "health_data_processing")
+        .eq("status", "withdrawn")
+        .not("health_data_delete_after", "is", null)
+        .lt("health_data_delete_after", new Date().toISOString())
+        .is("health_data_purged_at", null)
+        .limit(limit);
+      r.candidates = (due ?? []).length;
+      for (const c of due ?? []) {
+        if (!c.athlete_id) continue;
+        const counts: Record<string, number> = {};
+        const del = async (table: string, extra?: (q: any) => any) => {
+          let q = admin.from(table).delete({ count: policy.dry_run ? undefined : "exact" }).eq("user_id", c.athlete_id);
+          if (policy.dry_run) {
+            let cq = admin.from(table).select("*", { count: "exact", head: true }).eq("user_id", c.athlete_id);
+            if (extra) cq = extra(cq);
+            const { count } = await cq; counts[table] = count ?? 0; return;
+          }
+          if (extra) q = extra(q);
+          const { count, error } = await q;
+          if (error) throw new Error(`${table}_failed`);
+          counts[table] = count ?? 0;
+        };
+        try {
+          await del("wearable_samples");
+          await del("wearable_daily_summary");
+          await del("workout_logs", (q) => q.not("wearable_source", "is", null));
+          await del("health_data");
+          await del("mental_assessments");
+          await del("readiness_checkins");
+          const moodFilter = (q: any) => q.or("mood.not.is.null,energy.not.is.null");
+          if (policy.dry_run) {
+            const { count } = await moodFilter(admin.from("diary_entries")
+              .select("id", { count: "exact", head: true }).eq("user_id", c.athlete_id));
+            counts["diary_entries.mood_energy"] = count ?? 0;
+          } else {
+            const { count, error } = await moodFilter(admin.from("diary_entries")
+              .update({ mood: null, energy: null }, { count: "exact" }).eq("user_id", c.athlete_id));
+            if (error) throw new Error("diary_entries_failed");
+            counts["diary_entries.mood_energy"] = count ?? 0;
+          }
+          await admin.from("consent_withdrawal_purge_audit").insert({
+            consent_record_id: c.id, dry_run: policy.dry_run, row_counts: counts,
+          });
+          if (!policy.dry_run) {
+            await admin.from("consent_records")
+              .update({ health_data_purged_at: new Date().toISOString() }).eq("id", c.id);
+            r.processed++;
+          }
+        } catch (e) {
+          r.errors.push(String((e as Error)?.message ?? e));
+        }
+      }
+      return r;
+    }
+
     case "consent_documentation": {
       // 1) Withdrawn consents past the deadline.
       const { data: withdrawn } = await admin
@@ -549,6 +612,8 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
         .select("id")
         .eq("status", "withdrawn")
         .lt("withdrawn_at", cutoff)
+        // Never drop the record while its health-data purge is still due.
+        .or("health_data_delete_after.is.null,health_data_purged_at.not.is.null")
         .limit(limit);
       const deleteIds = new Set<string>((withdrawn ?? []).map((c: any) => c.id));
 
