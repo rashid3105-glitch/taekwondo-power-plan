@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { processPendingParentLinks } from "../_shared/parent-consent-link.ts";
 import { z } from "https://esm.sh/zod@3.23.8";
 
 const corsHeaders = {
@@ -179,6 +180,7 @@ Deno.serve(async (req) => {
         source: oldBirthDate ? "admin_override" : "self_initial",
       });
       if (auditErr) console.error("birth_date_audit insert failed", auditErr);
+      await processPendingParentLinks(adminClient, [user.id], "self_set_birth_date");
     }
 
     return new Response(JSON.stringify({ success: true, profile: updatedProfile }), {
