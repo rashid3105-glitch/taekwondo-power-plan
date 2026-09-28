@@ -144,6 +144,23 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Birth date is locked once set (only platform admins may change it).
+    let oldBirthDate: string | null = null;
+    const birthDateChanging = Object.prototype.hasOwnProperty.call(updateData, "birth_date");
+    if (birthDateChanging) {
+      const { data: cur } = await adminClient
+        .from("profiles").select("birth_date").eq("user_id", user.id).maybeSingle();
+      oldBirthDate = cur?.birth_date ?? null;
+      if (oldBirthDate && oldBirthDate !== (updateData as any).birth_date) {
+        const { data: isPlatformAdmin } = await adminClient.rpc("is_admin", { _user_id: user.id });
+        if (isPlatformAdmin !== true) {
+          return new Response(JSON.stringify({ error: "birth_date_locked" }), {
+            status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
+
     const { data: updatedProfile, error: updateError } = await adminClient
       .from("profiles")
       .update(updateData)
@@ -153,6 +170,15 @@ Deno.serve(async (req) => {
 
     if (updateError) {
       throw updateError;
+    }
+
+    if (birthDateChanging && oldBirthDate !== ((updateData as any).birth_date ?? null)) {
+      const { error: auditErr } = await adminClient.from("birth_date_audit").insert({
+        athlete_id: user.id, changed_by: user.id, old_birth_date: oldBirthDate,
+        new_birth_date: (updateData as any).birth_date ?? null,
+        source: oldBirthDate ? "admin_override" : "self_initial",
+      });
+      if (auditErr) console.error("birth_date_audit insert failed", auditErr);
     }
 
     return new Response(JSON.stringify({ success: true, profile: updatedProfile }), {

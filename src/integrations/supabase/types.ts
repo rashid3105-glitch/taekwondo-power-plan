@@ -350,6 +350,36 @@ export type Database = {
           },
         ]
       }
+      birth_date_audit: {
+        Row: {
+          athlete_id: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_birth_date: string | null
+          old_birth_date: string | null
+          source: string
+        }
+        Insert: {
+          athlete_id: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_birth_date?: string | null
+          old_birth_date?: string | null
+          source: string
+        }
+        Update: {
+          athlete_id?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_birth_date?: string | null
+          old_birth_date?: string | null
+          source?: string
+        }
+        Relationships: []
+      }
       blog_comments: {
         Row: {
           approved_at: string | null
@@ -5050,6 +5080,10 @@ export type Database = {
           unread_count: number
         }[]
       }
+      grant_consent_as_parent: {
+        Args: { _athlete: string; _policy_version: string }
+        Returns: undefined
+      }
       has_health_consent: { Args: { _athlete: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -5158,6 +5192,10 @@ export type Database = {
       users_share_club: {
         Args: { _first_user_id: string; _second_user_id: string }
         Returns: boolean
+      }
+      withdraw_consent_as_parent: {
+        Args: { _athlete: string }
+        Returns: undefined
       }
     }
     Enums: {

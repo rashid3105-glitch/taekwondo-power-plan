@@ -428,11 +428,25 @@ Deno.serve(async (req) => {
         return jsonResponse({ error: "forbidden" }, 403);
       }
 
+      // Existing birth dates are locked; only a platform admin may change them.
+      const { data: current } = await admin
+        .from("profiles").select("birth_date").eq("user_id", athleteId).maybeSingle();
+      const oldBirthDate: string | null = current?.birth_date ?? null;
+      if (oldBirthDate) {
+        const { data: isPlatformAdmin } = await admin.rpc("is_admin", { _user_id: coachId });
+        if (isPlatformAdmin !== true) return jsonResponse({ error: "birth_date_locked" }, 409);
+      }
+
       const { error: upErr } = await admin
         .from("profiles")
         .update({ birth_date: birthDate, age: Math.floor(years) })
         .eq("user_id", athleteId);
       if (upErr) return jsonResponse({ error: upErr.message }, 500);
+      const { error: auditErr } = await admin.from("birth_date_audit").insert({
+        athlete_id: athleteId, changed_by: coachId, old_birth_date: oldBirthDate,
+        new_birth_date: birthDate, source: oldBirthDate ? "admin_override" : "coach_initial",
+      });
+      if (auditErr) console.error("birth_date_audit insert failed", auditErr);
       return jsonResponse({ ok: true, birth_date: birthDate, age: Math.floor(years) });
     }
 

@@ -48,39 +48,11 @@ export function ParentConsentCard({
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("no session");
-      const now = new Date().toISOString();
-      const patch = granted
-        ? {
-            status: "granted",
-            granted_at: now,
-            withdrawn_at: null,
-            granted_by_relation: "parent",
-            granted_by_email: user.email ?? null,
-            policy_version: POLICY_VERSION,
-          }
-        : {
-            status: "withdrawn",
-            withdrawn_at: now,
-            granted_at: null,
-            granted_by_relation: "parent",
-            granted_by_email: user.email ?? null,
-          };
-
-      if (row?.id) {
-        const { error } = await supabase
-          .from("consent_records")
-          .update(patch as any)
-          .eq("id", row.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("consent_records").insert({
-          athlete_id: athleteId,
-          consent_type: CONSENT_TYPE,
-          club_id: clubId,
-          ...patch,
-        } as any);
-        if (error) throw error;
-      }
+      // Writes go through locked-down database functions (no direct table access).
+      const { error } = granted
+        ? await supabase.rpc("grant_consent_as_parent" as any, { _athlete: athleteId, _policy_version: POLICY_VERSION })
+        : await supabase.rpc("withdraw_consent_as_parent" as any, { _athlete: athleteId });
+      if (error) throw error;
       toast({ title: granted ? t("parentConsentGrantedToast") : t("parentConsentWithdrawnToast") });
       await load();
     } catch (e: any) {
