@@ -158,6 +158,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   if (isMinor) {
     return (
       <div className="space-y-4">
+        {noConsent && <HealthConsentNotice coach={viewingOther} />}
         <Card className="p-4">
           <p className="text-xs text-muted-foreground">{t("minorNumbersHidden")}</p>
         </Card>
@@ -197,7 +198,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
   }
 
   const showOnboarding = canEditGoal && !readOnly && (rerunOnboarding || !goal);
-  if (showOnboarding) {
+  if (showOnboarding && !noConsent) {
     return (
       <div className="max-w-md mx-auto py-2">
         <WeightOnboarding
@@ -248,6 +249,7 @@ export function WeightModule({ userId, profile, readOnly = false, canEditGoal = 
 
   return (
     <div className="space-y-4">
+      {noConsent && <HealthConsentNotice coach={viewingOther} />}
       {compact ? statusView : (
         <Tabs defaultValue="today">
           <TabsList className="grid grid-cols-3 w-full">
