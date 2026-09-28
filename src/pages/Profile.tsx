@@ -322,7 +322,7 @@ export default function Profile() {
       });
       if (error) throw error;
       if (!(res as any)?.ok) throw new Error((res as any)?.error || "error");
-      toast.success(t("privacyConsentWithdrawDone" as any));
+      toast.success(t("consentWithdrawnNotice" as any), { duration: 8000 });
       setWithdrawOpen(false);
       setTimeout(() => window.location.reload(), 400);
     } catch (e: any) {
