@@ -34,7 +34,8 @@ interface SquadRow {
   athlete_code: string | null;
   sessions_per_week: number;
   last_seen_at: string | null;
-  has_active_injury: boolean;
+  has_active_injury: boolean | null;
+  consent_missing?: boolean;
   has_active_plan: boolean;
   latest_readiness_score: number | null;
   latest_readiness_date: string | null;
@@ -498,14 +499,22 @@ export function SquadOverview({
                       </p>
                     </div>
                   </button>
-                  <div className="text-right flex-shrink-0">
-                    <div className={cn("text-2xl font-bold leading-none tabular-nums", scoreClass)}>
-                      {r.latest_readiness_score ?? "—"}
+                  {r.consent_missing ? (
+                    <div className="text-right flex-shrink-0">
+                      <span className="inline-block rounded-md border border-border px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                        {t("squadConsentMissing")}
+                      </span>
                     </div>
-                    <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
-                      {t("squadReadinessLabel")}
+                  ) : (
+                    <div className="text-right flex-shrink-0">
+                      <div className={cn("text-2xl font-bold leading-none tabular-nums", scoreClass)}>
+                        {r.latest_readiness_score ?? "—"}
+                      </div>
+                      <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mt-1">
+                        {t("squadReadinessLabel")}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Middle: activity + last seen */}
@@ -549,13 +558,15 @@ export function SquadOverview({
                     <span className="text-[10px] text-muted-foreground truncate">
                       {Math.round(completion * 100)}% {t("squadCompleted")}
                     </span>
-                    <span
-                      className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"
-                      title={t("mood")}
-                    >
-                      <MoodIcon className="h-3 w-3" />
-                      {r.latest_mood ?? "—"}/5
-                    </span>
+                    {!r.consent_missing && (
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"
+                        title={t("mood")}
+                      >
+                        <MoodIcon className="h-3 w-3" />
+                        {r.latest_mood ?? "—"}/5
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-0.5 flex-shrink-0">
                     {onSelectAthlete && (
