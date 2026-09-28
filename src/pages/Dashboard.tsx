@@ -822,10 +822,13 @@ export default function Dashboard() {
               )}
               <EventRemindersDropdown />
               <button
-                onClick={() => navigate("/profile-setup")}
+                onClick={() => { markDotSeen("gdpr_consent_2026_09"); navigate("/profile-setup"); }}
                 className="relative shrink-0"
                 aria-label={t("profile")}
               >
+                {!seenDots.has("gdpr_consent_2026_09") && (
+                  <span className="absolute -top-0.5 -right-0.5 z-10 h-2 w-2 rounded-full bg-destructive animate-pulse" />
+                )}
                 <AvatarImg
                   avatarUrl={profile?.avatar_url}
                   className="h-8 w-8 rounded-full object-cover border border-border"
