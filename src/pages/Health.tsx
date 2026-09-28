@@ -46,7 +46,7 @@ export default function Health() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
   // Apple Health (HealthKit) er nu live: siden er åben for alle brugere,
-  // ikke længere admin-gated. Shortcut-vejen findes stadig som fallback.
+  // ikke længere admin-gated.
   const [loaded, setLoaded] = useState(false);
   const [steps, setSteps] = useState<DailyRow[]>([]);
   const [reporting, setReporting] = useState(false);
