@@ -38,7 +38,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: 'Registered',
     withdrawTitle: 'Changed your mind?',
-    withdraw: 'Contact the club and the approval is withdrawn. Processing then stops.',
+    withdraw: 'Use the link below to withdraw consent at any time, no login needed. Collection stops immediately and health data is deleted after 30 days unless consent is given again.',
     policyLink: 'Privacy policy',
     signOff: 'Sportstalent',
   },
@@ -55,7 +55,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: 'Registreret',
     withdrawTitle: 'Fortrudt?',
-    withdraw: 'Kontakt klubben, s\u00e5 tr\u00e6kkes godkendelsen tilbage, og behandlingen stopper.',
+    withdraw: 'Brug linket herunder til at tr\u00e6kke samtykket tilbage n\u00e5r som helst, uden login. Indsamlingen stopper straks, og helbredsdata slettes efter 30 dage, medmindre samtykket gives igen.',
     policyLink: 'Privatlivspolitik',
     signOff: 'Sportstalent',
   },
@@ -72,7 +72,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: 'Registrerat',
     withdrawTitle: '\u00c5ngrat dig?',
-    withdraw: 'Kontakta klubben s\u00e5 \u00e5terkallas godk\u00e4nnandet och behandlingen upph\u00f6r.',
+    withdraw: 'Anv\u00e4nd l\u00e4nken nedan f\u00f6r att \u00e5terkalla samtycket n\u00e4r som helst, utan inloggning. Insamlingen stoppas direkt och h\u00e4lsodata raderas efter 30 dagar om samtycket inte ges igen.',
     policyLink: 'Integritetspolicy',
     signOff: 'Sportstalent',
   },
@@ -89,7 +89,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: 'Registriert',
     withdrawTitle: 'Meinung ge\u00e4ndert?',
-    withdraw: 'Kontaktieren Sie den Verein; die Zustimmung wird widerrufen und die Verarbeitung endet.',
+    withdraw: '\u00dcber den Link unten k\u00f6nnen Sie die Einwilligung jederzeit ohne Anmeldung widerrufen. Die Erfassung endet sofort; Gesundheitsdaten werden nach 30 Tagen gel\u00f6scht, sofern die Einwilligung nicht erneut erteilt wird.',
     policyLink: 'Datenschutz',
     signOff: 'Sportstalent',
   },
@@ -106,7 +106,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: '\u062a\u0627\u0631\u064a\u062e \u0627\u0644\u062a\u0633\u062c\u064a\u0644',
     withdrawTitle: '\u063a\u064a\u0651\u0631\u062a \u0631\u0623\u064a\u0643\u061f',
-    withdraw: '\u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u0646\u0627\u062f\u064a \u0644\u0633\u062d\u0628 \u0627\u0644\u0645\u0648\u0627\u0641\u0642\u0629 \u0648\u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0645\u0639\u0627\u0644\u062c\u0629.',
+    withdraw: 'استخدم الرابط أدناه لسحب الموافقة في أي وقت دون تسجيل دخول. يتوقف الجمع فورًا وتُحذف البيانات الصحية بعد 30 يومًا ما لم تُمنح الموافقة مجددًا.',
     policyLink: '\u0633\u064a\u0627\u0633\u0629 \u0627\u0644\u062e\u0635\u0648\u0635\u064a\u0629',
     signOff: 'Sportstalent',
   },
@@ -123,7 +123,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: 'Registrert',
     withdrawTitle: 'Ombestemt deg?',
-    withdraw: 'Kontakt klubben, s\u00e5 trekkes godkjenningen tilbake og behandlingen stopper.',
+    withdraw: 'Bruk lenken nedenfor for \u00e5 trekke samtykket tilbake n\u00e5r som helst, uten innlogging. Innsamlingen stopper straks, og helsedata slettes etter 30 dager med mindre samtykket gis igjen.',
     policyLink: 'Personvern',
     signOff: 'Sportstalent',
   },
@@ -140,7 +140,7 @@ const S: Record<Loc, Strings> = {
     ],
     when: 'Registrado',
     withdrawTitle: '\u00bfHas cambiado de opini\u00f3n?',
-    withdraw: 'Contacta con el club y la aprobaci\u00f3n se retira; el tratamiento se detiene.',
+    withdraw: 'Usa el enlace de abajo para retirar el consentimiento en cualquier momento, sin iniciar sesi\u00f3n. La recogida se detiene de inmediato y los datos de salud se eliminan a los 30 d\u00edas salvo que se vuelva a dar el consentimiento.',
     policyLink: 'Pol\u00edtica de privacidad',
     signOff: 'Sportstalent',
   },
@@ -157,9 +157,10 @@ interface Props {
   grantedAt?: string
   policyVersion?: string
   locale?: string
+  withdrawUrl?: string
 }
 
-const ConsentReceiptEmail = ({ athleteName, clubName, grantedAt, policyVersion, locale }: Props) => {
+const ConsentReceiptEmail = ({ athleteName, clubName, grantedAt, policyVersion, locale, withdrawUrl }: Props) => {
   const { loc, s } = pick(locale)
   const child = athleteName || (loc === 'da' ? 'dit barn' : 'your child')
   const club = clubName || SITE_NAME
@@ -191,6 +192,11 @@ const ConsentReceiptEmail = ({ athleteName, clubName, grantedAt, policyVersion, 
 
           <Text style={factTitle}>{s.withdrawTitle}</Text>
           <Text style={small}>{s.withdraw}</Text>
+          {withdrawUrl && (
+            <Text style={small}>
+              <Link href={withdrawUrl} style={linkStyle}>{withdrawUrl}</Link>
+            </Text>
+          )}
           <Text style={small}>
             <Link href={`${APP_URL}/privacy`} style={linkStyle}>{s.policyLink}</Link>
           </Text>
