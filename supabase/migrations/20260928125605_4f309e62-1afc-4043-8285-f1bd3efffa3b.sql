@@ -1,0 +1,1 @@
+ALTER TABLE public.diary_entries ALTER COLUMN mood DROP NOT NULL, ALTER COLUMN energy DROP NOT NULL;
