@@ -53,7 +53,7 @@ export function ParentConsentCard({
         ? await supabase.rpc("grant_consent_as_parent" as any, { _athlete: athleteId, _policy_version: POLICY_VERSION })
         : await supabase.rpc("withdraw_consent_as_parent" as any, { _athlete: athleteId });
       if (error) throw error;
-      toast({ title: granted ? t("parentConsentGrantedToast") : t("parentConsentWithdrawnToast") });
+      toast({ title: granted ? t("parentConsentGrantedToast") : t("parentConsentWithdrawnToast"), description: granted ? undefined : t("consentWithdrawnNotice") });
       await load();
     } catch (e: any) {
       toast({ title: t("parentConsentError"), description: e?.message, variant: "destructive" });

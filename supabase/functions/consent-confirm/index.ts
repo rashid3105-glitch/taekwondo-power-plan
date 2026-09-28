@@ -3,6 +3,9 @@
 //   action="get"   → returns minimal info to render the consent page
 //   action="grant" → marks token used + sets consent_records to granted
 //   action="not_my_child" → guardian says this request is not theirs
+//   action="withdraw" → guardian withdraws consent they granted with this
+//                       token (no login). Bound to the guardian's e-mail:
+//                       only works while the record is granted by that e-mail.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { POLICY_VERSION } from "../_shared/age.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
@@ -42,6 +45,39 @@ Deno.serve(async (req) => {
     const expired = new Date(tk.expires_at).getTime() < Date.now();
     const used = !!tk.confirmed_at;
 
+    // A used token can later be used ONLY to withdraw, and only while the
+    // consent is still the one this guardian (same e-mail) granted.
+    const loadWithdrawable = async () => {
+      if (!used || !tk.parent_email) return null;
+      const { data: rec } = await admin
+        .from("consent_records")
+        .select("id, status, granted_by_relation, granted_by_email")
+        .eq("athlete_id", tk.athlete_id)
+        .eq("consent_type", tk.consent_type)
+        .maybeSingle();
+      if (!rec || rec.status !== "granted" || rec.granted_by_relation !== "parent") return null;
+      if ((rec.granted_by_email || "").toLowerCase() !== tk.parent_email.toLowerCase()) return null;
+      return rec;
+    };
+
+    if (action === "withdraw") {
+      const rec = await loadWithdrawable();
+      if (!rec) return json({ ok: false, error: "not_withdrawable" }, 409);
+      const now = new Date().toISOString();
+      // Trigger sets health_data_delete_after (+30 d) and revokes wearables.
+      const { data: upd, error } = await admin
+        .from("consent_records")
+        .update({ status: "withdrawn", withdrawn_at: now, granted_at: null, grace_until: null })
+        .eq("id", rec.id)
+        .select("health_data_delete_after")
+        .maybeSingle();
+      if (error) return json({ ok: false, error: "server_error" }, 500);
+      await admin.from("consent_token_events").insert({
+        token_id: tk.id, athlete_id: tk.athlete_id, event: "withdrawn", meta: { source: "parent_token" },
+      });
+      return json({ ok: true, delete_after: (upd as any)?.health_data_delete_after ?? null });
+    }
+
     if (action === "get") {
       // Minimal, non-sensitive info to render the page.
       // We expose the athlete's display name AND the club name (the
@@ -70,6 +106,7 @@ Deno.serve(async (req) => {
 
       return json({
         valid: !expired && !used,
+        can_withdraw: !!(await loadWithdrawable()),
         expires_at: tk.expires_at,
         expired,
         used,
@@ -153,6 +190,7 @@ Deno.serve(async (req) => {
               grantedAt: now,
               policyVersion: POLICY_VERSION,
               locale: (rp as any)?.default_locale || "da",
+              withdrawUrl: `https://sportstalent.dk/consent/${token}`,
             },
           });
         }

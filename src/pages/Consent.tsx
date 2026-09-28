@@ -13,6 +13,7 @@ type Info = {
   valid: boolean;
   expired?: boolean;
   used?: boolean;
+  can_withdraw?: boolean;
   athlete_name?: string | null;
   club_name?: string | null;
   consent_type?: string;
@@ -48,6 +49,8 @@ export default function Consent() {
   const [checked, setChecked] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [notMine, setNotMine] = useState(false);
+  const [withdrawn, setWithdrawn] = useState(false);
+  const [confirmWithdraw, setConfirmWithdraw] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,6 +81,23 @@ export default function Consent() {
       });
       if (error) throw error;
       if ((data as any)?.ok) setGranted(true);
+      else throw new Error((data as any)?.error || "error");
+    } catch (e: any) {
+      setError(e.message || "Error");
+    } finally {
+      setGranting(false);
+    }
+  };
+
+  const withdraw = async () => {
+    setGranting(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("consent-confirm", {
+        body: { action: "withdraw", token },
+      });
+      if (error) throw error;
+      if ((data as any)?.ok) setWithdrawn(true);
       else throw new Error((data as any)?.error || "error");
     } catch (e: any) {
       setError(e.message || "Error");
@@ -159,7 +179,34 @@ export default function Consent() {
           </div>
         )}
 
-        {!loading && !granted && !notMine && info && !info.valid && (
+        {!loading && withdrawn && (
+          <div className="mt-6 rounded-2xl border border-border bg-card p-6 text-center">
+            <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
+            <p className="mt-3 text-sm">{t("consentWithdrawnNotice")}</p>
+          </div>
+        )}
+
+        {!loading && !withdrawn && !granted && info?.can_withdraw && (
+          <div className="mt-6 rounded-2xl border border-border bg-card p-5 space-y-3">
+            <div className="font-semibold">{athleteName} · {clubName}</div>
+            <p className="text-sm text-muted-foreground">{t("consentWithdrawActive")}</p>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            {!confirmWithdraw ? (
+              <Button variant="outline" className="h-12 w-full" onClick={() => setConfirmWithdraw(true)}>
+                <Undo2 className="h-4 w-4" /> {t("consentWithdrawBtn")}
+              </Button>
+            ) : (
+              <>
+                <p className="text-sm">{fillPlaceholders(t("consentWithdrawConfirm"), vars)}</p>
+                <Button variant="destructive" className="h-12 w-full" disabled={granting} onClick={withdraw}>
+                  {granting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("consentWithdrawBtn")}
+                </Button>
+              </>
+            )}
+          </div>
+        )}
+
+        {!loading && !withdrawn && !granted && !notMine && info && !info.valid && !info.can_withdraw && (
           <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border bg-card p-5">
             <AlertCircle className="mt-0.5 h-5 w-5 text-amber-500" />
             <div className="text-sm">

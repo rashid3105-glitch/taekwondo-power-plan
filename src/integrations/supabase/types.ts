@@ -1795,6 +1795,8 @@ export type Database = {
           granted_at: string | null
           granted_by_email: string | null
           granted_by_relation: string | null
+          health_data_delete_after: string | null
+          health_data_purged_at: string | null
           id: string
           parent_email_missing: boolean
           parent_link_needed: boolean
@@ -1814,6 +1816,8 @@ export type Database = {
           granted_at?: string | null
           granted_by_email?: string | null
           granted_by_relation?: string | null
+          health_data_delete_after?: string | null
+          health_data_purged_at?: string | null
           id?: string
           parent_email_missing?: boolean
           parent_link_needed?: boolean
@@ -1833,6 +1837,8 @@ export type Database = {
           granted_at?: string | null
           granted_by_email?: string | null
           granted_by_relation?: string | null
+          health_data_delete_after?: string | null
+          health_data_purged_at?: string | null
           id?: string
           parent_email_missing?: boolean
           parent_link_needed?: boolean
@@ -1914,6 +1920,30 @@ export type Database = {
           id?: string
           parent_email?: string
           token?: string
+        }
+        Relationships: []
+      }
+      consent_withdrawal_purge_audit: {
+        Row: {
+          consent_record_id: string | null
+          dry_run: boolean
+          id: string
+          purged_at: string
+          row_counts: Json
+        }
+        Insert: {
+          consent_record_id?: string | null
+          dry_run?: boolean
+          id?: string
+          purged_at?: string
+          row_counts?: Json
+        }
+        Update: {
+          consent_record_id?: string | null
+          dry_run?: boolean
+          id?: string
+          purged_at?: string
+          row_counts?: Json
         }
         Relationships: []
       }
