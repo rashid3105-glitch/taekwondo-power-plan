@@ -140,7 +140,6 @@ export async function requestHealthConnectPermission(): Promise<{
   reason?: string;
 }> {
   if (!isHealthConnectAvailable()) return { ok: false, reason: "not_android" };
-  if (isWearableConsentBlocked()) return { ok: false, reason: "consent_required" };
 
   logHealthConnectBridgeStatus("requestHealthConnectPermission");
 
@@ -187,6 +186,7 @@ export async function syncHealthConnect(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
   if (!isHealthConnectAvailable()) return { ok: false, reason: "not_android" };
+  if (isWearableConsentBlocked()) return { ok: false, reason: "consent_required" };
 
   logHealthConnectBridgeStatus("syncHealthConnect");
 

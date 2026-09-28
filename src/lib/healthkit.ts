@@ -129,7 +129,6 @@ export async function requestHealthKitPermission(): Promise<{
   reason?: string;
 }> {
   if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
-  if (isWearableConsentBlocked()) return { ok: false, reason: "consent_required" };
 
   logHealthKitBridgeStatus("requestHealthKitPermission");
 
@@ -171,6 +170,7 @@ export async function syncHealthKit(
   opts: { force?: boolean } = {},
 ): Promise<{ ok: boolean; inserted?: number; workouts?: number; reason?: string }> {
   if (!isHealthKitAvailable()) return { ok: false, reason: "not_ios" };
+  if (isWearableConsentBlocked()) return { ok: false, reason: "consent_required" };
 
   logHealthKitBridgeStatus("syncHealthKit");
 
