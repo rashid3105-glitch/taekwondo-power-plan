@@ -47,7 +47,7 @@ export function AnnouncementsCard() {
   if (visible.length === 0) return null;
 
   return (
-    <section className="dark rounded-2xl border border-[#c9a84c]/30 bg-[#141414] p-4">
+    <section className="surface-dark rounded-2xl border border-[#c9a84c]/30 bg-[#141414] p-4">
       <div className="mb-3 flex items-center gap-2">
         <Megaphone className="h-4 w-4 text-[#c9a84c]" />
         <h3 className="text-sm font-semibold text-foreground">Beskeder</h3>
