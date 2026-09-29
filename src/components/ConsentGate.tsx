@@ -36,6 +36,7 @@ const isPublicRoute = (pathname: string) => {
 type State =
   | { kind: "loading" }
   | { kind: "ok" }
+  | { kind: "confirm" }
   | { kind: "banner"; graceUntil: string; clubName: string | null }
   | {
       kind: "minor";
@@ -94,7 +95,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           .limit(1),
         supabase
           .from("consent_records")
-          .select("status, grace_until")
+          .select("status, grace_until, needs_self_confirmation")
           .eq("athlete_id", uid)
           .eq("consent_type", "health_data_processing")
           .limit(1),
@@ -217,6 +218,13 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       }
 
       if (status === "granted") {
+        if ((consent as any)?.needs_self_confirmation === true) {
+          let dismissed = false;
+          try { dismissed = sessionStorage.getItem("consent_confirm_dismissed") === "1"; } catch { /* ignore */ }
+          setBannerDismissed(dismissed);
+          setState({ kind: "confirm" });
+          return;
+        }
         setState({ kind: "ok" });
         return;
       }
@@ -256,6 +264,25 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
       if (error) throw error;
       if (!(data as any)?.ok) throw new Error((data as any)?.error || "error");
       setState({ kind: "ok" });
+    } catch (e: any) {
+      setError(e.message || t("error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Parent-granted consent that the (now old enough) athlete withdraws.
+  // Uses the normal withdraw flow (30-day health-data deletion).
+  const withdrawSelf = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("consent-self", { body: { action: "withdraw" } });
+      if (error) throw error;
+      if (!(data as any)?.ok) throw new Error((data as any)?.error || "error");
+      toast.success(t("consentSelfConfirmWithdrawn"));
+      setState({ kind: "loading" });
+      await evaluate();
     } catch (e: any) {
       setError(e.message || t("error"));
     } finally {
@@ -444,6 +471,42 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   // Always render children on public routes; never block sign-in flow.
   if (onPublic) return <>{children}</>;
   if (state.kind === "loading" || state.kind === "ok") return <>{children}</>;
+
+  if (state.kind === "confirm") {
+    return (
+      <>
+        {!bannerDismissed && (
+          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
+            <div className="max-w-5xl mx-auto px-3 py-2 flex flex-wrap items-center gap-2 text-sm">
+              <ShieldCheck className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+              <span className="flex-1 min-w-[12rem] text-amber-900 dark:text-amber-100">
+                {t("consentSelfConfirmText")}
+              </span>
+              <Button size="sm" onClick={grant} disabled={submitting}>
+                {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : t("consentSelfConfirmGrant")}
+              </Button>
+              <Button size="sm" variant="outline" onClick={withdrawSelf} disabled={submitting}>
+                {t("consentSelfConfirmWithdraw")}
+              </Button>
+              <button
+                onClick={() => {
+                  try { sessionStorage.setItem("consent_confirm_dismissed", "1"); } catch { /* ignore */ }
+                  setBannerDismissed(true);
+                }}
+                className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
+                aria-label={t("close")}
+                title={t("close")}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {error && <div className="px-3 pb-2 text-xs text-destructive max-w-5xl mx-auto">{error}</div>}
+          </div>
+        )}
+        {children}
+      </>
+    );
+  }
 
   if (state.kind === "banner") {
     return (
