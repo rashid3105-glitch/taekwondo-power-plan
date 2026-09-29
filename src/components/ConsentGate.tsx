@@ -213,7 +213,9 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         setState({ kind: "banner", graceUntil: grace as string, clubName });
         return;
       }
-      setState({ kind: "blocking", clubName });
+      let skipped = false;
+      try { skipped = sessionStorage.getItem("consent_skip_health") === "1"; } catch { /* ignore */ }
+      setState(skipped ? { kind: "ok" } : { kind: "blocking", clubName });
 
     } catch (e) {
       // Any thrown error leaves consent status unknown — fail CLOSED with a
