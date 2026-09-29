@@ -623,3 +623,12 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 }
 
 
+
+
+/* Dark athlete cockpit surfaces sit on a hard-coded near-black page, while the
+   base palette is light. Re-scope the text tokens so headings stay readable. */
+.surface-dark {
+  --foreground: 210 30% 95%;
+  --card-foreground: 210 30% 95%;
+  --muted-foreground: 220 12% 70%;
+}

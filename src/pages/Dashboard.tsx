@@ -952,7 +952,7 @@ export default function Dashboard() {
 
             {showMentalReminder && (
               <div
-                className="dark flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3 cursor-pointer hover:bg-primary/10 transition-colors"
+                className="surface-dark flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-3 cursor-pointer hover:bg-primary/10 transition-colors"
                 onClick={() => handleTabChange("mental")}
               >
                 <Brain className="h-5 w-5 text-primary shrink-0" />
@@ -991,7 +991,7 @@ export default function Dashboard() {
                   return (
                     <>
                       <p className="text-xs text-muted-foreground">{t(greetingKey)}</p>
-                      <p className="dark text-lg font-bold text-foreground truncate">{firstName}</p>
+                      <p className="surface-dark text-lg font-bold text-foreground truncate">{firstName}</p>
                       {profileFromCache && (
                         <p className="text-[10px] text-muted-foreground/80 truncate">
                           {t("profileCachedHint" as any) || "Vises fra cache"}
