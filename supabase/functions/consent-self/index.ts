@@ -275,6 +275,8 @@ Deno.serve(async (req) => {
       granted_by_email: user.email ?? null,
       policy_version: POLICY_VERSION,
       withdrawn_at: null,
+      // Athlete confirms a parent-given consent after reaching consent age.
+      needs_self_confirmation: false,
     };
 
     if (existing) {
