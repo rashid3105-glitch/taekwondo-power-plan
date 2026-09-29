@@ -213,7 +213,9 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         setState({ kind: "banner", graceUntil: grace as string, clubName });
         return;
       }
-      setState({ kind: "blocking", clubName });
+      let skipped = false;
+      try { skipped = sessionStorage.getItem("consent_skip_health") === "1"; } catch { /* ignore */ }
+      setState(skipped ? { kind: "ok" } : { kind: "blocking", clubName });
 
     } catch (e) {
       // Any thrown error leaves consent status unknown — fail CLOSED with a
@@ -582,6 +584,16 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col gap-2">
           <Button onClick={grant} disabled={submitting || !checked} className="w-full">
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentGrantBtn")}
+          </Button>
+          <Button
+            onClick={() => {
+              try { sessionStorage.setItem("consent_skip_health", "1"); } catch { /* ignore */ }
+              setState({ kind: "ok" });
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            {t("privacyConsentContinueWithout")}
           </Button>
           <Button onClick={logout} variant="ghost" className="w-full">
             {t("selfConsentLogout")}
