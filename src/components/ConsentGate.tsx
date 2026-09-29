@@ -247,9 +247,13 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     evaluate();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      setState({ kind: "loading" });
-      setChecked(false);
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      // Only a real user change resets to the loading screen; token refreshes
+      // re-evaluate silently so the app is not unmounted every hour.
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+        setState({ kind: "loading" });
+        setChecked(false);
+      }
       evaluate();
     });
     return () => sub.subscription.unsubscribe();
@@ -470,7 +474,16 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
 
   // Always render children on public routes; never block sign-in flow.
   if (onPublic) return <>{children}</>;
-  if (state.kind === "loading" || state.kind === "ok") return <>{children}</>;
+  // While consent is unknown, show nothing protected — a minor in a
+  // fully-blocking club must never glimpse the app before the verdict.
+  if (state.kind === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background" aria-busy="true">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+  if (state.kind === "ok") return <>{children}</>;
 
   if (state.kind === "confirm") {
     return (
