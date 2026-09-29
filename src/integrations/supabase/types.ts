@@ -2057,11 +2057,13 @@ export type Database = {
           club_id: string | null
           content: string
           created_at: string
+          energy: number | null
           entry_date: string
           entry_type: string
           entry_types: string[] | null
           id: string
           is_private: boolean
+          mood: number | null
           run_calories: number | null
           run_distance_km: number | null
           run_duration_seconds: number | null
@@ -2074,11 +2076,13 @@ export type Database = {
           club_id?: string | null
           content?: string
           created_at?: string
+          energy?: number | null
           entry_date?: string
           entry_type?: string
           entry_types?: string[] | null
           id?: string
           is_private?: boolean
+          mood?: number | null
           run_calories?: number | null
           run_distance_km?: number | null
           run_duration_seconds?: number | null
@@ -2091,11 +2095,13 @@ export type Database = {
           club_id?: string | null
           content?: string
           created_at?: string
+          energy?: number | null
           entry_date?: string
           entry_type?: string
           entry_types?: string[] | null
           id?: string
           is_private?: boolean
+          mood?: number | null
           run_calories?: number | null
           run_distance_km?: number | null
           run_duration_seconds?: number | null
