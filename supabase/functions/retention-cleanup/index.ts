@@ -6,7 +6,7 @@
 // Auth: service role key (called by pg_cron via pg_net) or a platform admin
 // JWT (manual run from the admin page).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { purgeUser, purgeHealthData } from "../_shared/purge-user.ts";
+import { purgeUser, purgeHealthData, purgeClubMembershipData } from "../_shared/purge-user.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const cors = {
@@ -755,4 +755,71 @@ async function emailFor(admin: any, uid: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+function clubDeleteOn(endedAt: string, retentionDays: number): string {
+  return new Date(new Date(endedAt).getTime() + retentionDays * 86400_000).toISOString().slice(0, 10);
+}
+
+const LOCALES = ["en", "da", "sv", "de", "ar", "no", "es"];
+
+/** Recipients for a club-athlete warning: the athlete, plus parents if below consent age. */
+async function clubAthleteRecipients(admin: any, uid: string): Promise<string[]> {
+  const out = new Set<string>();
+  const own = await emailFor(admin, uid);
+  if (own) out.add(own.toLowerCase());
+  const { data: prof } = await admin.from("profiles")
+    .select("birth_date, parent_email, guardian_email").eq("user_id", uid).maybeSingle();
+  let minor = false;
+  if (prof?.birth_date) {
+    const { data: ca } = await admin.rpc("consent_age_for_athlete", { _athlete_id: uid });
+    const limit = typeof ca === "number" ? ca : 18;
+    const b = new Date(prof.birth_date); const n = new Date();
+    let age = n.getFullYear() - b.getFullYear();
+    const mo = n.getMonth() - b.getMonth();
+    if (mo < 0 || (mo === 0 && n.getDate() < b.getDate())) age--;
+    minor = age < limit;
+  }
+  if (!minor) return [...out];
+  for (const e of [prof?.parent_email, prof?.guardian_email]) {
+    if (e && String(e).trim()) out.add(String(e).trim().toLowerCase());
+  }
+  const { data: links } = await admin.from("parent_athletes").select("parent_user_id").eq("athlete_id", uid);
+  for (const l of links ?? []) {
+    const e = await emailFor(admin, l.parent_user_id);
+    if (e) out.add(e.toLowerCase());
+  }
+  const { data: tok } = await admin.from("consent_tokens").select("parent_email")
+    .eq("athlete_id", uid).not("parent_email", "is", null)
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (tok?.parent_email) out.add(String(tok.parent_email).trim().toLowerCase());
+  return [...out];
+}
+
+/** Sends the athlete (+parent) warning and records it. Recorded even with no email
+ *  (logged) — the club, as data controller, has been warned. */
+async function warnClubAthlete(admin: any, policy: Policy, r: CategoryResult, c: any, m: any, deleteOn: string) {
+  const { data: prof } = await admin.from("profiles")
+    .select("display_name, default_locale").eq("user_id", m.user_id).maybeSingle();
+  const locale = LOCALES.includes(prof?.default_locale) ? prof.default_locale : "da";
+  const recipients = await clubAthleteRecipients(admin, m.user_id);
+  if (recipients.length === 0) r.errors.push("club_athlete_no_email");
+  for (const email of recipients) {
+    try {
+      await sendTemplateEmail("retention-deletion-warning", email, {
+        templateData: {
+          kind: "club_athlete",
+          recipientName: prof?.display_name ?? "",
+          subjectLabel: c.name ?? "",
+          deleteOn,
+          locale,
+        },
+        idempotencyKey: `retention-club-athlete-${m.id}-${email}`,
+      });
+    } catch { r.errors.push("club_athlete_warn_email_failed"); }
+  }
+  await admin.from("retention_notices").insert({
+    category: policy.category, subject_id: m.id, notice_type: "athlete_pre_delete",
+  });
+  r.warned++;
 }
