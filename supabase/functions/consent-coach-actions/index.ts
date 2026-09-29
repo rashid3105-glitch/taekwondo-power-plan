@@ -332,8 +332,14 @@ Deno.serve(async (req) => {
       const inCoachClub = effectiveClubIds.some((cid) => athleteClubs.has(cid));
       if (!inCoachClub) return jsonResponse({ error: "forbidden" }, 403);
 
-      // Self-consent requires a VERIFIED adult age.
-      const adultVerdict = isBelowConsentAge(athleteRow.birth_date);
+      // Self-consent requires a VERIFIED age at/above the athlete's
+      // country-specific digital consent age (fail safe 18).
+      let selfAge = 18;
+      try {
+        const { data: ca } = await admin.rpc("consent_age_for_athlete", { _athlete_id: athleteId });
+        if (typeof ca === "number") selfAge = ca;
+      } catch (_) { /* fail safe 18 */ }
+      const adultVerdict = isBelowConsentAge(athleteRow.birth_date, selfAge);
       if (adultVerdict === true) return jsonResponse({ error: "is_a_minor" }, 400);
       if (adultVerdict === "unknown") return jsonResponse({ error: "birth_date_required" }, 400);
 
