@@ -127,6 +127,7 @@ export function GlobalAppMenu() {
   const { hasCoachRole } = useRole();
   const { isCoachMode, setCoachMode } = useCoachMode();
   const { activeMembership } = useActiveClub();
+  const minorAccessSeen = (() => { try { return localStorage.getItem("club_minor_access_seen_v1") === "1"; } catch { return true; } })();
 
   const [open, setOpen] = useState(false);
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -443,6 +444,9 @@ export function GlobalAppMenu() {
               >
                 <Settings className="h-4 w-4 shrink-0 text-tab-progress" />
                 <span>Administrer moduler</span>
+                {activeMembership?.role_in_club === "admin" && !minorAccessSeen && (
+                  <span className="ml-auto h-2 w-2 rounded-full bg-destructive" aria-hidden />
+                )}
               </button>
             ) : (
               <button
