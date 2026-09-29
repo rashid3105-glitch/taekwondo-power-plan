@@ -583,6 +583,16 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
           <Button onClick={grant} disabled={submitting || !checked} className="w-full">
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("privacyConsentGrantBtn")}
           </Button>
+          <Button
+            onClick={() => {
+              try { sessionStorage.setItem("consent_skip_health", "1"); } catch { /* ignore */ }
+              setState({ kind: "ok" });
+            }}
+            variant="outline"
+            className="w-full"
+          >
+            {t("privacyConsentContinueWithout")}
+          </Button>
           <Button onClick={logout} variant="ghost" className="w-full">
             {t("selfConsentLogout")}
           </Button>
