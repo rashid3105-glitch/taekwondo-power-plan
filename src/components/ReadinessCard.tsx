@@ -237,7 +237,7 @@ export function ReadinessCard() {
           style={{ touchAction: "pan-y" }}
           className="cursor-grab active:cursor-grabbing"
         >
-          <Card className="border-2 border-primary/40 bg-primary/5 select-none">
+          <Card className="dark border-2 border-primary/40 bg-primary/5 select-none">
             <CardContent className="pt-4 pb-4 flex items-center gap-3">
               <Sun className="h-6 w-6 text-primary flex-shrink-0" />
               <div className="flex-1">
