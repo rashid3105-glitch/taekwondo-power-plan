@@ -46,6 +46,14 @@ Deno.serve(async (req) => {
       .eq("status", "active");
     if ((count ?? 0) > 0) return jsonRes({ error: "still_active_member" }, 409);
 
+    // Withdraw consent first so no new data is synced in after the purge
+    // (the withdrawal trigger revokes wearable connections).
+    await admin.from("consent_records")
+      .update({ status: "withdrawn", withdrawn_at: new Date().toISOString() })
+      .eq("athlete_id", user.id)
+      .eq("consent_type", "health_data_processing")
+      .eq("status", "granted");
+
     const res = await purgeHealthData(admin, user.id, { preserveHistory: true });
     await admin.from("retention_notices").insert({
       category: "left_club_health_data",

@@ -212,6 +212,12 @@ Deno.serve(async (req) => {
       await admin.from("consent_tokens")
         .update({ expires_at: new Date().toISOString() })
         .eq("id", tk.id);
+      // Flag the record so the coach sees that a new guardian email is needed.
+      await admin.from("consent_records")
+        .update({ parent_email_missing: true })
+        .eq("athlete_id", tk.athlete_id)
+        .eq("consent_type", tk.consent_type)
+        .neq("status", "granted");
       return json({ ok: true });
     }
 
