@@ -1219,6 +1219,7 @@ export type Database = {
           created_at: string
           health_data_purged: boolean
           id: string
+          reason: string
           table_counts: Json
           warning_sent: boolean
         }
@@ -1227,6 +1228,7 @@ export type Database = {
           created_at?: string
           health_data_purged?: boolean
           id?: string
+          reason?: string
           table_counts?: Json
           warning_sent?: boolean
         }
@@ -1235,6 +1237,7 @@ export type Database = {
           created_at?: string
           health_data_purged?: boolean
           id?: string
+          reason?: string
           table_counts?: Json
           warning_sent?: boolean
         }
