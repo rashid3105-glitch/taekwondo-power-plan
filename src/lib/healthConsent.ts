@@ -34,3 +34,16 @@ export function useHealthConsent(userId?: string | null) {
   }, [userId]);
   return consent;
 }
+
+export const GUARDIAN_CONSENT_EVENT = "sportstalent:open-guardian-consent";
+
+/**
+ * "Go to consent" link target. A minor using the app while waiting for
+ * parental consent gets the guardian-request dialog (ConsentGate handles the
+ * event and cancels it); everyone else goes to the adult consent on /profile.
+ */
+export function openHealthConsent(navigate: (to: string) => void) {
+  const ev = new CustomEvent(GUARDIAN_CONSENT_EVENT, { cancelable: true });
+  const notHandled = window.dispatchEvent(ev);
+  if (notHandled) navigate("/profile");
+}

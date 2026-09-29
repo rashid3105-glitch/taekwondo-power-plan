@@ -1294,6 +1294,7 @@ export type Database = {
           license_ended_at: string | null
           logo_url: string | null
           max_athletes: number
+          minor_access_without_consent: boolean
           name: string
           primary_color: string | null
           share_coach_notes: boolean
@@ -1315,6 +1316,7 @@ export type Database = {
           license_ended_at?: string | null
           logo_url?: string | null
           max_athletes?: number
+          minor_access_without_consent?: boolean
           name: string
           primary_color?: string | null
           share_coach_notes?: boolean
@@ -1336,6 +1338,7 @@ export type Database = {
           license_ended_at?: string | null
           logo_url?: string | null
           max_athletes?: number
+          minor_access_without_consent?: boolean
           name?: string
           primary_color?: string | null
           share_coach_notes?: boolean
@@ -5158,6 +5161,7 @@ export type Database = {
           weight_kg: number
         }[]
       }
+      get_club_minor_access: { Args: { _club_id: string }; Returns: boolean }
       get_club_test_medians: { Args: { _athlete_id: string }; Returns: Json }
       get_invite_by_code: { Args: { _code: string }; Returns: Json }
       get_parent_invite_info: { Args: { _code: string }; Returns: Json }
@@ -5252,6 +5256,7 @@ export type Database = {
         Args: { _feedback_id: string }
         Returns: undefined
       }
+      my_minor_access_without_consent: { Args: never; Returns: boolean }
       normalize_country: { Args: { _country: string }; Returns: string }
       nutrition_plan_has_numeric_targets: {
         Args: { _custom_calories: number; _plan_data: Json }
@@ -5290,6 +5295,10 @@ export type Database = {
       }
       set_club_default_weekly_schedule: {
         Args: { _club_id: string; _schedule: Json }
+        Returns: undefined
+      }
+      set_club_minor_access: {
+        Args: { _club_id: string; _enabled: boolean }
         Returns: undefined
       }
       set_superadmin_active: { Args: { _active: boolean }; Returns: boolean }

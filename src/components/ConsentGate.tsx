@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShieldCheck, Loader2, AlertTriangle, X } from "lucide-react";
 import { publicAppOrigin } from "@/lib/platform";
+import { GUARDIAN_CONSENT_EVENT } from "@/lib/healthConsent";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Routes where the gate must never appear (public / pre-login / consent flows).
 const PUBLIC_PREFIXES = [
@@ -41,6 +43,8 @@ type State =
       guardianEmail: string | null;
       recordStatus: string | null;
       token: { sent_at: string; expires_at: string; expired: boolean } | null;
+      /** Club allows use of the app (without health data) while waiting. */
+      minorAccess: boolean;
     }
   | { kind: "blocking"; clubName: string | null }
   | { kind: "needsBirthDate" }
@@ -65,6 +69,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   const [guardianLink, setGuardianLink] = useState<string | null>(null);
   const [guardianEmailInput, setGuardianEmailInput] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [guardianDialogOpen, setGuardianDialogOpen] = useState(false);
 
 
   const evaluate = useCallback(async () => {
@@ -199,7 +204,14 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
         } catch {
           // keep fallback values
         }
-        setState({ kind: "minor", clubName, guardianEmail, recordStatus, token });
+        // Club choice: may minors use the app (no health data) while waiting?
+        // Any lookup failure counts as "no" — fail closed to the full block.
+        let minorAccess = false;
+        try {
+          const { data: ma, error: maErr } = await supabase.rpc("my_minor_access_without_consent" as any);
+          minorAccess = !maErr && ma === true;
+        } catch { minorAccess = false; }
+        setState({ kind: "minor", clubName, guardianEmail, recordStatus, token, minorAccess });
         return;
 
       }
@@ -343,6 +355,14 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const minorAccessActive = state.kind === "minor" && state.minorAccess;
+  useEffect(() => {
+    if (!minorAccessActive) return;
+    const handler = (e: Event) => { e.preventDefault(); setGuardianDialogOpen(true); };
+    window.addEventListener(GUARDIAN_CONSENT_EVENT, handler);
+    return () => window.removeEventListener(GUARDIAN_CONSENT_EVENT, handler);
+  }, [minorAccessActive]);
+
   const onPublic = isPublicRoute(location.pathname);
 
   // Compute placeholder vars — only meaningful inside banner/blocking states.
@@ -353,52 +373,7 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
   const vars = useMemo(() => ({ clubName }), [clubName]);
 
 
-  // Always render children on public routes; never block sign-in flow.
-  if (onPublic) return <>{children}</>;
-  if (state.kind === "loading" || state.kind === "ok") return <>{children}</>;
-
-  if (state.kind === "banner") {
-    return (
-      <>
-        {!bannerDismissed && (
-          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
-            <div className="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3 text-sm">
-              <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
-              <span className="flex-1 text-amber-900 dark:text-amber-100">
-                {t("selfConsentBannerText")}
-              </span>
-              <Button size="sm" onClick={grant} disabled={submitting}>
-                {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : t("selfConsentBannerCta")}
-              </Button>
-              <button
-                onClick={() => setBannerDismissed(true)}
-                className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
-                aria-label="Dismiss"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            {error && <div className="px-3 pb-2 text-xs text-destructive max-w-5xl mx-auto">{error}</div>}
-          </div>
-        )}
-        {children}
-      </>
-    );
-  }
-
-  if (state.kind === "minor") {
-    return (
-      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-lg p-6 space-y-5">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-semibold">{t("privacyConsentMinorTitle")}</h1>
-          </div>
-          <p className="text-sm leading-relaxed">
-            {fillPlaceholders(t("privacyConsentMinorBody"), vars)}
-          </p>
-
-          {(() => {
+  function renderGuardianPanel(state: Extract<State, { kind: "minor" }>) {
             const tok = state.token;
             const waiting = (tok && !tok.expired) || (!tok && state.recordStatus === "pending");
             const expired = !!tok?.expired;
@@ -464,7 +439,84 @@ export function ConsentGate({ children }: { children: React.ReactNode }) {
                 )}
               </div>
             );
-          })()}
+  }
+
+  // Always render children on public routes; never block sign-in flow.
+  if (onPublic) return <>{children}</>;
+  if (state.kind === "loading" || state.kind === "ok") return <>{children}</>;
+
+  if (state.kind === "banner") {
+    return (
+      <>
+        {!bannerDismissed && (
+          <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800">
+            <div className="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3 text-sm">
+              <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+              <span className="flex-1 text-amber-900 dark:text-amber-100">
+                {t("selfConsentBannerText")}
+              </span>
+              <Button size="sm" onClick={grant} disabled={submitting}>
+                {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : t("selfConsentBannerCta")}
+              </Button>
+              <button
+                onClick={() => setBannerDismissed(true)}
+                className="text-amber-900/70 dark:text-amber-100/70 hover:opacity-100"
+                aria-label="Dismiss"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            {error && <div className="px-3 pb-2 text-xs text-destructive max-w-5xl mx-auto">{error}</div>}
+          </div>
+        )}
+        {children}
+      </>
+    );
+  }
+
+  if (state.kind === "minor" && state.minorAccess) {
+    return (
+      <>
+        <div className="sticky top-0 z-50 w-full bg-amber-100 dark:bg-amber-950/40 border-b border-amber-300 dark:border-amber-800" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+          <div className="max-w-5xl mx-auto px-3 py-2 flex items-center gap-3 text-sm">
+            <AlertTriangle className="h-4 w-4 text-amber-700 dark:text-amber-300 shrink-0" />
+            <span className="flex-1 text-amber-900 dark:text-amber-100">{t("minorAccessBannerText")}</span>
+            <Button size="sm" onClick={() => setGuardianDialogOpen(true)}>{t("minorAccessBannerCta")}</Button>
+          </div>
+        </div>
+        {children}
+        <Dialog open={guardianDialogOpen} onOpenChange={setGuardianDialogOpen}>
+          <DialogContent className="max-w-lg max-h-[90dvh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-primary" /> {t("privacyConsentMinorTitle")}
+              </DialogTitle>
+            </DialogHeader>
+            <p className="text-sm leading-relaxed">{fillPlaceholders(t("privacyConsentMinorBody"), vars)}</p>
+            {renderGuardianPanel(state)}
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button onClick={() => { setState({ kind: "loading" }); evaluate(); }} variant="secondary" className="w-full">
+              {t("privacyConsentMinorRefresh")}
+            </Button>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
+
+  if (state.kind === "minor") {
+    return (
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-lg p-6 space-y-5">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-semibold">{t("privacyConsentMinorTitle")}</h1>
+          </div>
+          <p className="text-sm leading-relaxed">
+            {fillPlaceholders(t("privacyConsentMinorBody"), vars)}
+          </p>
+
+          {renderGuardianPanel(state)}
 
 
           <p className="text-xs text-muted-foreground">

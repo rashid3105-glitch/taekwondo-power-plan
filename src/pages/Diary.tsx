@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { openHealthConsent } from "@/lib/healthConsent";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -509,7 +510,7 @@ export default function Diary() {
             {hasHealthConsent === false ? (
               <p className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
                 {t("diaryMoodNeedsConsent")}{" "}
-                <button type="button" onClick={() => navigate("/profile")} className="underline underline-offset-2 text-primary">
+                <button type="button" onClick={() => openHealthConsent(navigate)} className="underline underline-offset-2 text-primary">
                   {t("diaryMoodConsentLink")}
                 </button>
               </p>

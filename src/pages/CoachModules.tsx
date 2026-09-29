@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
+import { ClubMinorAccessSetting } from "@/components/coach/ClubMinorAccessSetting";
 
 interface AthleteOption { id: string; name: string; }
 type Tab = "club" | "athlete";
@@ -166,6 +167,7 @@ export default function CoachModules() {
 
       <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
         <LicenseFieldsSection coachId={coachId} />
+        <ClubMinorAccessSetting clubId={clubId} />
 
         {/* Tabs */}
         <div className="flex gap-1 p-1 rounded-xl bg-white/[0.03] border border-white/10">
