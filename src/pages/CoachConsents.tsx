@@ -27,6 +27,7 @@ type Row = {
   withdrawn_at: string | null;
   granted_by_email: string | null;
   granted_by_relation: "self" | "parent" | null;
+  needs_self_confirmation?: boolean;
   policy_version: string | null;
   is_minor: boolean;
   consent_age: number;
@@ -116,7 +117,7 @@ export default function CoachConsents() {
       // Consent records for the club
       const { data: consents } = await supabase
         .from("consent_records")
-        .select("athlete_id,status,granted_at,withdrawn_at,granted_by_email,granted_by_relation,policy_version")
+        .select("athlete_id,status,granted_at,withdrawn_at,granted_by_email,granted_by_relation,policy_version,needs_self_confirmation")
         .eq("club_id", activeClubId)
         .eq("consent_type", "health_data_processing");
 
@@ -164,6 +165,7 @@ export default function CoachConsents() {
           granted_by_email: c?.granted_by_email ?? null,
           granted_by_relation: c?.granted_by_relation ?? null,
           policy_version: c?.policy_version ?? null,
+          needs_self_confirmation: c?.needs_self_confirmation === true,
           is_minor: isMinor,
           consent_age: threshold,
           age_known: verdict !== "unknown",
@@ -336,7 +338,14 @@ export default function CoachConsents() {
                     <TableCell title={r.policy_version ? `${t("consentPolicyVersion")}: ${r.policy_version}` : undefined}>
                       {fmtDate(r.granted_at, locale)}
                     </TableCell>
-                    <TableCell><StatusBadge s={r.status} /></TableCell>
+                    <TableCell>
+                      <div className="flex flex-col items-start gap-1">
+                        <StatusBadge s={r.status} />
+                        {r.status === "granted" && r.needs_self_confirmation && (
+                          <Badge variant="outline" className="text-xs">{t("consentsAwaitingAthleteConfirm")}</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">
                       {!r.age_known ? (
                         <div className="flex items-center gap-2 justify-end">
