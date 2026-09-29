@@ -3970,7 +3970,7 @@ const translations = {
     consentSelfConfirmGrant: "I give consent",
     consentSelfConfirmWithdraw: "Withdraw consent",
     consentSelfConfirmWithdrawn: "Consent withdrawn. Your health data will be deleted in 30 days.",
-    consentsAwaitingAthleteConfirm: "Awaiting athlete"s confirmation",
+    consentsAwaitingAthleteConfirm: "Awaiting athlete’s confirmation",
     consentsStatusGranted: "Granted",
     consentsStatusWithdrawn: "Withdrawn",
     consentsStatusMissing: "Missing",
