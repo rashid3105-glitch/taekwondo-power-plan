@@ -1213,6 +1213,33 @@ export type Database = {
           },
         ]
       }
+      club_termination_purge_audit: {
+        Row: {
+          club_id: string
+          created_at: string
+          health_data_purged: boolean
+          id: string
+          table_counts: Json
+          warning_sent: boolean
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          health_data_purged?: boolean
+          id?: string
+          table_counts?: Json
+          warning_sent?: boolean
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          health_data_purged?: boolean
+          id?: string
+          table_counts?: Json
+          warning_sent?: boolean
+        }
+        Relationships: []
+      }
       club_week_technique_focus: {
         Row: {
           coach_note: string | null
