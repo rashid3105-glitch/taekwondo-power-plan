@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
 
       const { data: tokens } = await admin
         .from("consent_tokens")
-        .select("athlete_id, parent_email, expires_at, created_at")
+        .select("id, athlete_id, parent_email, expires_at, created_at")
         .eq("consent_type", "health_data_processing")
         .in("athlete_id", minorIds)
         .order("created_at", { ascending: false });
@@ -181,9 +181,17 @@ Deno.serve(async (req) => {
         if (!latestTokenByAthlete.has(t.athlete_id)) latestTokenByAthlete.set(t.athlete_id, t);
       }
 
+      const { data: rejEvents } = await admin
+        .from("consent_token_events")
+        .select("token_id")
+        .eq("event", "not_my_child")
+        .in("athlete_id", minorIds);
+      const rejectedTokenIds = new Set((rejEvents || []).map((e: any) => e.token_id));
+
       return minorProfiles.map((p: any) => {
         const c = consentByAthlete.get(p.user_id);
         const tok = latestTokenByAthlete.get(p.user_id);
+        const rejected = !!tok && rejectedTokenIds.has(tok.id);
         return {
           athlete_id: p.user_id,
           display_name: p.display_name || "",
@@ -192,8 +200,9 @@ Deno.serve(async (req) => {
           club_id: p.club_id,
           status: c?.status || "none",
           grace_until: c?.grace_until || null,
-          parent_email_on_token: tok?.parent_email || null,
-          parent_email_missing: !!c?.parent_email_missing,
+          parent_email_on_token: rejected ? null : (tok?.parent_email || null),
+          parent_email_rejected: rejected,
+          parent_email_missing: rejected || !!c?.parent_email_missing,
         };
       });
     }

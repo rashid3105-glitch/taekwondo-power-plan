@@ -35,6 +35,7 @@ type Row = {
   birth_date: string | null;
   parent_email_on_token: string | null;
   parent_email_missing: boolean;
+  parent_email_rejected: boolean;
 };
 
 
@@ -80,7 +81,7 @@ export default function CoachConsents() {
     }
     toast.success(t("consentParentRequestSent"));
     setRows((rs) => rs.map((r) =>
-      r.athlete_id === row.athlete_id ? { ...r, parent_email_on_token: email } : r,
+      r.athlete_id === row.athlete_id ? { ...r, parent_email_on_token: email, parent_email_rejected: false, parent_email_missing: false } : r,
     ));
     setEmailDrafts((d) => ({ ...d, [row.athlete_id]: "" }));
   }
@@ -127,6 +128,7 @@ export default function CoachConsents() {
       // Parent-email hints from previously issued consent tokens (minor athletes)
       const parentEmailByAthlete = new Map<string, string>();
       const parentEmailMissing = new Set<string>();
+      const parentEmailRejected = new Set<string>();
       try {
         const { data: missingData } = await supabase.functions.invoke("consent-coach-actions", {
           body: { action: "list_missing", club_id: activeClubId },
@@ -135,6 +137,7 @@ export default function CoachConsents() {
         for (const m of missing) {
           if (m.parent_email_on_token) parentEmailByAthlete.set(m.athlete_id, m.parent_email_on_token);
             if (m.parent_email_missing) parentEmailMissing.add(m.athlete_id);
+          if (m.parent_email_rejected) parentEmailRejected.add(m.athlete_id);
         }
       } catch { /* non-fatal */ }
 
@@ -172,6 +175,7 @@ export default function CoachConsents() {
           birth_date: m.birth_date ?? null,
           parent_email_on_token: parentEmailByAthlete.get(m.user_id) ?? null,
           parent_email_missing: parentEmailMissing.has(m.user_id),
+          parent_email_rejected: parentEmailRejected.has(m.user_id),
         };
       });
 
@@ -364,7 +368,11 @@ export default function CoachConsents() {
                         </div>
                       ) : r.is_minor ? (
                         <div className="flex items-center gap-2 justify-end">
-                          {r.parent_email_missing && !r.parent_email_on_token && (
+                          {r.parent_email_rejected ? (
+                            <span className="text-[11px] text-destructive whitespace-nowrap">
+                              {t("consentsParentRejected")}
+                            </span>
+                          ) : r.parent_email_missing && !r.parent_email_on_token && (
                             <span className="text-[11px] text-destructive whitespace-nowrap">
                               {t("consentsParentEmailMissing")}
                             </span>

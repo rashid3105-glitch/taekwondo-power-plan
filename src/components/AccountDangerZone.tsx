@@ -147,6 +147,7 @@ export function AccountDangerZone() {
                 </AlertDialogTitle>
                 <AlertDialogDescription className="space-y-3">
                   <span className="block">{t("leftClubConfirmDesc")}</span>
+                  <span className="block font-semibold">{t("leftClubConfirmStopsSync")}</span>
                   <span className="block font-bold text-destructive">{t("deleteAccountIrreversible")}</span>
                   <span className="block text-sm">{t("deleteAccountExportFirst")}</span>
                 </AlertDialogDescription>
