@@ -9,7 +9,7 @@ const SITE_NAME = "SPORTSTALENT"
 type Locale = 'en' | 'da' | 'sv' | 'de' | 'ar' | 'no' | 'es'
 
 interface Props {
-  /** 'account' | 'video' | 'club' | 'health_data' */
+  /** 'account' | 'video' | 'club' | 'health_data' | 'club_athlete' */
   kind?: string
   recipientName?: string
   /** Title of the video, or name of the club — empty for accounts. */
@@ -44,6 +44,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `The video recording "${t}" reaches our 24-month retention limit and will be deleted on ${d}, including tags, notes and drawings.`,
     club: (c, d) => `The licence for ${c} has ended. Under our retention schedule the club's athlete data will be deleted on ${d}. Export what you need before that date.`,
     health: (d) => `Your club membership has ended. Under our retention schedule your diary, reflections and health data will be deleted on ${d}.`,
+    clubAthlete: (c, d) => `The licence for ${c} has ended. On ${d} the club's data about you will be deleted: coach comments, club plans and assignments, attendance and team memberships. Your health data (wearables, readiness, weight, mood/energy, mental assessments) will also be deleted, unless you are active in another club. Your account is kept — including your own diary text, test results and personal plans — so you can join a new club.`,
     exportCta: 'Sign in to download your data before that date — the export requires your login, so no one else can access it:',
     keep: 'Simply sign in before that date if you want to keep the data — signing in resets the deadline.',
     footer: 'This is an automated message about data retention.',
@@ -57,6 +58,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `Videooptagelsen "${t}" når vores grænse på 24 måneder og slettes den ${d} — inklusive tags, noter og tegninger.`,
     club: (c, d) => `Licensen for ${c} er ophørt. Efter vores slettefrister slettes klubbens atletdata den ${d}. Eksportér det, du skal bruge, inden da.`,
     health: (d) => `Dit klubmedlemskab er afsluttet. Efter vores slettefrister slettes din dagbog, dine refleksioner og dine helbredsdata den ${d}.`,
+    clubAthlete: (c, d) => `Licensen for ${c} er ophørt. Den ${d} slettes klubbens data om dig: trænerkommentarer, klubbens planer og tildelinger, fremmøde og holdmedlemskaber. Dine helbredsdata (wearables, readiness, vægt, humør/energi, mentale vurderinger) slettes også, medmindre du er aktiv i en anden klub. Din konto bevares — også din egen dagbogstekst, dine testresultater og personlige planer — så du kan meldes ind i en ny klub.`,
     exportCta: 'Log ind og hent dine data inden da — eksporten kræver dit login, så ingen andre kan hente dem:',
     keep: 'Log blot ind inden da, hvis du vil beholde dine data — et login nulstiller fristen.',
     footer: 'Dette er en automatisk besked om opbevaringsfrister.',
@@ -70,6 +72,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `Videoinspelningen "${t}" når vår gräns på 24 månader och raderas den ${d} — inklusive taggar, anteckningar och ritningar.`,
     club: (c, d) => `Licensen för ${c} har upphört. Enligt våra lagringstider raderas klubbens atletuppgifter den ${d}. Exportera det du behöver innan dess.`,
     health: (d) => `Ditt klubbmedlemskap har avslutats. Enligt våra lagringstider raderas din dagbok, dina reflektioner och dina hälsouppgifter den ${d}.`,
+    clubAthlete: (c, d) => `Licensen för ${c} har upphört. Den ${d} raderas klubbens uppgifter om dig: tränarkommentarer, klubbens planer och tilldelningar, närvaro och lagmedlemskap. Dina hälsouppgifter (wearables, readiness, vikt, humör/energi, mentala bedömningar) raderas också, om du inte är aktiv i en annan klubb. Ditt konto behålls — även din egen dagbokstext, dina testresultat och personliga planer — så att du kan gå med i en ny klubb.`,
     exportCta: 'Logga in och hämta dina uppgifter innan dess — exporten kräver din inloggning, så ingen annan kommer åt dem:',
     keep: 'Logga bara in innan dess om du vill behålla uppgifterna — en inloggning nollställer fristen.',
     footer: 'Detta är ett automatiskt meddelande om lagringstider.',
@@ -83,6 +86,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `Die Videoaufnahme „${t}" erreicht unsere Grenze von 24 Monaten und wird am ${d} gelöscht — einschließlich Tags, Notizen und Zeichnungen.`,
     club: (c, d) => `Die Lizenz für ${c} ist beendet. Nach unseren Löschfristen werden die Athletendaten des Vereins am ${d} gelöscht. Exportieren Sie vorher, was Sie benötigen.`,
     health: (d) => `Ihre Vereinsmitgliedschaft ist beendet. Nach unseren Löschfristen werden Ihr Tagebuch, Ihre Reflexionen und Ihre Gesundheitsdaten am ${d} gelöscht.`,
+    clubAthlete: (c, d) => `Die Lizenz für ${c} ist beendet. Am ${d} werden die Daten des Vereins über Sie gelöscht: Trainerkommentare, Vereinspläne und Zuweisungen, Anwesenheit und Teammitgliedschaften. Ihre Gesundheitsdaten (Wearables, Readiness, Gewicht, Stimmung/Energie, mentale Bewertungen) werden ebenfalls gelöscht, sofern Sie nicht in einem anderen Verein aktiv sind. Ihr Konto bleibt bestehen — einschließlich Ihres eigenen Tagebuchtexts, Ihrer Testergebnisse und persönlichen Pläne —, sodass Sie einem neuen Verein beitreten können.`,
     exportCta: 'Melden Sie sich vorher an und laden Sie Ihre Daten herunter — der Export erfordert Ihre Anmeldung, sodass niemand sonst darauf zugreifen kann:',
     keep: 'Melden Sie sich einfach vorher an, wenn Sie die Daten behalten möchten — eine Anmeldung setzt die Frist zurück.',
     footer: 'Dies ist eine automatische Nachricht zu Aufbewahrungsfristen.',
@@ -96,6 +100,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `التسجيل المصوّر "${t}" بلغ حد الاحتفاظ البالغ 24 شهرًا وسيُحذف في ${d}، بما في ذلك الوسوم والملاحظات والرسومات.`,
     club: (c, d) => `انتهى ترخيص ${c}. وفقًا لمدد الاحتفاظ لدينا ستُحذف بيانات رياضيي النادي في ${d}. صدّر ما تحتاجه قبل ذلك التاريخ.`,
     health: (d) => `انتهت عضويتك في النادي. وفقًا لمدد الاحتفاظ لدينا ستُحذف مذكراتك وتأملاتك وبياناتك الصحية في ${d}.`,
+    clubAthlete: (c, d) => `انتهى ترخيص ${c}. في ${d} ستُحذف بيانات النادي عنك: تعليقات المدربين وخطط النادي والتكليفات والحضور وعضويات الفرق. كما ستُحذف بياناتك الصحية (الأجهزة القابلة للارتداء والجاهزية والوزن والمزاج/الطاقة والتقييمات الذهنية) ما لم تكن نشطًا في نادٍ آخر. يبقى حسابك — بما في ذلك نص مذكراتك ونتائج اختباراتك وخططك الشخصية — لتتمكن من الانضمام إلى نادٍ جديد.`,
     exportCta: 'سجّل الدخول ونزّل بياناتك قبل ذلك التاريخ — يتطلب التصدير تسجيل دخولك، فلا يمكن لأحد غيرك الوصول إليها:',
     keep: 'يكفي تسجيل الدخول قبل ذلك التاريخ إذا أردت الاحتفاظ بالبيانات — تسجيل الدخول يعيد ضبط المهلة.',
     footer: 'هذه رسالة تلقائية بشأن مدد الاحتفاظ بالبيانات.',
@@ -109,6 +114,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `Videoopptaket "${t}" når grensen vår på 24 måneder og slettes ${d} — inkludert tagger, notater og tegninger.`,
     club: (c, d) => `Lisensen for ${c} er avsluttet. Etter våre slettefrister slettes klubbens utøverdata ${d}. Eksportér det du trenger før den datoen.`,
     health: (d) => `Klubbmedlemskapet ditt er avsluttet. Etter våre slettefrister slettes dagboken din, refleksjonene dine og helsedataene dine ${d}.`,
+    clubAthlete: (c, d) => `Lisensen for ${c} er avsluttet. ${d} slettes klubbens data om deg: trenerkommentarer, klubbens planer og tildelinger, oppmøte og lagmedlemskap. Helsedataene dine (wearables, readiness, vekt, humør/energi, mentale vurderinger) slettes også, med mindre du er aktiv i en annen klubb. Kontoen din beholdes — også din egen dagboktekst, testresultater og personlige planer — slik at du kan meldes inn i en ny klubb.`,
     exportCta: 'Logg inn og last ned dataene dine før den datoen — eksporten krever innlogging, så ingen andre får tilgang:',
     keep: 'Logg bare inn før den datoen hvis du vil beholde dataene — en innlogging nullstiller fristen.',
     footer: 'Dette er en automatisk melding om lagringsfrister.',
@@ -122,6 +128,7 @@ const COPY: Record<Locale, {
     video: (t, d) => `La grabación de vídeo "${t}" alcanza nuestro límite de 24 meses y se eliminará el ${d}, incluidas las etiquetas, las notas y los dibujos.`,
     club: (c, d) => `La licencia de ${c} ha finalizado. Según nuestros plazos de conservación, los datos de los deportistas del club se eliminarán el ${d}. Exporte lo que necesite antes de esa fecha.`,
     health: (d) => `Su membresía del club ha finalizado. Según nuestros plazos de conservación, su diario, sus reflexiones y sus datos de salud se eliminarán el ${d}.`,
+    clubAthlete: (c, d) => `La licencia de ${c} ha finalizado. El ${d} se eliminarán los datos del club sobre usted: comentarios de entrenadores, planes y asignaciones del club, asistencia y membresías de equipo. Sus datos de salud (wearables, readiness, peso, estado de ánimo/energía, evaluaciones mentales) también se eliminarán, salvo que esté activo en otro club. Su cuenta se conserva, incluido el texto de su diario, sus resultados de pruebas y sus planes personales, para que pueda unirse a un nuevo club.`,
     exportCta: 'Inicie sesión y descargue sus datos antes de esa fecha: la exportación requiere su inicio de sesión, por lo que nadie más puede acceder a ellos:',
     keep: 'Basta con iniciar sesión antes de esa fecha si desea conservar los datos: el inicio de sesión reinicia el plazo.',
     footer: 'Este es un mensaje automático sobre los plazos de conservación.',
@@ -138,6 +145,7 @@ const RetentionDeletionWarningEmail = ({
   const c = COPY[locale] ?? COPY.da
   const bodyText =
     kind === 'health_data' ? c.health(deleteOn)
+    : kind === 'club_athlete' ? c.clubAthlete(subjectLabel, deleteOn)
     : kind === 'video' ? c.video(subjectLabel, deleteOn)
     : kind === 'club' ? c.club(subjectLabel, deleteOn)
     : c.account(deleteOn)
@@ -154,7 +162,7 @@ const RetentionDeletionWarningEmail = ({
           <Text style={text}>{c.hi(recipientName || SITE_NAME)}</Text>
           <Text style={text}>{bodyText}</Text>
           {kind === 'account' && <Text style={text}>{c.keep}</Text>}
-          {kind === 'health_data' && (
+          {(kind === 'health_data' || kind === 'club_athlete') && (
             <>
               <Text style={text}>{c.exportCta}</Text>
               <Text style={text}><a href={loginUrl} style={link}>{loginUrl}</a></Text>

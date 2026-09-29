@@ -116,7 +116,13 @@ export async function purgeUser(admin: any, uid: string): Promise<PurgeResult> {
  * Covers both structured health tables and free-text that can carry health details
  * (diary, reflections, coach feedback).
  */
-export async function purgeHealthData(admin: any, uid: string): Promise<{ deleted_rows: number; errors: string[] }> {
+export async function purgeHealthData(
+  admin: any,
+  uid: string,
+  opts: { preserveHistory?: boolean; counts?: Record<string, number> } = {},
+): Promise<{ deleted_rows: number; errors: string[] }> {
+  const preserve = !!opts.preserveHistory;
+  const counts = opts.counts ?? {};
   const HEALTH_TABLES: Array<{ table: string; column: string }> = [
     { table: "health_data", column: "user_id" },
     { table: "wearable_samples", column: "user_id" },
@@ -130,7 +136,8 @@ export async function purgeHealthData(admin: any, uid: string): Promise<{ delete
     { table: "weight_logs", column: "user_id" },
     { table: "weight_goals", column: "user_id" },
     { table: "supplement_checks", column: "user_id" },
-    { table: "physical_test_results", column: "user_id" },
+    // Own test results are the athlete's history — kept when preserveHistory.
+    ...(preserve ? [] : [{ table: "physical_test_results", column: "user_id" }]),
     { table: "form_curve_weekly", column: "user_id" },
     // Free text that can contain health information about the athlete.
     // coach_reflection_comments / workout_log_feedback both carry coach_id and
@@ -141,27 +148,41 @@ export async function purgeHealthData(admin: any, uid: string): Promise<{ delete
     { table: "competition_reflections", column: "user_id" },
     { table: "coach_reflection_comments", column: "athlete_id" },
     { table: "workout_log_feedback", column: "athlete_id" },
-
   ];
   let deleted_rows = 0;
   const errors: string[] = [];
 
-  // Diary comments first (children of the athlete's own diary entries), then the entries.
-  try {
-    const { data: entries } = await admin.from("diary_entries").select("id").eq("user_id", uid);
-    const entryIds = (entries ?? []).map((r: any) => r.id);
-    if (entryIds.length > 0) {
+  if (preserve) {
+    // Keep the athlete's own diary text; only clear mood/energy.
+    try {
       const { count, error } = await admin
-        .from("diary_comments").delete({ count: "exact" }).in("diary_entry_id", entryIds);
+        .from("diary_entries")
+        .update({ mood: null, energy: null }, { count: "exact" })
+        .eq("user_id", uid)
+        .or("mood.not.is.null,energy.not.is.null");
       if (error) throw error;
-      deleted_rows += count ?? 0;
+      counts["diary_entries.mood_energy_cleared"] = count ?? 0;
+    } catch {
+      errors.push("health:diary_mood_energy");
     }
-    const { count: entryCount, error: entryErr } = await admin
-      .from("diary_entries").delete({ count: "exact" }).eq("user_id", uid);
-    if (entryErr) throw entryErr;
-    deleted_rows += entryCount ?? 0;
-  } catch (e) {
-    errors.push("health:diary_entries");
+  } else {
+    // Diary comments first (children of the athlete's own diary entries), then the entries.
+    try {
+      const { data: entries } = await admin.from("diary_entries").select("id").eq("user_id", uid);
+      const entryIds = (entries ?? []).map((r: any) => r.id);
+      if (entryIds.length > 0) {
+        const { count, error } = await admin
+          .from("diary_comments").delete({ count: "exact" }).in("diary_entry_id", entryIds);
+        if (error) throw error;
+        deleted_rows += count ?? 0;
+      }
+      const { count: entryCount, error: entryErr } = await admin
+        .from("diary_entries").delete({ count: "exact" }).eq("user_id", uid);
+      if (entryErr) throw entryErr;
+      deleted_rows += entryCount ?? 0;
+    } catch (e) {
+      errors.push("health:diary_entries");
+    }
   }
 
   for (const { table, column } of HEALTH_TABLES) {
@@ -169,10 +190,106 @@ export async function purgeHealthData(admin: any, uid: string): Promise<{ delete
       const { count, error } = await admin.from(table).delete({ count: "exact" }).eq(column, uid);
       if (error) throw error;
       deleted_rows += count ?? 0;
+      counts[table] = (counts[table] ?? 0) + (count ?? 0);
     } catch (e) {
       errors.push(`health:${table}`);
     }
   }
   return { deleted_rows, errors };
 }
+
+/**
+ * Terminated club: removes the club's data about one athlete (and, if the athlete
+ * is not active in another club, their health data). The account, profile, own
+ * diary text, own test results and own personal plans are kept.
+ * Returns per-table counts only — no personal data.
+ */
+export async function purgeClubMembershipData(
+  admin: any,
+  uid: string,
+  clubId: string,
+): Promise<{ counts: Record<string, number>; health_purged: boolean; errors: string[] }> {
+  const counts: Record<string, number> = {};
+  const errors: string[] = [];
+
+  // 1) Coach comments from this club on the athlete's diary entries.
+  try {
+    const { data: entries } = await admin.from("diary_entries").select("id").eq("user_id", uid);
+    const ids = (entries ?? []).map((r: any) => r.id);
+    if (ids.length > 0) {
+      const { count, error } = await admin.from("diary_comments")
+        .delete({ count: "exact" }).eq("club_id", clubId).in("diary_entry_id", ids);
+      if (error) throw error;
+      counts["diary_comments"] = count ?? 0;
+    }
+  } catch { errors.push("club:diary_comments"); }
+
+  // 2) Club-owned rows about this athlete (club_id = terminated club).
+  const CLUB_TABLES: Array<{ table: string; column: string }> = [
+    { table: "coach_athletes", column: "athlete_id" },
+    { table: "coach_athlete_notes", column: "athlete_id" },
+    { table: "coach_messages", column: "athlete_id" },
+    { table: "coach_reflection_comments", column: "athlete_id" },
+    { table: "workout_log_feedback", column: "athlete_id" },
+    { table: "competition_reflection_requests", column: "athlete_id" },
+    { table: "event_reminders", column: "athlete_id" },
+    { table: "session_attendance", column: "athlete_id" },
+    { table: "athlete_modules", column: "athlete_id" },
+    { table: "athlete_module_overrides", column: "user_id" },
+    { table: "athlete_week_technique_focus", column: "athlete_id" },
+    { table: "compliance_alerts", column: "athlete_id" },
+  ];
+  for (const { table, column } of CLUB_TABLES) {
+    try {
+      const { count, error } = await admin.from(table)
+        .delete({ count: "exact" }).eq(column, uid).eq("club_id", clubId);
+      if (error) throw error;
+      counts[table] = count ?? 0;
+    } catch { errors.push(`club:${table}`); }
+  }
+
+  // 3) Team memberships and season-plan assignments in this club.
+  try {
+    const { data: teams } = await admin.from("club_teams").select("id").eq("club_id", clubId);
+    const teamIds = (teams ?? []).map((t: any) => t.id);
+    if (teamIds.length > 0) {
+      const { count, error } = await admin.from("club_team_members")
+        .delete({ count: "exact" }).eq("user_id", uid).in("team_id", teamIds);
+      if (error) throw error;
+      counts["club_team_members"] = count ?? 0;
+    }
+  } catch { errors.push("club:club_team_members"); }
+  try {
+    const { data: plans } = await admin.from("club_season_plans").select("id").eq("club_id", clubId);
+    const planIds = (plans ?? []).map((p: any) => p.id);
+    if (planIds.length > 0) {
+      const { count, error } = await admin.from("club_season_plan_visibility")
+        .delete({ count: "exact" }).eq("athlete_id", uid).in("season_plan_id", planIds);
+      if (error) throw error;
+      counts["club_season_plan_visibility"] = count ?? 0;
+    }
+  } catch { errors.push("club:club_season_plan_visibility"); }
+
+  // 4) Health data — only if the athlete is not active in another club.
+  let health_purged = false;
+  const { count: otherActive } = await admin.from("club_memberships")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", uid).eq("status", "active").neq("club_id", clubId);
+  if ((otherActive ?? 0) === 0) {
+    const res = await purgeHealthData(admin, uid, { preserveHistory: true, counts });
+    errors.push(...res.errors);
+    health_purged = true;
+  }
+
+  // 5) End the membership.
+  try {
+    const { error } = await admin.from("club_memberships")
+      .update({ status: "removed", ended_at: new Date().toISOString() })
+      .eq("user_id", uid).eq("club_id", clubId).neq("status", "removed");
+    if (error) throw error;
+  } catch { errors.push("club:membership"); }
+
+  return { counts, health_purged, errors };
+}
+
 

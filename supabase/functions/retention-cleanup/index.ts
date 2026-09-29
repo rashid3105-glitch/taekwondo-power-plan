@@ -6,7 +6,7 @@
 // Auth: service role key (called by pg_cron via pg_net) or a platform admin
 // JWT (manual run from the admin page).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { purgeUser, purgeHealthData } from "../_shared/purge-user.ts";
+import { purgeUser, purgeHealthData, purgeClubMembershipData } from "../_shared/purge-user.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const cors = {
@@ -332,7 +332,8 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
 
     // ------------------------------------------------------------------
     case "terminated_club_data": {
-      // Warning to club admins while the grace period runs.
+      // Warning to club admins AND to each athlete (+ parent of minors) while
+      // the grace period runs. The athlete account itself is never deleted here.
       if (policy.warn_days > 0) {
         const warnCutoff = daysAgo(policy.retention_days - policy.warn_days);
         const { data: warnClubs } = await admin
@@ -343,37 +344,54 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
           .gte("license_ended_at", cutoff)
           .limit(limit);
         for (const c of warnClubs ?? []) {
-          if (await alreadyNotified(admin, policy.category, c.id, "pre_delete")) continue;
-          const { data: admins } = await admin
-            .from("club_memberships")
-            .select("user_id")
-            .eq("club_id", c.id)
-            .eq("role_in_club", "admin")
-            .eq("status", "active");
-          if (policy.dry_run) { r.warned++; continue; }
-          let sent = false;
-          for (const a of admins ?? []) {
-            const email = await emailFor(admin, a.user_id);
-            if (!email) continue;
-            try {
-              await sendTemplateEmail("retention-deletion-warning", email, {
-                templateData: {
-                  kind: "club",
-                  recipientName: "",
-                  subjectLabel: c.name ?? "",
-                  deleteOn: dateIn(policy.warn_days),
-                  locale: "da",
-                },
-                idempotencyKey: `retention-club-${c.id}-${a.user_id}`,
-              });
-              sent = true;
-            } catch { r.errors.push("club_warn_email_failed"); }
+          const deleteOn = clubDeleteOn(c.license_ended_at, policy.retention_days);
+          if (!(await alreadyNotified(admin, policy.category, c.id, "pre_delete"))) {
+            const { data: admins } = await admin
+              .from("club_memberships")
+              .select("user_id")
+              .eq("club_id", c.id)
+              .eq("role_in_club", "admin")
+              .eq("status", "active");
+            if (policy.dry_run) { r.warned++; }
+            else {
+              let sent = false;
+              for (const a of admins ?? []) {
+                const email = await emailFor(admin, a.user_id);
+                if (!email) continue;
+                try {
+                  await sendTemplateEmail("retention-deletion-warning", email, {
+                    templateData: {
+                      kind: "club",
+                      recipientName: "",
+                      subjectLabel: c.name ?? "",
+                      deleteOn,
+                      locale: "da",
+                    },
+                    idempotencyKey: `retention-club-${c.id}-${a.user_id}`,
+                  });
+                  sent = true;
+                } catch { r.errors.push("club_warn_email_failed"); }
+              }
+              if (sent) {
+                await admin.from("retention_notices").insert({
+                  category: policy.category, subject_id: c.id, notice_type: "pre_delete",
+                });
+                r.warned++;
+              }
+            }
           }
-          if (sent) {
-            await admin.from("retention_notices").insert({
-              category: policy.category, subject_id: c.id, notice_type: "pre_delete",
-            });
-            r.warned++;
+
+          const { data: athletes } = await admin
+            .from("club_memberships")
+            .select("id, user_id")
+            .eq("club_id", c.id)
+            .eq("role_in_club", "athlete")
+            .neq("status", "removed")
+            .limit(limit);
+          for (const m of athletes ?? []) {
+            if (await alreadyNotified(admin, policy.category, m.id, "athlete_pre_delete")) continue;
+            if (policy.dry_run) { r.warned++; continue; }
+            await warnClubAthlete(admin, policy, r, c, m, deleteOn);
           }
         }
       }
@@ -388,16 +406,42 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
       for (const c of clubs ?? []) {
         const { data: members } = await admin
           .from("club_memberships")
-          .select("user_id, role_in_club")
+          .select("id, user_id, role_in_club, status")
           .eq("club_id", c.id)
+          .eq("role_in_club", "athlete")
+          .neq("status", "removed")
           .limit(limit);
         for (const m of members ?? []) {
-          if (m.role_in_club !== "athlete") continue;
           if (await isProtectedUser(admin, m.user_id)) continue;
+          // Never delete before the athlete warning has been attempted, and
+          // give late-warned athletes the full warning period.
+          if (policy.warn_days > 0) {
+            const { data: notice } = await admin
+              .from("retention_notices")
+              .select("sent_at, created_at")
+              .eq("category", policy.category)
+              .eq("subject_id", m.id)
+              .eq("notice_type", "athlete_pre_delete")
+              .maybeSingle();
+            if (!notice) {
+              if (!policy.dry_run) {
+                await warnClubAthlete(admin, policy, r, c, m, dateIn(policy.warn_days));
+              } else r.warned++;
+              continue;
+            }
+            const warnedAt = new Date(notice.sent_at ?? notice.created_at).getTime();
+            if (Date.now() - warnedAt < policy.warn_days * 86400_000) continue;
+          }
           r.candidates++;
           if (policy.dry_run) continue;
-          const res = await purgeUser(admin, m.user_id);
-          if (res.errors.length > 0) r.errors.push(`club_purge:${m.user_id.slice(0, 8)}`);
+          const res = await purgeClubMembershipData(admin, m.user_id, c.id);
+          if (res.errors.length > 0) r.errors.push(...res.errors.slice(0, 3));
+          await admin.from("club_termination_purge_audit").insert({
+            club_id: c.id,
+            health_data_purged: res.health_purged,
+            warning_sent: true,
+            table_counts: res.counts,
+          });
           r.processed++;
           if (r.processed >= limit) break;
         }
@@ -711,4 +755,71 @@ async function emailFor(admin: any, uid: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+function clubDeleteOn(endedAt: string, retentionDays: number): string {
+  return new Date(new Date(endedAt).getTime() + retentionDays * 86400_000).toISOString().slice(0, 10);
+}
+
+const LOCALES = ["en", "da", "sv", "de", "ar", "no", "es"];
+
+/** Recipients for a club-athlete warning: the athlete, plus parents if below consent age. */
+async function clubAthleteRecipients(admin: any, uid: string): Promise<string[]> {
+  const out = new Set<string>();
+  const own = await emailFor(admin, uid);
+  if (own) out.add(own.toLowerCase());
+  const { data: prof } = await admin.from("profiles")
+    .select("birth_date, parent_email, guardian_email").eq("user_id", uid).maybeSingle();
+  let minor = false;
+  if (prof?.birth_date) {
+    const { data: ca } = await admin.rpc("consent_age_for_athlete", { _athlete_id: uid });
+    const limit = typeof ca === "number" ? ca : 18;
+    const b = new Date(prof.birth_date); const n = new Date();
+    let age = n.getFullYear() - b.getFullYear();
+    const mo = n.getMonth() - b.getMonth();
+    if (mo < 0 || (mo === 0 && n.getDate() < b.getDate())) age--;
+    minor = age < limit;
+  }
+  if (!minor) return [...out];
+  for (const e of [prof?.parent_email, prof?.guardian_email]) {
+    if (e && String(e).trim()) out.add(String(e).trim().toLowerCase());
+  }
+  const { data: links } = await admin.from("parent_athletes").select("parent_user_id").eq("athlete_id", uid);
+  for (const l of links ?? []) {
+    const e = await emailFor(admin, l.parent_user_id);
+    if (e) out.add(e.toLowerCase());
+  }
+  const { data: tok } = await admin.from("consent_tokens").select("parent_email")
+    .eq("athlete_id", uid).not("parent_email", "is", null)
+    .order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (tok?.parent_email) out.add(String(tok.parent_email).trim().toLowerCase());
+  return [...out];
+}
+
+/** Sends the athlete (+parent) warning and records it. Recorded even with no email
+ *  (logged) — the club, as data controller, has been warned. */
+async function warnClubAthlete(admin: any, policy: Policy, r: CategoryResult, c: any, m: any, deleteOn: string) {
+  const { data: prof } = await admin.from("profiles")
+    .select("display_name, default_locale").eq("user_id", m.user_id).maybeSingle();
+  const locale = LOCALES.includes(prof?.default_locale) ? prof.default_locale : "da";
+  const recipients = await clubAthleteRecipients(admin, m.user_id);
+  if (recipients.length === 0) r.errors.push("club_athlete_no_email");
+  for (const email of recipients) {
+    try {
+      await sendTemplateEmail("retention-deletion-warning", email, {
+        templateData: {
+          kind: "club_athlete",
+          recipientName: prof?.display_name ?? "",
+          subjectLabel: c.name ?? "",
+          deleteOn,
+          locale,
+        },
+        idempotencyKey: `retention-club-athlete-${m.id}-${email}`,
+      });
+    } catch { r.errors.push("club_athlete_warn_email_failed"); }
+  }
+  await admin.from("retention_notices").insert({
+    category: policy.category, subject_id: m.id, notice_type: "athlete_pre_delete",
+  });
+  r.warned++;
 }
