@@ -98,7 +98,12 @@ async function collectMetrics(
         .lt("summary_date", end),
     ]);
 
-  const diaryRows = (diary.data as any[]) || [];
+  // mood/energy live in diary_entry_health; only used with health-data consent.
+  const { data: hasConsent } = await admin.rpc("has_health_consent", { _athlete: athleteId });
+  const diaryRows = ((diary.data as any[]) || []).map((d) => {
+    const h = Array.isArray(d.diary_entry_health) ? d.diary_entry_health[0] : d.diary_entry_health;
+    return { ...d, mood: hasConsent === true ? h?.mood ?? null : null, energy: hasConsent === true ? h?.energy ?? null : null };
+  });
   const workoutRows = ((workouts.data as any[]) || []).filter((w) => w.completed);
   const mentalRows = (mental.data as any[]) || [];
   const mentalPrevRow = ((mentalPrev.data as any[]) || [])[0] || null;
