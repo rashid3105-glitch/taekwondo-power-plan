@@ -25,3 +25,42 @@ export async function fetchOwnHealthConsent(userId: string): Promise<boolean> {
   if (error) return false;
   return data === true;
 }
+
+/**
+ * Writes the health part (mood/energy) of a diary entry to diary_entry_health.
+ * Separate from the diary text so the text always saves. Both null → row removed.
+ * An RLS/consent rejection is dropped (logged, no retry) and returns false.
+ */
+export async function saveDiaryHealth(
+  entryId: string,
+  userId: string,
+  mood: number | null | undefined,
+  energy: number | null | undefined,
+): Promise<boolean> {
+  const m = mood ?? null;
+  const e = energy ?? null;
+  try {
+    if (m == null && e == null) {
+      await supabase.from("diary_entry_health" as any).delete().eq("entry_id", entryId);
+      return true;
+    }
+    const { error } = await supabase
+      .from("diary_entry_health" as any)
+      .upsert({ entry_id: entryId, user_id: userId, mood: m, energy: e } as any, { onConflict: "entry_id" });
+    if (error) throw error;
+    return true;
+  } catch (err: any) {
+    const msg = `${err?.code ?? ""} ${err?.message ?? ""}`;
+    if (/42501|row-level security|consent/i.test(msg)) {
+      console.info("[diary] health part dropped: no health-data consent");
+      return false;
+    }
+    throw err;
+  }
+}
+
+/** Reads mood/energy from an embedded diary_entry_health relation. */
+export function healthFromEmbed(row: any): { mood: number | null; energy: number | null } {
+  const h = Array.isArray(row?.diary_entry_health) ? row.diary_entry_health[0] : row?.diary_entry_health;
+  return { mood: h?.mood ?? null, energy: h?.energy ?? null };
+}

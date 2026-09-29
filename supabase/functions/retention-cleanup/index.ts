@@ -624,17 +624,7 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
           await del("mental_assessments");
           await del("readiness_checkins");
           await del("weight_logs");
-          const moodFilter = (q: any) => q.or("mood.not.is.null,energy.not.is.null");
-          if (policy.dry_run) {
-            const { count } = await moodFilter(admin.from("diary_entries")
-              .select("id", { count: "exact", head: true }).eq("user_id", c.athlete_id));
-            counts["diary_entries.mood_energy"] = count ?? 0;
-          } else {
-            const { count, error } = await moodFilter(admin.from("diary_entries")
-              .update({ mood: null, energy: null }, { count: "exact" }).eq("user_id", c.athlete_id));
-            if (error) throw new Error("diary_entries_failed");
-            counts["diary_entries.mood_energy"] = count ?? 0;
-          }
+          await del("diary_entry_health");
           await admin.from("consent_withdrawal_purge_audit").insert({
             consent_record_id: c.id, dry_run: policy.dry_run, row_counts: counts,
           });

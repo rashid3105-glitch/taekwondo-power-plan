@@ -124,6 +124,7 @@ export async function purgeHealthData(
   const preserve = !!opts.preserveHistory;
   const counts = opts.counts ?? {};
   const HEALTH_TABLES: Array<{ table: string; column: string }> = [
+    { table: "diary_entry_health", column: "user_id" },
     { table: "health_data", column: "user_id" },
     { table: "wearable_samples", column: "user_id" },
     { table: "wearable_daily_summary", column: "user_id" },
@@ -153,17 +154,14 @@ export async function purgeHealthData(
   const errors: string[] = [];
 
   if (preserve) {
-    // Keep the athlete's own diary text; only clear mood/energy.
+    // Keep the athlete's own diary text; mood/energy live in diary_entry_health.
     try {
       const { count, error } = await admin
-        .from("diary_entries")
-        .update({ mood: null, energy: null }, { count: "exact" })
-        .eq("user_id", uid)
-        .or("mood.not.is.null,energy.not.is.null");
+        .from("diary_entry_health").delete({ count: "exact" }).eq("user_id", uid);
       if (error) throw error;
-      counts["diary_entries.mood_energy_cleared"] = count ?? 0;
+      counts["diary_entry_health"] = count ?? 0;
     } catch {
-      errors.push("health:diary_mood_energy");
+      errors.push("health:diary_entry_health");
     }
   } else {
     // Diary comments first (children of the athlete's own diary entries), then the entries.

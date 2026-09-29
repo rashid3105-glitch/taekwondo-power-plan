@@ -10,6 +10,7 @@ import {
   queueDiaryIntent,
   type DiaryOutboxIntent,
 } from "./diaryOfflineDB";
+import { saveDiaryHealth } from "./diaryHealth";
 
 export interface DiarySyncResult {
   flushed: number;
@@ -45,8 +46,6 @@ export async function syncDiary(): Promise<DiarySyncResult> {
               user_id: intent.user_id,
               entry_date: intent.entry_date,
               content: intent.content,
-              mood: intent.mood,
-              energy: intent.energy,
               tags: intent.tags,
               entry_type: intent.entry_type,
               entry_types: intent.entry_types ?? null,
@@ -61,14 +60,16 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             .single();
           if (error) throw error;
           const newId = (data as { id: string }).id;
+          // Text is saved; health part separately — dropped without retry if refused.
+          const healthOk = await saveDiaryHealth(newId, intent.user_id, intent.mood, intent.energy).catch(() => false);
           await deleteCachedEntry(intent.key);
           await putCachedEntry({
             id: newId,
             user_id: intent.user_id,
             entry_date: (data as any).entry_date,
             content: (data as any).content,
-            mood: (data as any).mood,
-            energy: (data as any).energy,
+            mood: healthOk ? intent.mood ?? null : null,
+            energy: healthOk ? intent.energy ?? null : null,
             tags: ((data as any).tags as string[]) || [],
             entry_type: ((data as any).entry_type as any) || "general",
             entry_types: ((data as any).entry_types as string[] | null) ?? null,
@@ -93,8 +94,6 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             .update({
               entry_date: intent.entry_date,
               content: intent.content,
-              mood: intent.mood,
-              energy: intent.energy,
               tags: intent.tags,
               entry_type: intent.entry_type,
               entry_types: intent.entry_types ?? null,
@@ -108,13 +107,14 @@ export async function syncDiary(): Promise<DiarySyncResult> {
             .select()
             .single();
           if (error) throw error;
+          const healthOk = await saveDiaryHealth(id, intent.user_id, intent.mood, intent.energy).catch(() => false);
           await putCachedEntry({
             id,
             user_id: intent.user_id,
             entry_date: (data as any).entry_date,
             content: (data as any).content,
-            mood: (data as any).mood,
-            energy: (data as any).energy,
+            mood: healthOk ? intent.mood ?? null : null,
+            energy: healthOk ? intent.energy ?? null : null,
             tags: ((data as any).tags as string[]) || [],
             entry_type: ((data as any).entry_type as any) || "general",
             entry_types: ((data as any).entry_types as string[] | null) ?? null,

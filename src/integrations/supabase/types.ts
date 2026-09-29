@@ -2057,13 +2057,11 @@ export type Database = {
           club_id: string | null
           content: string
           created_at: string
-          energy: number | null
           entry_date: string
           entry_type: string
           entry_types: string[] | null
           id: string
           is_private: boolean
-          mood: number | null
           run_calories: number | null
           run_distance_km: number | null
           run_duration_seconds: number | null
@@ -2076,13 +2074,11 @@ export type Database = {
           club_id?: string | null
           content?: string
           created_at?: string
-          energy?: number | null
           entry_date?: string
           entry_type?: string
           entry_types?: string[] | null
           id?: string
           is_private?: boolean
-          mood?: number | null
           run_calories?: number | null
           run_distance_km?: number | null
           run_duration_seconds?: number | null
@@ -2095,13 +2091,11 @@ export type Database = {
           club_id?: string | null
           content?: string
           created_at?: string
-          energy?: number | null
           entry_date?: string
           entry_type?: string
           entry_types?: string[] | null
           id?: string
           is_private?: boolean
-          mood?: number | null
           run_calories?: number | null
           run_distance_km?: number | null
           run_duration_seconds?: number | null
@@ -2116,6 +2110,41 @@ export type Database = {
             columns: ["club_id"]
             isOneToOne: false
             referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diary_entry_health: {
+        Row: {
+          created_at: string
+          energy: number | null
+          entry_id: string
+          mood: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          energy?: number | null
+          entry_id: string
+          mood?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          energy?: number | null
+          entry_id?: string
+          mood?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diary_entry_health_entry_id_fkey"
+            columns: ["entry_id"]
+            isOneToOne: true
+            referencedRelation: "diary_entries"
             referencedColumns: ["id"]
           },
         ]

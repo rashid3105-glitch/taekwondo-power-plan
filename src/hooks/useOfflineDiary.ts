@@ -3,6 +3,7 @@
 // the network is available.
 
 import { useCallback, useEffect, useState } from "react";
+import { healthFromEmbed } from "@/lib/diaryHealth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   listCachedEntries,
@@ -55,7 +56,7 @@ export function useOfflineDiary() {
     if (navigator.onLine) {
       const { data, error } = await supabase
         .from("diary_entries")
-        .select("*")
+        .select("*, diary_entry_health(mood, energy)")
         .eq("user_id", user.id)
         .order("entry_date", { ascending: false });
       if (!error && data) {
@@ -64,8 +65,8 @@ export function useOfflineDiary() {
           user_id: e.user_id,
           entry_date: e.entry_date,
           content: e.content,
-          mood: e.mood,
-          energy: e.energy,
+          mood: healthFromEmbed(e).mood,
+          energy: healthFromEmbed(e).energy,
           tags: (e.tags as string[]) || [],
           entry_type: (e.entry_type as DiaryEntryType) || "general",
           entry_types: (e.entry_types as string[] | null) ?? null,

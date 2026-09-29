@@ -24,6 +24,7 @@ const OWN_DATA: Array<{ table: string; column: string }> = [
   { table: "weight_logs", column: "user_id" },
   { table: "supplement_checks", column: "user_id" },
   { table: "diary_entries", column: "user_id" },
+  { table: "diary_entry_health", column: "user_id" },
   { table: "competition_reflections", column: "user_id" },
   { table: "competitions", column: "user_id" },
   { table: "season_plans", column: "user_id" },
