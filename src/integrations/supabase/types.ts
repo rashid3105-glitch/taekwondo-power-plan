@@ -1828,6 +1828,7 @@ export type Database = {
           health_data_delete_after: string | null
           health_data_purged_at: string | null
           id: string
+          needs_self_confirmation: boolean
           parent_email_missing: boolean
           parent_link_needed: boolean
           policy_version: string | null
@@ -1849,6 +1850,7 @@ export type Database = {
           health_data_delete_after?: string | null
           health_data_purged_at?: string | null
           id?: string
+          needs_self_confirmation?: boolean
           parent_email_missing?: boolean
           parent_link_needed?: boolean
           policy_version?: string | null
@@ -1870,6 +1872,7 @@ export type Database = {
           health_data_delete_after?: string | null
           health_data_purged_at?: string | null
           id?: string
+          needs_self_confirmation?: boolean
           parent_email_missing?: boolean
           parent_link_needed?: boolean
           policy_version?: string | null
@@ -5266,6 +5269,7 @@ export type Database = {
         Args: { _athlete: string }
         Returns: string
       }
+      recompute_consent_requirements_daily: { Args: never; Returns: number }
       recompute_wearable_summary: {
         Args: { _from: string; _to: string; _user_id: string }
         Returns: undefined
