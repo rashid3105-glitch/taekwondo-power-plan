@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { saveDiaryHealth } from "@/lib/diaryHealth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -538,15 +539,15 @@ export function MentalAssessment({ profile }: { profile: Profile | null }) {
           : "",
       ].filter(Boolean).join("\n");
 
-      const { error } = await supabase.from("diary_entries").insert({
+      const { data: inserted, error } = await supabase.from("diary_entries").insert({
         user_id: user.id,
         content,
-        mood: Math.round(totalScore / dimensions.length),
-        energy: Math.round(totalScore / dimensions.length),
         tags: ["mental-assessment"],
-      });
+      } as any).select("id").single();
 
       if (error) throw error;
+      const score = Math.round(totalScore / dimensions.length);
+      await saveDiaryHealth((inserted as any).id, user.id, score, score).catch(() => false);
       setDiarySaved(true);
       toast({ title: txt.savedToDiary });
     } catch (err: any) {

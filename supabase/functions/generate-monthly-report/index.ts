@@ -54,7 +54,7 @@ async function collectMetrics(
     await Promise.all([
       admin
         .from("diary_entries")
-        .select("id, entry_date, mood, energy, entry_type")
+        .select("id, entry_date, entry_type, diary_entry_health(mood, energy)")
         .eq("user_id", athleteId)
         .gte("entry_date", start)
         .lt("entry_date", end),
