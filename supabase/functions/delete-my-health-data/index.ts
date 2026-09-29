@@ -1,5 +1,6 @@
-// Lets an athlete whose club membership has ended delete their health data and
-// free-text entries immediately, instead of waiting for the retention deadline.
+// Lets an athlete whose club membership has ended delete their health data
+// immediately (own diary text and test results are kept — same scope as the
+// nightly left-club cleanup), instead of waiting for the retention deadline.
 // Same routine as the nightly cleanup — no separate deletion list.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
@@ -45,7 +46,7 @@ Deno.serve(async (req) => {
       .eq("status", "active");
     if ((count ?? 0) > 0) return jsonRes({ error: "still_active_member" }, 409);
 
-    const res = await purgeHealthData(admin, user.id);
+    const res = await purgeHealthData(admin, user.id, { preserveHistory: true });
     await admin.from("retention_notices").insert({
       category: "left_club_health_data",
       subject_id: user.id,
