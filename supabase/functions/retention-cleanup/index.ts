@@ -6,7 +6,7 @@
 // Auth: service role key (called by pg_cron via pg_net) or a platform admin
 // JWT (manual run from the admin page).
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { purgeUser, purgeHealthData, purgeClubMembershipData } from "../_shared/purge-user.ts";
+import { purgeUser, purgeClubMembershipData } from "../_shared/purge-user.ts";
 import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const cors = {
@@ -281,20 +281,24 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
           if (await hasActiveMembership(admin, m.user_id)) continue;
           if (await alreadyNotified(admin, policy.category, m.user_id, "pre_delete")) continue;
           if (policy.dry_run) { r.warned++; continue; }
-          const email = await emailFor(admin, m.user_id);
-          if (!email) continue;
           const { data: prof } = await admin
-            .from("profiles").select("display_name").eq("user_id", m.user_id).maybeSingle();
+            .from("profiles").select("display_name, default_locale").eq("user_id", m.user_id).maybeSingle();
+          const locale = LOCALES.includes(prof?.default_locale) ? prof.default_locale : "da";
+          // Athlete + parent(s) when below the country's consent age.
+          const recipients = await clubAthleteRecipients(admin, m.user_id);
+          if (recipients.length === 0) continue;
           try {
-            await sendTemplateEmail("retention-deletion-warning", email, {
-              templateData: {
-                kind: "health_data",
-                recipientName: prof?.display_name ?? "",
-                deleteOn: dateIn(policy.warn_days),
-                locale: "da",
-              },
-              idempotencyKey: `retention-health-${m.user_id}`,
-            });
+            for (const email of recipients) {
+              await sendTemplateEmail("retention-deletion-warning", email, {
+                templateData: {
+                  kind: "health_data",
+                  recipientName: prof?.display_name ?? "",
+                  deleteOn: dateIn(policy.warn_days),
+                  locale,
+                },
+                idempotencyKey: `retention-health-${m.user_id}-${email}`,
+              });
+            }
             await admin.from("retention_notices").insert({
               category: policy.category, subject_id: m.user_id, notice_type: "pre_delete",
             });
@@ -319,8 +323,23 @@ async function runCategory(admin: any, policy: Policy): Promise<CategoryResult> 
             !(await alreadyNotified(admin, policy.category, m.user_id, "pre_delete"))) continue;
         r.candidates++;
         if (policy.dry_run) continue;
-        const res = await purgeHealthData(admin, m.user_id);
-        if (res.errors.length > 0) r.errors.push(...res.errors.slice(0, 3));
+        // Same rule as terminated clubs: the athlete's history follows the athlete.
+        // Purge the left club's data about them (+ health data, since no active club);
+        // keep account, profile, own diary text, own test results and personal plans.
+        const { data: left } = await admin.from("club_memberships")
+          .select("club_id").eq("user_id", m.user_id).eq("status", "removed");
+        const clubIds = [...new Set((left ?? []).map((x: any) => x.club_id).filter(Boolean))];
+        for (const clubId of clubIds) {
+          const res = await purgeClubMembershipData(admin, m.user_id, clubId as string);
+          if (res.errors.length > 0) r.errors.push(...res.errors.slice(0, 3));
+          await admin.from("club_termination_purge_audit").insert({
+            club_id: clubId,
+            reason: "left_club",
+            health_data_purged: res.health_purged,
+            warning_sent: policy.warn_days > 0,
+            table_counts: res.counts,
+          });
+        }
         await admin.from("retention_notices").insert({
           category: policy.category, subject_id: m.user_id, notice_type: "purged",
         });
