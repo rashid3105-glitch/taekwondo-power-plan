@@ -637,3 +637,11 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
 @layer base {
   :root { --corner-red: 0 78% 52%; --corner-blue: 214 88% 52%; }
 }
+
+/* Match Analyzer lab: 3D spinning logo loader */
+@keyframes logo-spin-3d { 0% { transform: rotateY(0deg) rotateX(8deg); } 50% { transform: rotateY(180deg) rotateX(-8deg); } 100% { transform: rotateY(360deg) rotateX(8deg); } }
+@keyframes logo-glow { 0%,100% { opacity: .35; transform: scale(.9); } 50% { opacity: .8; transform: scale(1.1); } }
+.logo-3d-stage { perspective: 600px; }
+.logo-3d { animation: logo-spin-3d 2.4s cubic-bezier(.45,.05,.55,.95) infinite; transform-style: preserve-3d; filter: drop-shadow(0 12px 18px hsl(var(--primary) / .45)); }
+.logo-3d-glow { animation: logo-glow 2.4s ease-in-out infinite; background: radial-gradient(circle, hsl(var(--primary) / .5), transparent 70%); }
+@media (prefers-reduced-motion: reduce) { .logo-3d, .logo-3d-glow { animation-duration: 6s; } }
