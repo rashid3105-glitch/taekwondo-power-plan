@@ -328,7 +328,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
           <h1 className="font-black text-xl truncate">{match.title}: {match.red} vs {match.blue}</h1>
           <p className="text-xs text-muted-foreground">{match.date} · {match.weight}</p>
         </div>
-        {match.report && <Button variant="outline" className="h-11" onClick={() => exportPdf(match, t)}><FileDown className="h-4 w-4 me-1" />{t("exportPdf")}</Button>}
+        {match.report && <Button variant="outline" className="h-11 me-12" onClick={() => exportPdf(match, t)}><FileDown className="h-4 w-4 me-1" />{t("exportPdf")}</Button>}
       </div>
       {match.report && match.stale && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/50 bg-primary/10 p-3">
