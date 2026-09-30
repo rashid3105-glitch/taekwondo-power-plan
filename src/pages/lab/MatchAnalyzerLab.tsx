@@ -22,7 +22,7 @@ interface Match { id: string; title: string; red: string; blue: string; date: st
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
-  { id: "back", name: "Back Kick", kr: "Dwi Chagi", body: 3, head: 4 },
+  { id: "back", name: "Back Kick", kr: "Dwi Chagi", body: 4, head: 5 },
   { id: "spinhook", name: "Spin Hook", kr: "Dwi Huryeo", body: 4, head: 5 },
   { id: "axe", name: "Axe Kick", kr: "Naeryeo Chagi", body: 2, head: 3 },
   { id: "side", name: "Side Kick", kr: "Yeop Chagi", body: 2, head: 3 },
@@ -46,7 +46,7 @@ const DEMO_EVENTS: Ev[] = [
   { id: "d3", t: 34, corner: "red", tech: "spinhook", zone: "head", scored: false, pts: 0, round: 1 },
   { id: "d4", t: 47, corner: "red", tech: "roundhouse", zone: "body", scored: true, pts: 2, round: 1 },
   { id: "d5", t: 63, corner: "blue", tech: "axe", zone: "head", scored: false, pts: 0, round: 1 },
-  { id: "d6", t: 78, corner: "red", tech: "back", zone: "body", scored: true, pts: 3, round: 2 },
+  { id: "d6", t: 78, corner: "red", tech: "back", zone: "body", scored: true, pts: 4, round: 2 },
   { id: "d7", t: 92, corner: "blue", tech: "side", zone: "body", scored: true, pts: 2, round: 2 },
   { id: "d8", t: 105, corner: "red", tech: "crescent", zone: "body", scored: false, pts: 0, round: 2 },
   { id: "d9", t: 118, corner: "red", tech: "punch", zone: "body", scored: true, pts: 1, round: 2 },
