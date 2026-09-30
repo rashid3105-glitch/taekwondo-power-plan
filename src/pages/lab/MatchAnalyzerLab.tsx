@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import runnerIcon from "@/assets/runner-icon.png";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useMatchLabT } from "@/i18n/matchLab";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -72,10 +74,22 @@ export default function MatchAnalyzerLab() {
         {open ? (
           <Studio match={open} onBack={() => setOpenId(null)} onChange={update} />
         ) : (
-          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} />
+          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); return ms.filter((x) => x.id !== id); })} />
         )}
       </div>
       <NewMatchDialog open={newOpen} onOpenChange={setNewOpen} onCreate={(m) => { setMatches((ms) => [m, ...ms]); setOpenId(m.id); }} />
+    </div>
+  );
+}
+
+function LogoLoader({ label }: { label: string }) {
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-background/85 backdrop-blur-sm animate-fade-in" role="status" aria-live="polite">
+      <div className="logo-3d-stage relative h-32 w-32 flex items-center justify-center">
+        <div className="logo-3d-glow absolute inset-0 rounded-full" />
+        <img src={runnerIcon} alt="" className="logo-3d relative h-24 w-auto" />
+      </div>
+      <p className="text-sm font-semibold text-foreground">{label}</p>
     </div>
   );
 }
@@ -84,8 +98,10 @@ function score(events: Ev[], c: Corner) {
   return events.filter((e) => e.corner === c && e.scored).reduce((s, e) => s + e.pts, 0);
 }
 
-function Hub({ matches, onOpen, onNew, onBack }: { matches: Match[]; onOpen: (id: string) => void; onNew: () => void; onBack: () => void }) {
+function Hub({ matches, onOpen, onNew, onBack, onDelete }: { matches: Match[]; onOpen: (id: string) => void; onNew: () => void; onBack: () => void; onDelete: (id: string) => void }) {
   const t = useMatchLabT();
+  const [delId, setDelId] = useState<string | null>(null);
+  const delMatch = matches.find((m) => m.id === delId);
   const total = matches.reduce((s, m) => s + m.events.length, 0);
   const kpis = [
     [t("totalMatches"), matches.length], [t("inProgress"), matches.filter((m) => !!!m.report).length],
@@ -126,12 +142,24 @@ function Hub({ matches, onOpen, onNew, onBack }: { matches: Match[]; onOpen: (id
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>{m.date} · {m.weight} · {m.events.length} {t("techniquesLogged").toLowerCase()}</span>
-                <Button size="sm" variant="outline" onClick={() => onOpen(m.id)}>{t("open")}</Button>
+                <div className="flex gap-2 shrink-0"><Button size="icon" variant="ghost" className="h-9 w-9" title={t("delete")} aria-label={t("delete")} onClick={() => setDelId(m.id)}><Trash2 className="h-4 w-4" /></Button><Button size="sm" variant="outline" onClick={() => onOpen(m.id)}>{t("open")}</Button></div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+      <AlertDialog open={!!delId} onOpenChange={(o) => !o && setDelId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{delMatch ? `${delMatch.title}: ${delMatch.red} vs ${delMatch.blue}. ` : ""}{t("deleteDesc")}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (delId) onDelete(delId); setDelId(null); toast.success(t("deleted")); }}>{t("delete")}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
@@ -141,11 +169,27 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
   const [f, setF] = useState({ title: "", red: "", blue: "", date: new Date().toISOString().slice(0, 10), weight: WEIGHTS[3], rounds: 3 });
   const [file, setFile] = useState<File | null>(null);
   const ok = f.title && f.red && f.blue;
-  const submit = () => {
-    onCreate({ id: uid(), ...f, videoUrl: file ? URL.createObjectURL(file) : undefined, events: [], ai: false });
+  const [loading, setLoading] = useState(false);
+  const submit = async () => {
+    let videoUrl: string | undefined;
+    if (file) {
+      setLoading(true);
+      videoUrl = URL.createObjectURL(file);
+      const ok = await new Promise<boolean>((res) => {
+        const v = document.createElement("video"); v.preload = "metadata"; v.muted = true;
+        v.onloadeddata = () => res(true); v.onerror = () => res(false); v.src = videoUrl!;
+        setTimeout(() => res(true), 20000);
+      });
+      await new Promise((r) => setTimeout(r, 600));
+      setLoading(false);
+      if (!ok) { URL.revokeObjectURL(videoUrl); toast.error(t("videoError")); return; }
+    }
+    onCreate({ id: uid(), ...f, videoUrl, events: [], ai: false });
     onOpenChange(false); setFile(null); setF({ ...f, title: "", red: "", blue: "" });
   };
   return (
+    <>
+    {loading && <LogoLoader label={t("uploading")} />}
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader><DialogTitle>{t("newAnalysis")}</DialogTitle></DialogHeader>
@@ -175,10 +219,11 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>{t("cancel")}</Button>
-          <Button disabled={!ok} onClick={submit}>{t("start")}</Button>
+          <Button disabled={!ok || loading} onClick={submit}>{t("start")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
 
@@ -193,6 +238,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
   const [cat, setCat] = useState<"kicks" | "punches">("kicks");
   const [note, setNote] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
+  const [stage, setStage] = useState<"frames" | "ai">("ai");
   const events = useMemo(() => [...match.events].sort((a, b) => a.t - b.t), [match.events]);
   const red = score(events, "red"), blue = score(events, "blue");
 
@@ -214,7 +260,9 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
   const runAi = async () => {
     setAnalyzing(true);
     try {
+      setStage("frames");
       const frames = match.videoUrl ? await extractFrames(match.videoUrl, 20) : [];
+      setStage("ai");
       const { data, error } = await supabase.functions.invoke("match-lab-analyze", {
         body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
       });
@@ -228,6 +276,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
 
   return (
     <>
+      {analyzing && <LogoLoader label={stage === "frames" ? t("stageFrames") : t("stageAi")} />}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft className="h-4 w-4 me-1" />{t("back")}</Button>
         <div className="min-w-0">
