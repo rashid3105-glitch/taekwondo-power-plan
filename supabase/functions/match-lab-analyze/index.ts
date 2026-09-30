@@ -28,7 +28,7 @@ const SHAPE = `Return ONLY one JSON object, no markdown:
  "detected": [{"t": seconds, "corner": "red"|"blue", "tech": one of [${TECHS}], "zone": "body"|"head", "scored": boolean, "confidence": 0-100}],
  "coaching": {"red": {"focus": ["#1", "#2", "#3"], "technique": {"name": "", "tips": ["","",""], "drills": ["","",""]}, "strategy": ["",""], "physical": ["",""], "mental": ["",""]}, "blue": {same}}
 }
-fightIq and mechanics describe the RED fighter. Only put events in "detected" that you can actually see in the frames and that are NOT already in the tagged list; use the frame timestamps. If frames are missing or unclear, base the analysis on the tagged events, keep "detected" empty, and lower confidence. Never invent certainty.`;
+fightIq and mechanics describe the RED fighter. Put events in "detected" that you can see in the frames and that are NOT already in the tagged list; use the frame timestamps. Also: if a scoreboard is visible and a score changes between two frames, add one detected event at the later frame for the corner that gained points, choosing the technique/zone that matches the point difference (1 punch, 2 body kick, 3 head kick, 4 turning body, 5 turning head) with confidence at most 40. A kick in progress or a clear attack also counts, with scored=false if no score change follows. If frames are missing or unclear, base the analysis on the tagged events, keep "detected" empty, and lower confidence. Never invent certainty.`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     if (raw.length > 6_000_000) return json({ error: "too_large" }, 400);
     const body = JSON.parse(raw);
     const frames: { t: number; data: string }[] = (Array.isArray(body.frames) ? body.frames : [])
-      .slice(0, 24).filter((f: any) => typeof f?.data === "string" && f.data.startsWith("data:image/jpeg;base64,"));
+      .slice(0, 48).filter((f: any) => typeof f?.data === "string" && f.data.startsWith("data:image/jpeg;base64,"));
     const events = (Array.isArray(body.events) ? body.events : []).slice(0, 300).map((e: any) => ({
       t: Number(e.t) || 0, corner: e.corner === "blue" ? "blue" : "red", tech: sanitizePromptText(e.tech, 30),
       zone: e.zone === "head" ? "head" : "body", scored: !!e.scored, pts: Number(e.pts) || 0, round: Number(e.round) || 1,
