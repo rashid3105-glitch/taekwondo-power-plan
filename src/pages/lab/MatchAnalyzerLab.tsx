@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Brain, Check, Pencil, Save, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
+import { ArrowLeft, Brain, Check, Pencil, Save, FileDown, RefreshCw, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
 interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string }
-interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean }
+interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean; stale?: boolean }
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
@@ -58,6 +58,19 @@ const DEMO_EVENTS: Ev[] = [
 
 const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: false };
 const LAB_KEY = "match_lab_matches_v1";
+
+// Videos stay on this device (IndexedDB), keyed by match id.
+const VDB = "match-lab-videos";
+function vdb(): Promise<IDBDatabase> {
+  return new Promise((res, rej) => { const r = indexedDB.open(VDB, 1); r.onupgradeneeded = () => r.result.createObjectStore("v"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+async function vop<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest): Promise<T> {
+  const db = await vdb();
+  return new Promise((res, rej) => { const q = fn(db.transaction("v", mode).objectStore("v")); q.onsuccess = () => res(q.result as T); q.onerror = () => rej(q.error); });
+}
+const saveVideo = (id: string, b: Blob) => vop<void>("readwrite", (s) => s.put(b, id));
+const loadVideo = (id: string) => vop<Blob | undefined>("readonly", (s) => s.get(id));
+const removeVideo = (id: string) => vop<void>("readwrite", (s) => s.delete(id)).catch(() => undefined);
 const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg)", "Light (-74kg)", "Welter (-80kg)", "Middle (-87kg)", "Heavy (+87kg)"];
 
 export default function MatchAnalyzerLab() {
@@ -72,7 +85,20 @@ export default function MatchAnalyzerLab() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
   const open = matches.find((m) => m.id === openId) || null;
-  const update = (m: Match) => setMatches((ms) => ms.map((x) => (x.id === m.id ? m : x)));
+  const update = (m: Match) => setMatches((ms) => ms.map((x) => {
+    if (x.id !== m.id) return x;
+    // Events changed after an analysis → mark the AI report as out of date.
+    const stale = m.report && x.events !== m.events ? true : m.stale;
+    return { ...m, stale };
+  }));
+  useEffect(() => {
+    let alive = true;
+    matches.filter((m) => !m.videoUrl).forEach(async (m) => {
+      try { const b = await loadVideo(m.id); if (b && alive) { const url = URL.createObjectURL(b); setMatches((ms) => ms.map((x) => (x.id === m.id && !x.videoUrl ? { ...x, videoUrl: url } : x))); } } catch { /* ignore */ }
+    });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-safe pb-safe">
@@ -81,7 +107,7 @@ export default function MatchAnalyzerLab() {
         {open ? (
           <Studio match={open} onBack={() => setOpenId(null)} onChange={update} />
         ) : (
-          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); return ms.filter((x) => x.id !== id); })} />
+          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); removeVideo(id); return ms.filter((x) => x.id !== id); })} />
         )}
       </div>
       <NewMatchDialog open={newOpen} onOpenChange={setNewOpen} onCreate={(m) => { setMatches((ms) => [m, ...ms]); setOpenId(m.id); }} />
@@ -191,7 +217,9 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
       setLoading(false);
       if (!ok) { URL.revokeObjectURL(videoUrl); toast.error(t("videoError")); return; }
     }
-    onCreate({ id: uid(), ...f, videoUrl, events: [], ai: false });
+    const id = uid();
+    if (file) { try { await saveVideo(id, file); toast.success(t("videoLocal")); } catch { /* quota: keep for this session only */ } }
+    onCreate({ id, ...f, videoUrl, events: [], ai: false });
     onOpenChange(false); setFile(null); setF({ ...f, title: "", red: "", blue: "" });
   };
   return (
@@ -274,23 +302,40 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
         body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
       });
       if (error || !data?.report) throw new Error(data?.error || "ai_error");
-      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed });
+      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed, edited: false, stale: false });
     } catch (e) {
       console.error(e); toast.error(t("aiError"));
     } finally { setAnalyzing(false); }
   };
   const list = cat === "kicks" ? KICKS : PUNCHES;
+  const [confirmOverwrite, setConfirmOverwrite] = useState(false);
+  const [editing, setEditing] = useState<Ev | null>(null);
+  const requestRun = () => (match.edited ? setConfirmOverwrite(true) : runAi());
 
   return (
     <>
       {analyzing && <LogoLoader label={stage === "frames" ? t("stageFrames") : t("stageAi")} />}
+      <AlertDialog open={confirmOverwrite} onOpenChange={setConfirmOverwrite}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("overwriteTitle")}</AlertDialogTitle><AlertDialogDescription>{t("overwriteDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => runAi()}>{t("overwrite")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <EditEventDialog ev={editing} rounds={match.rounds} onClose={() => setEditing(null)} onSave={(ev) => { onChange({ ...match, events: match.events.map((x) => (x.id === ev.id ? ev : x)) }); setEditing(null); }} />
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft className="h-4 w-4 me-1" />{t("back")}</Button>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="font-black text-xl truncate">{match.title}: {match.red} vs {match.blue}</h1>
           <p className="text-xs text-muted-foreground">{match.date} · {match.weight}</p>
         </div>
+        {match.report && <Button variant="outline" className="h-11 me-12" onClick={() => exportPdf(match, t)}><FileDown className="h-4 w-4 me-1" />{t("exportPdf")}</Button>}
       </div>
+      {match.report && match.stale && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-primary/50 bg-primary/10 p-3">
+          <p className="text-sm flex-1 min-w-[200px]">{t("stale")}</p>
+          <Button className="h-11" onClick={requestRun} disabled={analyzing}><RefreshCw className="h-4 w-4 me-1" />{t("updateAnalysis")}</Button>
+        </div>
+      )}
       <div className="grid lg:grid-cols-[1.3fr_1fr_0.8fr] gap-4">
         {/* Video + scoreboard */}
         <div className="space-y-3">
@@ -353,7 +398,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
             </div>
             <Input className="h-11" placeholder={t("note")} value={note} onChange={(e) => setNote(e.target.value)} />
           </TabsContent>
-          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onSave={(r) => { const clean = (sd?: Side) => sd && { ...sd, dominant: unlines(lines(sd.dominant)), strengths: unlines(lines(sd.strengths)), improve: unlines(lines(sd.improve)) }; onChange({ ...match, edited: true, report: { ...r, red: clean(r.red), blue: clean(r.blue) } }); }} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
+          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={requestRun} onSave={(r) => { const clean = (sd?: Side) => sd && { ...sd, dominant: unlines(lines(sd.dominant)), strengths: unlines(lines(sd.strengths)), improve: unlines(lines(sd.improve)) }; onChange({ ...match, edited: true, report: { ...r, red: clean(r.red), blue: clean(r.blue) } }); }} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
           <TabsContent value="stats"><StatsPanel match={match} events={events} /></TabsContent>
           <TabsContent value="coach"><CoachPanel match={match} /></TabsContent>
         </Tabs>
@@ -370,6 +415,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
                   <div className="text-xs text-muted-foreground">{fmt(e.t)} · {t("round")} {e.round} · {t(e.zone)}</div>
                 </div>
                 <Badge variant={e.scored ? "default" : "outline"}>{e.scored ? `+${e.pts}` : t("miss")}</Badge>
+                <Button size="icon" variant="ghost" className="h-8 w-8" title={t("editEvent")} aria-label={t("editEvent")} onClick={(x) => { x.stopPropagation(); setEditing(e); }}><Pencil className="h-4 w-4" /></Button>
                 <Button size="icon" variant="ghost" className="h-8 w-8" title="✕" onClick={(x) => { x.stopPropagation(); onChange({ ...match, events: match.events.filter((y) => y.id !== e.id) }); }}><Trash2 className="h-4 w-4" /></Button>
               </div>
             ))}
@@ -669,4 +715,103 @@ function CoachPanel({ match }: { match: Match }) {
       </Tabs>
     </div>
   );
+}
+
+function EditEventDialog({ ev, rounds, onClose, onSave }: { ev: Ev | null; rounds: number; onClose: () => void; onSave: (e: Ev) => void }) {
+  const t = useMatchLabT();
+  const [d, setD] = useState<Ev | null>(ev);
+  useEffect(() => setD(ev), [ev]);
+  if (!d) return null;
+  const k = ALL.find((x) => x.id === d.tech) ?? ALL[0];
+  const save = () => onSave({ ...d, pts: d.scored ? k[d.zone] : 0, round: Math.max(1, Math.min(rounds, d.round)) });
+  return (
+    <Dialog open={!!ev} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>{t("editEvent")}</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <Seg options={[["red", t("red")], ["blue", t("blue")]]} value={d.corner} onChange={(v) => setD({ ...d, corner: v as Corner })} colorFor={(v) => cc(v as Corner)} />
+          <select className="h-11 w-full rounded-md border bg-background px-2 text-sm" value={d.tech} onChange={(e) => setD({ ...d, tech: e.target.value })}>
+            {ALL.map((x) => <option key={x.id} value={x.id}>{x.name} · {x.kr}</option>)}
+          </select>
+          <Seg options={[["body", t("body")], ["head", t("head")]]} value={d.zone} onChange={(v) => setD({ ...d, zone: v as Zone })} />
+          <Seg options={[["1", t("scored")], ["0", t("miss")]]} value={d.scored ? "1" : "0"} onChange={(v) => setD({ ...d, scored: v === "1" })} />
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>{t("timeSec")}</Label><Input type="number" min={0} className="h-11" value={d.t} onChange={(e) => setD({ ...d, t: Math.max(0, Math.round(Number(e.target.value) || 0)) })} /></div>
+            <div><Label>{t("round")}</Label>
+              <select className="h-11 w-full rounded-md border bg-background px-2 text-sm" value={d.round} onChange={(e) => setD({ ...d, round: +e.target.value })}>
+                {Array.from({ length: rounds }, (_, i) => i + 1).map((r) => <option key={r} value={r}>{r}</option>)}
+              </select></div>
+          </div>
+          <p className="text-xs text-muted-foreground">{d.scored ? `+${k[d.zone]}` : t("miss")}</p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" className="h-11" onClick={onClose}>{t("cancel")}</Button>
+          <Button className="h-11" onClick={save}>{t("saveEvent")}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/** Build a text PDF of the saved analysis and share it (or download as fallback). */
+async function exportPdf(match: Match, t: (k: string) => string) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const W = 210, M = 15; let y = 18;
+  const need = (h: number) => { if (y + h > 280) { doc.addPage(); y = 18; } };
+  const text = (s: string, size = 10, bold = false, color: [number, number, number] = [30, 30, 30]) => {
+    doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(size); doc.setTextColor(...color);
+    for (const ln of doc.splitTextToSize(s, W - 2 * M) as string[]) { need(size * 0.5); doc.text(ln, M, y); y += size * 0.45; }
+    y += 1.5;
+  };
+  const head = (s: string) => { y += 3; text(s.toUpperCase(), 11, true, [180, 130, 20]); };
+  const list = (a?: string[]) => (a ?? []).forEach((x) => text(`•  ${x}`));
+  const r = match.report ?? {};
+  const red: [number, number, number] = [220, 40, 40], blue: [number, number, number] = [30, 110, 230];
+  text(t("pdfTitle"), 18, true);
+  text(`${match.title}: ${match.red} vs ${match.blue}`, 13, true);
+  text(`${match.date} · ${match.weight} · ${match.rounds} ${t("rounds")}`, 9, false, [110, 110, 110]);
+  text(`${match.red} ${score(match.events, "red")} – ${score(match.events, "blue")} ${match.blue}${r.winner ? `   ·   ${t("winner")}: ${r.winner === "red" ? match.red : match.blue}` : ""}`, 12, true);
+  if (match.edited) text(t("edited"), 9, false, [110, 110, 110]);
+  if (r.summary) { head(t("summary")); text(r.summary); }
+  (["red", "blue"] as Corner[]).forEach((c) => {
+    const sd = r[c]; if (!sd) return;
+    head(c === "red" ? match.red : match.blue);
+    if (sd.style) text(`${t("style")}: ${sd.style}`, 10, false, c === "red" ? red : blue);
+    if (sd.dominant?.length) text(`${t("dominant")}: ${sd.dominant.join(", ")}`);
+    if (sd.strengths?.length) { text(t("strengths"), 10, true); list(sd.strengths); }
+    if (sd.improve?.length) { text(t("improve"), 10, true); list(sd.improve); }
+  });
+  const iq = r.fightIq ?? {};
+  head(`${t("fightIq")} · ${n(iq.score)} (${match.red})`);
+  text(["distance", "timing", "adaptability", "setups", "defense", "pressure"].map((k) => `${t(k)} ${n(iq[k])}`).join("   ·   "));
+  const ring = r.ring ?? {};
+  head(t("ringControl"));
+  text(`${t("center")} ${n(ring.centerControlPct)}%  ·  ${t("reaction")} ${n(ring.reactionMs)} ms  ·  ${t("counterRate")} ${n(ring.counterRatePct)}%  ·  ${t("attacksMin")} ${ring.attacksPerMin ?? 0}`);
+  const mech = r.mechanics ?? {};
+  head(t("mechanics"));
+  text(["chamber", "pivot", "balance", "recovery", "hip", "flexibility"].map((k) => `${t(k)} ${n(mech[k])}/10`).join("   ·   "));
+  if (r.momentum?.length) { head(t("momentum")); r.momentum.forEach((m) => text(`${fmt(n(m.t))}  ${m.text}`)); }
+  (["red", "blue"] as Corner[]).forEach((c) => {
+    const cs = r.coaching?.[c]; if (!cs) return;
+    head(`${t("coaching")} · ${c === "red" ? match.red : match.blue}`);
+    if (cs.focus?.length) { text(t("focus"), 10, true); cs.focus.forEach((f, i) => text(`#${i + 1}  ${f}`)); }
+    if (cs.technique?.name) text(`${t("technique")}: ${cs.technique.name}`, 10, true);
+    if (cs.technique?.tips?.length) { text(t("tips"), 10, true); list(cs.technique.tips); }
+    if (cs.technique?.drills?.length) { text(t("drills"), 10, true); list(cs.technique.drills); }
+    if (cs.strategy?.length) { text(t("strategy"), 10, true); list(cs.strategy); }
+    if (cs.physical?.length) { text(t("physical"), 10, true); list(cs.physical); }
+    if (cs.mental?.length) { text(t("mental"), 10, true); list(cs.mental); }
+  });
+  head(t("pdfEvents"));
+  [...match.events].sort((a, b) => a.t - b.t).forEach((e) =>
+    text(`${fmt(e.t)}  R${e.round}  ${e.corner === "red" ? match.red : match.blue}  ${techName(e.tech)} (${t(e.zone)})  ${e.scored ? `+${e.pts}` : t("miss")}`, 9, false, e.corner === "red" ? red : blue));
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) { doc.setPage(i); doc.setFontSize(8); doc.setTextColor(140, 140, 140); doc.text(`${t("pdfFooter")} · ${i}/${pages}`, M, 290); }
+  const name = `${match.title || "match"}-${match.date}.pdf`.replace(/[^\w.-]+/g, "_");
+  const blob = doc.output("blob");
+  const file = new File([blob], name, { type: "application/pdf" });
+  const nav = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean };
+  if (nav.canShare?.({ files: [file] })) { try { await nav.share({ files: [file], title: name }); return; } catch { /* cancelled → download */ } }
+  doc.save(name);
 }
