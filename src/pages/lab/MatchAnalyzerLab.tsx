@@ -350,7 +350,114 @@ function Bar({ label, value, max = 100, suffix = "" }: { label: string; value: n
   );
 }
 
-__AI__
+type Side = { style?: string; dominant?: string[]; strengths?: string[]; improve?: string[] };
+type CoachSide = { focus?: string[]; technique?: { name?: string; tips?: string[]; drills?: string[] }; strategy?: string[]; physical?: string[]; mental?: string[] };
+interface Report {
+  winner?: Corner; summary?: string; red?: Side; blue?: Side;
+  fightIq?: Record<string, number>; ring?: { centerControlPct?: number; reactionMs?: number; counterRatePct?: number; attacksPerMin?: number };
+  momentum?: { t: number; corner: Corner; text: string }[]; mechanics?: Record<string, number>;
+  detected?: { t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; confidence?: number }[];
+  coaching?: { red?: CoachSide; blue?: CoachSide };
+}
+
+/** Grab evenly spaced, downscaled JPEG frames from a local video. */
+async function extractFrames(url: string, count: number): Promise<{ t: number; data: string }[]> {
+  const v = document.createElement("video");
+  v.src = url; v.muted = true; v.playsInline = true; v.preload = "auto";
+  await new Promise<void>((res, rej) => { v.onloadedmetadata = () => res(); v.onerror = () => rej(new Error("video")); });
+  const dur = v.duration || 0; if (!dur || !isFinite(dur)) return [];
+  const w = 480, h = Math.round((v.videoHeight / Math.max(1, v.videoWidth)) * w) || 270;
+  const c = document.createElement("canvas"); c.width = w; c.height = h; const ctx = c.getContext("2d")!;
+  const out: { t: number; data: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const t = (dur * (i + 0.5)) / count;
+    await new Promise<void>((res) => { v.onseeked = () => res(); v.currentTime = t; });
+    ctx.drawImage(v, 0, 0, w, h);
+    out.push({ t: Math.round(t), data: c.toDataURL("image/jpeg", 0.6) });
+  }
+  return out;
+}
+
+const n = (x: unknown, d = 0) => (typeof x === "number" && isFinite(x) ? Math.round(x) : d);
+
+function AiPanel({ match, analyzing, onRun, onApply }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void }) {
+  const t = useMatchLabT();
+  const r = match.report;
+  const runBtn = (
+    <Button className="h-11" onClick={onRun} disabled={analyzing}><Sparkles className="h-4 w-4 me-1" />{analyzing ? t("analyzing") : t("analyzeAi")}</Button>
+  );
+  if (!r) return (
+    <Card><CardContent className="p-6 text-center space-y-3">
+      <Sparkles className="h-8 w-8 mx-auto text-primary" />
+      {runBtn}
+      <p className="text-xs text-muted-foreground">{match.videoUrl ? t("aiReal") : t("aiNoVideo")}</p>
+    </CardContent></Card>
+  );
+  const iq = r.fightIq ?? {}; const ring = r.ring ?? {}; const mech = r.mechanics ?? {};
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">{t("framesUsed")}: {match.framesUsed ?? 0}</p>
+        <Button size="sm" variant="outline" onClick={onRun} disabled={analyzing}>{analyzing ? t("analyzing") : t("reanalyze")}</Button>
+      </div>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {r.summary && <p className="text-sm">{r.summary}</p>}
+          {(["red", "blue"] as Corner[]).map((c) => { const sd = r[c] ?? {}; return (
+            <div key={c} className="rounded-lg border p-3 space-y-2 border-s-4" style={{ borderInlineStartColor: cc(c) }}>
+              <div className="flex items-center justify-between">
+                <span className="font-bold" style={{ color: cc(c) }}>{c === "red" ? match.red : match.blue}</span>
+                {r.winner === c && <Badge>{t("winner")}</Badge>}
+              </div>
+              {sd.style && <p className="text-xs text-muted-foreground">{t("style")}: {sd.style}</p>}
+              <div className="flex flex-wrap gap-1">{(sd.dominant ?? []).map((x) => <Badge key={x} variant="secondary">{x}</Badge>)}</div>
+              <div className="text-xs space-y-1">
+                <div className="font-semibold">{t("strengths")}</div>
+                {(sd.strengths ?? []).map((k) => <div key={k} className="flex gap-1"><Check className="h-3 w-3 mt-0.5 shrink-0 text-primary" />{k}</div>)}
+                <div className="font-semibold pt-1">{t("improve")}</div>
+                {(sd.improve ?? []).map((k) => <div key={k} className="flex gap-1"><X className="h-3 w-3 mt-0.5 shrink-0 text-destructive" />{k}</div>)}
+              </div>
+            </div>
+          ); })}
+        </CardContent>
+      </Card>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Brain className="h-4 w-4" />{t("fightIq")} · {n(iq.score)} <span className="text-xs font-normal" style={{ color: RED }}>{match.red}</span></CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {["distance", "timing", "adaptability", "setups", "defense", "pressure"].map((k) => <Bar key={k} label={t(k)} value={n(iq[k])} />)}
+        </CardContent>
+      </Card>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("ringControl")}</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3 text-center">
+          {[[t("center"), `${n(ring.centerControlPct)}%`], [t("reaction"), `${n(ring.reactionMs)} ms`], [t("counterRate"), `${n(ring.counterRatePct)}%`], [t("attacksMin"), String(ring.attacksPerMin ?? 0)]].map(([l, v]) => (
+            <div key={l} className="rounded-md border p-2"><div className="text-lg font-black">{v}</div><div className="text-[11px] text-muted-foreground">{l}</div></div>
+          ))}
+        </CardContent>
+      </Card>
+      {(r.momentum ?? []).length > 0 && <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("momentum")}</CardTitle></CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          {(r.momentum ?? []).map((m, i) => (
+            <div key={i} className="flex gap-2"><span className="font-mono text-xs w-10 shrink-0" style={{ color: cc(m.corner === "blue" ? "blue" : "red") }}>{fmt(n(m.t))}</span>{m.text}</div>
+          ))}
+        </CardContent>
+      </Card>}
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("mechanics")}</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {["chamber", "pivot", "balance", "recovery", "hip", "flexibility"].map((k) => <Bar key={k} label={t(k)} value={n(mech[k])} max={10} suffix="/10" />)}
+        </CardContent>
+      </Card>
+      {(r.detected ?? []).length > 0 && <Card><CardHeader className="pb-2 flex-row items-center justify-between"><CardTitle className="text-base">{t("detected")}</CardTitle>
+        <Button size="sm" onClick={onApply}><Check className="h-4 w-4 me-1" />{t("applyAll")}</Button></CardHeader>
+        <CardContent className="space-y-2">
+          {(r.detected ?? []).map((e, i) => (
+            <div key={i} className="flex justify-between text-sm border-s-4 ps-2" style={{ borderInlineStartColor: cc(e.corner === "blue" ? "blue" : "red") }}>
+              <span>{fmt(n(e.t))} · {techName(e.tech)} · {t(e.zone === "head" ? "head" : "body")}</span><span className="text-muted-foreground">{n(e.confidence)}%</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>}
+    </div>
+  );
+}
 
 function StatsPanel({ match, events }: { match: Match; events: Ev[] }) {
   const t = useMatchLabT();
@@ -388,4 +495,37 @@ function StatsPanel({ match, events }: { match: Match; events: Ev[] }) {
   );
 }
 
-__COACH__
+function CoachPanel({ match }: { match: Match }) {
+  const t = useMatchLabT();
+  const [who, setWho] = useState<Corner>("red");
+  const cs = match.report?.coaching?.[who];
+  if (!cs) return <Card><CardContent className="p-6 text-sm text-muted-foreground text-center">{t("coachEmpty")}</CardContent></Card>;
+  const li = (xs?: string[]) => (xs ?? []).map((k) => <div key={k}>• {k}</div>);
+  return (
+    <div className="space-y-3">
+      <Seg options={[["red", match.red], ["blue", match.blue]]} value={who} onChange={(v) => setWho(v as Corner)} colorFor={(v) => cc(v as Corner)} />
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("focus")}</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {(cs.focus ?? []).slice(0, 3).map((k, i) => (
+            <div key={k} className="flex items-center gap-3 rounded-md border p-2"><span className="font-black text-primary">#{i + 1}</span><span className="text-sm">{k}</span></div>
+          ))}
+        </CardContent>
+      </Card>
+      <Tabs defaultValue="technique">
+        <TabsList className="grid grid-cols-4 w-full">
+          {["technique", "strategy", "physical", "mental"].map((k) => <TabsTrigger key={k} value={k} className="text-xs">{t(k)}</TabsTrigger>)}
+        </TabsList>
+        <TabsContent value="technique"><Card><CardContent className="p-4 text-sm space-y-2">
+          {cs.technique?.name && <div className="font-bold">{cs.technique.name}</div>}
+          <div className="font-semibold text-xs uppercase text-muted-foreground">{t("tips")}</div>
+          {li(cs.technique?.tips)}
+          <div className="font-semibold text-xs uppercase text-muted-foreground pt-2">{t("drills")}</div>
+          {li(cs.technique?.drills)}
+        </CardContent></Card></TabsContent>
+        {(["strategy", "physical", "mental"] as const).map((v) => (
+          <TabsContent key={v} value={v}><Card><CardContent className="p-4 text-sm space-y-2">{li(cs[v])}</CardContent></Card></TabsContent>
+        ))}
+      </Tabs>
+    </div>
+  );
+}
