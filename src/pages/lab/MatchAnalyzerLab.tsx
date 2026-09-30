@@ -308,9 +308,10 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
         const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body";
         return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1), src: "ai", conf: n(d.confidence) };
       });
-      const kept = match.events.filter((e) => e.src !== "ai");
-      onChange({ ...match, ai: true, events: [...kept, ...aiEvents], report: { ...rep, detected: [] }, framesUsed: data.framesUsed, edited: false, stale: false, savedAt: Date.now() });
-      if (aiEvents.length) toast.success(t("aiAdded")); else toast.info(t("aiNoEvents"));
+      // Never remove existing events on re-analysis — only add new ones that are not already there (same corner within 2 s).
+      const fresh = aiEvents.filter((a) => !match.events.some((e) => e.corner === a.corner && Math.abs(e.t - a.t) <= 2));
+      onChange({ ...match, ai: true, events: [...match.events, ...fresh], report: { ...rep, detected: [] }, framesUsed: data.framesUsed, edited: false, stale: false, savedAt: Date.now() });
+      if (fresh.length) toast.success(t("aiAdded")); else toast.info(t("aiNoEvents"));
     } catch (e) {
       console.error(e); toast.error(t("aiError"));
     } finally { setAnalyzing(false); }
