@@ -20,8 +20,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
-interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string }
-interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean; stale?: boolean }
+interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string; src?: "ai"; conf?: number }
+interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean; stale?: boolean; savedAt?: number }
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
@@ -88,7 +88,7 @@ export default function MatchAnalyzerLab() {
   const update = (m: Match) => setMatches((ms) => ms.map((x) => {
     if (x.id !== m.id) return x;
     // Events changed after an analysis → mark the AI report as out of date.
-    const stale = m.report && x.events !== m.events ? true : m.stale;
+    const stale = m.report && x.events !== m.events && m.report === x.report ? true : m.stale;
     return { ...m, stale };
   }));
   useEffect(() => {
@@ -296,13 +296,21 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
     setAnalyzing(true);
     try {
       setStage("frames");
-      const frames = match.videoUrl ? await extractFrames(match.videoUrl, 20) : [];
+      const frames = match.videoUrl ? await extractFrames(match.videoUrl, 40) : [];
       setStage("ai");
       const { data, error } = await supabase.functions.invoke("match-lab-analyze", {
         body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
       });
       if (error || !data?.report) throw new Error(data?.error || "ai_error");
-      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed, edited: false, stale: false });
+      const rep = data.report as Report;
+      // Put the AI's detected events straight on the timeline (marked "AI") so the coach can correct them.
+      const aiEvents: Ev[] = (rep.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => {
+        const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body";
+        return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1), src: "ai", conf: n(d.confidence) };
+      });
+      const kept = match.events.filter((e) => e.src !== "ai");
+      onChange({ ...match, ai: true, events: [...kept, ...aiEvents], report: { ...rep, detected: [] }, framesUsed: data.framesUsed, edited: false, stale: false, savedAt: Date.now() });
+      if (aiEvents.length) toast.success(t("aiAdded")); else toast.info(t("aiNoEvents"));
     } catch (e) {
       console.error(e); toast.error(t("aiError"));
     } finally { setAnalyzing(false); }
@@ -321,7 +329,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
           <AlertDialogFooter><AlertDialogCancel>{t("cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => runAi()}>{t("overwrite")}</AlertDialogAction></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <EditEventDialog ev={editing} rounds={match.rounds} onClose={() => setEditing(null)} onSave={(ev) => { onChange({ ...match, events: match.events.map((x) => (x.id === ev.id ? ev : x)) }); setEditing(null); }} />
+      <EditEventDialog ev={editing} rounds={match.rounds} onClose={() => setEditing(null)} onSave={(ev) => { onChange({ ...match, events: match.events.map((x) => (x.id === ev.id ? { ...ev, src: undefined, conf: undefined } : x)) }); setEditing(null); }} />
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft className="h-4 w-4 me-1" />{t("back")}</Button>
         <div className="min-w-0 flex-1">
@@ -398,7 +406,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
             </div>
             <Input className="h-11" placeholder={t("note")} value={note} onChange={(e) => setNote(e.target.value)} />
           </TabsContent>
-          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={requestRun} onSave={(r) => { const clean = (sd?: Side) => sd && { ...sd, dominant: unlines(lines(sd.dominant)), strengths: unlines(lines(sd.strengths)), improve: unlines(lines(sd.improve)) }; onChange({ ...match, edited: true, report: { ...r, red: clean(r.red), blue: clean(r.blue) } }); }} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
+          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={requestRun} onPersist={() => onChange({ ...match, savedAt: Date.now() })} onSave={(r) => { const clean = (sd?: Side) => sd && { ...sd, dominant: unlines(lines(sd.dominant)), strengths: unlines(lines(sd.strengths)), improve: unlines(lines(sd.improve)) }; onChange({ ...match, edited: true, report: { ...r, red: clean(r.red), blue: clean(r.blue) } }); }} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
           <TabsContent value="stats"><StatsPanel match={match} events={events} /></TabsContent>
           <TabsContent value="coach"><CoachPanel match={match} /></TabsContent>
         </Tabs>
@@ -411,7 +419,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
             {events.map((e) => (
               <div key={e.id} className="flex items-center gap-2 rounded-md border p-2 border-s-4 cursor-pointer hover:bg-muted" style={{ borderInlineStartColor: cc(e.corner) }} onClick={() => seek(e.t)}>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate">{techName(e.tech)}</div>
+                  <div className="text-sm font-semibold truncate flex items-center gap-1">{techName(e.tech)}{e.src === "ai" && <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">{t("aiTag")}{e.conf ? ` ${e.conf}%` : ""}</Badge>}</div>
                   <div className="text-xs text-muted-foreground">{fmt(e.t)} · {t("round")} {e.round} · {t(e.zone)}</div>
                 </div>
                 <Badge variant={e.scored ? "default" : "outline"}>{e.scored ? `+${e.pts}` : t("miss")}</Badge>
@@ -482,7 +490,7 @@ async function extractFrames(url: string, count: number): Promise<{ t: number; d
 
 const n = (x: unknown, d = 0) => (typeof x === "number" && isFinite(x) ? Math.round(x) : d);
 
-function AiPanel({ match, analyzing, onRun, onApply, onSave }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void; onSave: (r: Report) => void }) {
+function AiPanel({ match, analyzing, onRun, onApply, onSave, onPersist }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void; onSave: (r: Report) => void; onPersist: () => void }) {
   const t = useMatchLabT();
   const [draft, setDraft] = useState<Report | null>(null);
   const r = match.report;
@@ -503,6 +511,10 @@ function AiPanel({ match, analyzing, onRun, onApply, onSave }: { match: Match; a
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-muted-foreground">{t("framesUsed")}: {match.framesUsed ?? 0}{match.edited && <Badge variant="secondary" className="ms-2">{t("edited")}</Badge>}</p>
         <Button size="sm" variant="outline" onClick={onRun} disabled={analyzing}>{analyzing ? t("analyzing") : t("reanalyze")}</Button>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="outline" className="h-11" onClick={() => setDraft(JSON.parse(JSON.stringify(r)))}><Pencil className="h-4 w-4 me-1" />{t("edit")}</Button>
+        <Button className="h-11" onClick={() => { onPersist(); toast.success(t("saved")); }}><Save className="h-4 w-4 me-1" />{t("saveAnalysis")}</Button>
       </div>
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
@@ -582,6 +594,10 @@ function ReportEditor({ match, draft, setDraft, onCancel, onSave }: { match: Mat
   return (
     <div className="space-y-3 pb-24">
       <p className="text-xs text-muted-foreground">{t("editHint")}</p>
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="outline" className="h-11" onClick={onCancel}>{t("discard")}</Button>
+        <Button className="h-11" onClick={onSave}><Save className="h-4 w-4 me-1" />{t("save")}</Button>
+      </div>
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="space-y-1"><Label className="text-xs">{t("summary")}</Label>
