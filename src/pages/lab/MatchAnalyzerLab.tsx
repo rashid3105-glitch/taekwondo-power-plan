@@ -1,7 +1,8 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Brain, Check, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
+import { ArrowLeft, Brain, Check, Pencil, Save, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
 interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string }
-interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number }
+interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean }
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
@@ -56,12 +57,18 @@ const DEMO_EVENTS: Ev[] = [
 ];
 
 const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: false };
+const LAB_KEY = "match_lab_matches_v1";
 const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg)", "Light (-74kg)", "Welter (-80kg)", "Middle (-87kg)", "Heavy (+87kg)"];
 
 export default function MatchAnalyzerLab() {
   const t = useMatchLabT();
   const navigate = useNavigate();
-  const [matches, setMatches] = useState<Match[]>([DEMO]);
+  const [matches, setMatches] = useState<Match[]>(() => {
+    try { const raw = localStorage.getItem(LAB_KEY); if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; } } catch { /* ignore */ }
+    return [DEMO];
+  });
+  // Keep analyses on this device (video files cannot be stored, so they are left out).
+  useEffect(() => { try { localStorage.setItem(LAB_KEY, JSON.stringify(matches.map(({ videoUrl: _v, ...m }) => m))); } catch { /* quota */ } }, [matches]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
   const open = matches.find((m) => m.id === openId) || null;
@@ -346,7 +353,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
             </div>
             <Input className="h-11" placeholder={t("note")} value={note} onChange={(e) => setNote(e.target.value)} />
           </TabsContent>
-          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
+          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onSave={(r) => { const clean = (sd?: Side) => sd && { ...sd, dominant: unlines(lines(sd.dominant)), strengths: unlines(lines(sd.strengths)), improve: unlines(lines(sd.improve)) }; onChange({ ...match, edited: true, report: { ...r, red: clean(r.red), blue: clean(r.blue) } }); }} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
           <TabsContent value="stats"><StatsPanel match={match} events={events} /></TabsContent>
           <TabsContent value="coach"><CoachPanel match={match} /></TabsContent>
         </Tabs>
@@ -429,8 +436,9 @@ async function extractFrames(url: string, count: number): Promise<{ t: number; d
 
 const n = (x: unknown, d = 0) => (typeof x === "number" && isFinite(x) ? Math.round(x) : d);
 
-function AiPanel({ match, analyzing, onRun, onApply }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void }) {
+function AiPanel({ match, analyzing, onRun, onApply, onSave }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void; onSave: (r: Report) => void }) {
   const t = useMatchLabT();
+  const [draft, setDraft] = useState<Report | null>(null);
   const r = match.report;
   const runBtn = (
     <Button className="h-11" onClick={onRun} disabled={analyzing}><Sparkles className="h-4 w-4 me-1" />{analyzing ? t("analyzing") : t("analyzeAi")}</Button>
@@ -442,11 +450,12 @@ function AiPanel({ match, analyzing, onRun, onApply }: { match: Match; analyzing
       <p className="text-xs text-muted-foreground">{match.videoUrl ? t("aiReal") : t("aiNoVideo")}</p>
     </CardContent></Card>
   );
+  if (draft) return <ReportEditor match={match} draft={draft} setDraft={setDraft} onCancel={() => setDraft(null)} onSave={() => { onSave(draft); setDraft(null); toast.success(t("saved")); }} />;
   const iq = r.fightIq ?? {}; const ring = r.ring ?? {}; const mech = r.mechanics ?? {};
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs text-muted-foreground">{t("framesUsed")}: {match.framesUsed ?? 0}</p>
+    <div className="space-y-3 pb-24">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">{t("framesUsed")}: {match.framesUsed ?? 0}{match.edited && <Badge variant="secondary" className="ms-2">{t("edited")}</Badge>}</p>
         <Button size="sm" variant="outline" onClick={onRun} disabled={analyzing}>{analyzing ? t("analyzing") : t("reanalyze")}</Button>
       </div>
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
@@ -504,6 +513,89 @@ function AiPanel({ match, analyzing, onRun, onApply }: { match: Match; analyzing
           ))}
         </CardContent>
       </Card>}
+      <div className="sticky bottom-20 z-20 flex justify-end">
+        <Button className="h-11 shadow-lg" onClick={() => setDraft(JSON.parse(JSON.stringify(r)))}><Pencil className="h-4 w-4 me-1" />{t("edit")}</Button>
+      </div>
+    </div>
+  );
+}
+
+const lines = (a?: string[]) => (a ?? []).join("\n");
+const unlines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
+const clamp = (v: string, max: number) => Math.max(0, Math.min(max, Math.round(Number(v) || 0)));
+
+function ReportEditor({ match, draft, setDraft, onCancel, onSave }: { match: Match; draft: Report; setDraft: (r: Report) => void; onCancel: () => void; onSave: () => void }) {
+  const t = useMatchLabT();
+  const set = (patch: Partial<Report>) => setDraft({ ...draft, ...patch });
+  const setSide = (c: Corner, patch: Partial<Side>) => set({ [c]: { ...(draft[c] ?? {}), ...patch } } as Partial<Report>);
+  const num = (label: string, value: number, max: number, onV: (v: number) => void) => (
+    <div key={label} className="space-y-1"><Label className="text-xs">{label}</Label>
+      <Input type="number" inputMode="numeric" min={0} max={max} className="h-11" value={value} onChange={(e) => onV(clamp(e.target.value, max))} /></div>
+  );
+  const iq = draft.fightIq ?? {}; const mech = draft.mechanics ?? {}; const ring = draft.ring ?? {};
+  return (
+    <div className="space-y-3 pb-24">
+      <p className="text-xs text-muted-foreground">{t("editHint")}</p>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-1"><Label className="text-xs">{t("summary")}</Label>
+            <Textarea rows={3} value={draft.summary ?? ""} onChange={(e) => set({ summary: e.target.value })} /></div>
+          <div className="space-y-1"><Label className="text-xs">{t("winner")}</Label>
+            <Seg options={[["red", match.red], ["blue", match.blue]]} value={draft.winner ?? ""} onChange={(v) => set({ winner: v as Corner })} colorFor={(v) => cc(v as Corner)} /></div>
+          {(["red", "blue"] as Corner[]).map((c) => { const sd = draft[c] ?? {}; return (
+            <div key={c} className="rounded-lg border p-3 space-y-2 border-s-4" style={{ borderInlineStartColor: cc(c) }}>
+              <span className="font-bold" style={{ color: cc(c) }}>{c === "red" ? match.red : match.blue}</span>
+              <div className="space-y-1"><Label className="text-xs">{t("style")}</Label><Input className="h-11" value={sd.style ?? ""} onChange={(e) => setSide(c, { style: e.target.value })} /></div>
+              <div className="space-y-1"><Label className="text-xs">{t("dominant")} · {t("onePerLine")}</Label><Textarea rows={2} value={lines(sd.dominant)} onChange={(e) => setSide(c, { dominant: e.target.value.split("\n") })} /></div>
+              <div className="space-y-1"><Label className="text-xs">{t("strengths")} · {t("onePerLine")}</Label><Textarea rows={3} value={lines(sd.strengths)} onChange={(e) => setSide(c, { strengths: e.target.value.split("\n") })} /></div>
+              <div className="space-y-1"><Label className="text-xs">{t("improve")} · {t("onePerLine")}</Label><Textarea rows={3} value={lines(sd.improve)} onChange={(e) => setSide(c, { improve: e.target.value.split("\n") })} /></div>
+            </div>
+          ); })}
+        </CardContent>
+      </Card>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("fightIq")} (0–100)</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          {["score", "distance", "timing", "adaptability", "setups", "defense", "pressure"].map((k) => num(k === "score" ? t("fightIq") : t(k), n(iq[k]), 100, (v) => set({ fightIq: { ...iq, [k]: v } })))}
+        </CardContent>
+      </Card>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("ringControl")}</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          {num(`${t("center")} %`, n(ring.centerControlPct), 100, (v) => set({ ring: { ...ring, centerControlPct: v } }))}
+          {num(`${t("reaction")} ms`, n(ring.reactionMs), 5000, (v) => set({ ring: { ...ring, reactionMs: v } }))}
+          {num(`${t("counterRate")} %`, n(ring.counterRatePct), 100, (v) => set({ ring: { ...ring, counterRatePct: v } }))}
+          {num(t("attacksMin"), n(ring.attacksPerMin), 200, (v) => set({ ring: { ...ring, attacksPerMin: v } }))}
+        </CardContent>
+      </Card>
+      {(draft.momentum ?? []).length > 0 && <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("momentum")}</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {(draft.momentum ?? []).map((m, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <span className="font-mono text-xs w-10 shrink-0 pt-3" style={{ color: cc(m.corner === "blue" ? "blue" : "red") }}>{fmt(n(m.t))}</span>
+              <Textarea rows={2} value={m.text} onChange={(e) => set({ momentum: (draft.momentum ?? []).map((x, j) => (j === i ? { ...x, text: e.target.value } : x)) })} />
+              <Button size="icon" variant="ghost" className="h-11 w-11 shrink-0" title={t("removeItem")} aria-label={t("removeItem")} onClick={() => set({ momentum: (draft.momentum ?? []).filter((_, j) => j !== i) })}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>}
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("mechanics")} (0–10)</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-2 gap-3">
+          {["chamber", "pivot", "balance", "recovery", "hip", "flexibility"].map((k) => num(t(k), n(mech[k]), 10, (v) => set({ mechanics: { ...mech, [k]: v } })))}
+        </CardContent>
+      </Card>
+      {(draft.detected ?? []).length > 0 && <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("detected")}</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {(draft.detected ?? []).map((e, i) => (
+            <div key={i} className="flex items-center justify-between text-sm border-s-4 ps-2" style={{ borderInlineStartColor: cc(e.corner === "blue" ? "blue" : "red") }}>
+              <span>{fmt(n(e.t))} · {techName(e.tech)} · {t(e.zone === "head" ? "head" : "body")}</span>
+              <Button size="icon" variant="ghost" className="h-11 w-11" title={t("removeItem")} aria-label={t("removeItem")} onClick={() => set({ detected: (draft.detected ?? []).filter((_, j) => j !== i) })}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>}
+      <div className="sticky bottom-20 z-20 flex justify-end gap-2 rounded-lg border bg-card/95 p-2 shadow-lg backdrop-blur">
+        <Button variant="outline" className="h-11" onClick={onCancel}>{t("discard")}</Button>
+        <Button className="h-11" onClick={onSave}><Save className="h-4 w-4 me-1" />{t("save")}</Button>
+      </div>
     </div>
   );
 }
