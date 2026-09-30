@@ -84,8 +84,8 @@ Deno.serve(async (req) => {
     if (!res.ok || !res.body) {
       const txt = await res.text().catch(() => "");
       console.error("match-lab-analyze gateway", res.status, txt.slice(0, 300));
-      const code = res.status === 429 ? "rate_limited" : res.status === 402 ? "no_credits" : "ai_error";
-      return json({ error: code }, res.status === 429 || res.status === 402 ? res.status : 502);
+      const code = res.status === 429 ? "rate_limited" : res.status === 402 ? "no_credits" : res.status === 403 ? "ai_blocked" : "ai_error";
+      return json({ error: code }, [402, 403, 429].includes(res.status) ? res.status : 502);
     }
 
     // Read the SSE stream server-side and collect the final text.
