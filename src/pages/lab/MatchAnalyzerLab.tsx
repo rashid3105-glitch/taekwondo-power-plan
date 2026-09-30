@@ -12,15 +12,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useMatchLabT } from "@/i18n/matchLab";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
 interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string }
-interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean }
+interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number }
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
-  { id: "back", name: "Back Kick", kr: "Dwi Chagi", body: 3, head: 4 },
+  { id: "back", name: "Back Kick", kr: "Dwi Chagi", body: 4, head: 5 },
   { id: "spinhook", name: "Spin Hook", kr: "Dwi Huryeo", body: 4, head: 5 },
   { id: "axe", name: "Axe Kick", kr: "Naeryeo Chagi", body: 2, head: 3 },
   { id: "side", name: "Side Kick", kr: "Yeop Chagi", body: 2, head: 3 },
@@ -44,19 +46,14 @@ const DEMO_EVENTS: Ev[] = [
   { id: "d3", t: 34, corner: "red", tech: "spinhook", zone: "head", scored: false, pts: 0, round: 1 },
   { id: "d4", t: 47, corner: "red", tech: "roundhouse", zone: "body", scored: true, pts: 2, round: 1 },
   { id: "d5", t: 63, corner: "blue", tech: "axe", zone: "head", scored: false, pts: 0, round: 1 },
-  { id: "d6", t: 78, corner: "red", tech: "back", zone: "body", scored: true, pts: 3, round: 2 },
+  { id: "d6", t: 78, corner: "red", tech: "back", zone: "body", scored: true, pts: 4, round: 2 },
   { id: "d7", t: 92, corner: "blue", tech: "side", zone: "body", scored: true, pts: 2, round: 2 },
   { id: "d8", t: 105, corner: "red", tech: "crescent", zone: "body", scored: false, pts: 0, round: 2 },
   { id: "d9", t: 118, corner: "red", tech: "punch", zone: "body", scored: true, pts: 1, round: 2 },
   { id: "d10", t: 131, corner: "blue", tech: "front", zone: "body", scored: false, pts: 0, round: 3 },
 ];
-const AI_DETECTED: Ev[] = [
-  { id: "a1", t: 142, corner: "red", tech: "tornado", zone: "head", scored: false, pts: 0, round: 3 },
-  { id: "a2", t: 150, corner: "blue", tech: "roundhouse", zone: "body", scored: false, pts: 0, round: 3 },
-  { id: "a3", t: 158, corner: "red", tech: "roundhouse", zone: "body", scored: false, pts: 0, round: 3 },
-];
 
-const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: true };
+const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: false };
 const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg)", "Light (-74kg)", "Welter (-80kg)", "Middle (-87kg)", "Heavy (+87kg)"];
 
 export default function MatchAnalyzerLab() {
@@ -91,8 +88,8 @@ function Hub({ matches, onOpen, onNew, onBack }: { matches: Match[]; onOpen: (id
   const t = useMatchLabT();
   const total = matches.reduce((s, m) => s + m.events.length, 0);
   const kpis = [
-    [t("totalMatches"), matches.length], [t("inProgress"), matches.filter((m) => !m.ai).length],
-    [t("completed"), matches.filter((m) => m.ai).length], [t("techniquesLogged"), total],
+    [t("totalMatches"), matches.length], [t("inProgress"), matches.filter((m) => !!!m.report).length],
+    [t("completed"), matches.filter((m) => !!m.report).length], [t("techniquesLogged"), total],
   ] as const;
   return (
     <>
@@ -119,7 +116,7 @@ function Hub({ matches, onOpen, onNew, onBack }: { matches: Match[]; onOpen: (id
                 <div className="font-bold">{m.title}</div>
                 <div className="flex gap-2">
                   {m.id === "demo" && <Badge variant="secondary">{t("demo")}</Badge>}
-                  <Badge variant={m.ai ? "default" : "outline"}>{m.ai ? t("completed") : t("inProgress")}</Badge>
+                  <Badge variant={!!m.report ? "default" : "outline"}>{!!m.report ? t("completed") : t("inProgress")}</Badge>
                 </div>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -213,7 +210,20 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
     }
   };
   const seek = (s: number) => { if (vref.current) vref.current.currentTime = s; setTime(s); };
-  const runAi = () => { setAnalyzing(true); setTimeout(() => { setAnalyzing(false); onChange({ ...match, ai: true }); }, 1500); };
+  const { locale } = useLanguage();
+  const runAi = async () => {
+    setAnalyzing(true);
+    try {
+      const frames = match.videoUrl ? await extractFrames(match.videoUrl, 20) : [];
+      const { data, error } = await supabase.functions.invoke("match-lab-analyze", {
+        body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
+      });
+      if (error || !data?.report) throw new Error(data?.error || "ai_error");
+      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed });
+    } catch (e) {
+      console.error(e); toast.error(t("aiError"));
+    } finally { setAnalyzing(false); }
+  };
   const list = cat === "kicks" ? KICKS : PUNCHES;
 
   return (
@@ -287,7 +297,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
             </div>
             <Input className="h-11" placeholder={t("note")} value={note} onChange={(e) => setNote(e.target.value)} />
           </TabsContent>
-          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onApply={() => { onChange({ ...match, events: [...match.events, ...AI_DETECTED.map((e) => ({ ...e, id: uid() }))] }); toast.success(t("applied")); }} /></TabsContent>
+          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
           <TabsContent value="stats"><StatsPanel match={match} events={events} /></TabsContent>
           <TabsContent value="coach"><CoachPanel match={match} /></TabsContent>
         </Tabs>
@@ -340,73 +350,111 @@ function Bar({ label, value, max = 100, suffix = "" }: { label: string; value: n
   );
 }
 
+type Side = { style?: string; dominant?: string[]; strengths?: string[]; improve?: string[] };
+type CoachSide = { focus?: string[]; technique?: { name?: string; tips?: string[]; drills?: string[] }; strategy?: string[]; physical?: string[]; mental?: string[] };
+interface Report {
+  winner?: Corner; summary?: string; red?: Side; blue?: Side;
+  fightIq?: Record<string, number>; ring?: { centerControlPct?: number; reactionMs?: number; counterRatePct?: number; attacksPerMin?: number };
+  momentum?: { t: number; corner: Corner; text: string }[]; mechanics?: Record<string, number>;
+  detected?: { t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; confidence?: number }[];
+  coaching?: { red?: CoachSide; blue?: CoachSide };
+}
+
+/** Grab evenly spaced, downscaled JPEG frames from a local video. */
+async function extractFrames(url: string, count: number): Promise<{ t: number; data: string }[]> {
+  const v = document.createElement("video");
+  v.src = url; v.muted = true; v.playsInline = true; v.preload = "auto";
+  await new Promise<void>((res, rej) => { v.onloadedmetadata = () => res(); v.onerror = () => rej(new Error("video")); });
+  const dur = v.duration || 0; if (!dur || !isFinite(dur)) return [];
+  const w = 480, h = Math.round((v.videoHeight / Math.max(1, v.videoWidth)) * w) || 270;
+  const c = document.createElement("canvas"); c.width = w; c.height = h; const ctx = c.getContext("2d")!;
+  const out: { t: number; data: string }[] = [];
+  for (let i = 0; i < count; i++) {
+    const t = (dur * (i + 0.5)) / count;
+    await new Promise<void>((res) => { v.onseeked = () => res(); v.currentTime = t; });
+    ctx.drawImage(v, 0, 0, w, h);
+    out.push({ t: Math.round(t), data: c.toDataURL("image/jpeg", 0.6) });
+  }
+  return out;
+}
+
+const n = (x: unknown, d = 0) => (typeof x === "number" && isFinite(x) ? Math.round(x) : d);
+
 function AiPanel({ match, analyzing, onRun, onApply }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void }) {
   const t = useMatchLabT();
-  if (!match.ai) return (
+  const r = match.report;
+  const runBtn = (
+    <Button className="h-11" onClick={onRun} disabled={analyzing}><Sparkles className="h-4 w-4 me-1" />{analyzing ? t("analyzing") : t("analyzeAi")}</Button>
+  );
+  if (!r) return (
     <Card><CardContent className="p-6 text-center space-y-3">
       <Sparkles className="h-8 w-8 mx-auto text-primary" />
-      <Button className="h-11" onClick={onRun} disabled={analyzing}><Sparkles className="h-4 w-4 me-1" />{analyzing ? t("analyzing") : t("analyzeAi")}</Button>
-      <p className="text-xs text-muted-foreground">{t("aiDemo")}</p>
+      {runBtn}
+      <p className="text-xs text-muted-foreground">{match.videoUrl ? t("aiReal") : t("aiNoVideo")}</p>
     </CardContent></Card>
   );
-  const winner = score(match.events, "red") >= score(match.events, "blue") ? "red" : "blue";
+  const iq = r.fightIq ?? {}; const ring = r.ring ?? {}; const mech = r.mechanics ?? {};
   return (
     <div className="space-y-3">
-      <p className="text-xs text-muted-foreground">{t("aiDemo")}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">{t("framesUsed")}: {match.framesUsed ?? 0}</p>
+        <Button size="sm" variant="outline" onClick={onRun} disabled={analyzing}>{analyzing ? t("analyzing") : t("reanalyze")}</Button>
+      </div>
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          {(["red", "blue"] as Corner[]).map((c) => (
+          {r.summary && <p className="text-sm">{r.summary}</p>}
+          {(["red", "blue"] as Corner[]).map((c) => { const sd = r[c] ?? {}; return (
             <div key={c} className="rounded-lg border p-3 space-y-2 border-s-4" style={{ borderInlineStartColor: cc(c) }}>
               <div className="flex items-center justify-between">
                 <span className="font-bold" style={{ color: cc(c) }}>{c === "red" ? match.red : match.blue}</span>
-                {winner === c && <Badge>{t("winner")}</Badge>}
+                {r.winner === c && <Badge>{t("winner")}</Badge>}
               </div>
-              <p className="text-xs text-muted-foreground">{t("style")}: {t(c === "red" ? "styleRed" : "styleBlue")}</p>
-              <div className="flex flex-wrap gap-1">{(c === "red" ? ["Roundhouse", "Crescent", "Back Kick"] : ["Roundhouse", "Side Kick"]).map((x) => <Badge key={x} variant="secondary">{x}</Badge>)}</div>
+              {sd.style && <p className="text-xs text-muted-foreground">{t("style")}: {sd.style}</p>}
+              <div className="flex flex-wrap gap-1">{(sd.dominant ?? []).map((x) => <Badge key={x} variant="secondary">{x}</Badge>)}</div>
               <div className="text-xs space-y-1">
                 <div className="font-semibold">{t("strengths")}</div>
-                {["s1", "s2"].map((k) => <div key={k} className="flex gap-1"><Check className="h-3 w-3 mt-0.5 text-primary" />{t(k)}</div>)}
+                {(sd.strengths ?? []).map((k) => <div key={k} className="flex gap-1"><Check className="h-3 w-3 mt-0.5 shrink-0 text-primary" />{k}</div>)}
                 <div className="font-semibold pt-1">{t("improve")}</div>
-                {["i1", "i2"].map((k) => <div key={k} className="flex gap-1"><X className="h-3 w-3 mt-0.5 text-destructive" />{t(k)}</div>)}
+                {(sd.improve ?? []).map((k) => <div key={k} className="flex gap-1"><X className="h-3 w-3 mt-0.5 shrink-0 text-destructive" />{k}</div>)}
               </div>
             </div>
-          ))}
+          ); })}
         </CardContent>
       </Card>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Brain className="h-4 w-4" />{t("fightIq")} · 78</CardTitle></CardHeader>
+      <Card><CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Brain className="h-4 w-4" />{t("fightIq")} · {n(iq.score)} <span className="text-xs font-normal" style={{ color: RED }}>{match.red}</span></CardTitle></CardHeader>
         <CardContent className="space-y-2">
-          {[["distance", 82], ["timing", 76], ["adaptability", 70], ["setups", 64], ["defense", 71], ["pressure", 80]].map(([k, v]) => <Bar key={k} label={t(k as string)} value={v as number} />)}
+          {["distance", "timing", "adaptability", "setups", "defense", "pressure"].map((k) => <Bar key={k} label={t(k)} value={n(iq[k])} />)}
         </CardContent>
       </Card>
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("ringControl")}</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-2 gap-3 text-center">
-          {[[t("center"), "58%"], [t("reaction"), "310 ms"], [t("counterRate"), "34%"], [t("attacksMin"), "11.2"]].map(([l, v]) => (
+          {[[t("center"), `${n(ring.centerControlPct)}%`], [t("reaction"), `${n(ring.reactionMs)} ms`], [t("counterRate"), `${n(ring.counterRatePct)}%`], [t("attacksMin"), String(ring.attacksPerMin ?? 0)]].map(([l, v]) => (
             <div key={l} className="rounded-md border p-2"><div className="text-lg font-black">{v}</div><div className="text-[11px] text-muted-foreground">{l}</div></div>
           ))}
         </CardContent>
       </Card>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("momentum")}</CardTitle></CardHeader>
+      {(r.momentum ?? []).length > 0 && <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("momentum")}</CardTitle></CardHeader>
         <CardContent className="space-y-2 text-sm">
-          {[["0:34", "mo1", "red"], ["1:32", "mo2", "blue"], ["2:10", "mo3", "red"]].map(([ts, k, c]) => (
-            <div key={k} className="flex gap-2"><span className="font-mono text-xs w-10" style={{ color: cc(c as Corner) }}>{ts}</span>{t(k)}</div>
+          {(r.momentum ?? []).map((m, i) => (
+            <div key={i} className="flex gap-2"><span className="font-mono text-xs w-10 shrink-0" style={{ color: cc(m.corner === "blue" ? "blue" : "red") }}>{fmt(n(m.t))}</span>{m.text}</div>
           ))}
         </CardContent>
-      </Card>
+      </Card>}
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("mechanics")}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
-          {[["chamber", 8], ["pivot", 7], ["balance", 6], ["recovery", 7], ["hip", 8], ["flexibility", 6]].map(([k, v]) => <Bar key={k} label={t(k as string)} value={v as number} max={10} suffix="/10" />)}
+          {["chamber", "pivot", "balance", "recovery", "hip", "flexibility"].map((k) => <Bar key={k} label={t(k)} value={n(mech[k])} max={10} suffix="/10" />)}
         </CardContent>
       </Card>
-      <Card><CardHeader className="pb-2 flex-row items-center justify-between"><CardTitle className="text-base">{t("detected")}</CardTitle>
+      {(r.detected ?? []).length > 0 && <Card><CardHeader className="pb-2 flex-row items-center justify-between"><CardTitle className="text-base">{t("detected")}</CardTitle>
         <Button size="sm" onClick={onApply}><Check className="h-4 w-4 me-1" />{t("applyAll")}</Button></CardHeader>
         <CardContent className="space-y-2">
-          {AI_DETECTED.map((e, i) => (
-            <div key={e.id} className="flex justify-between text-sm border-s-4 ps-2" style={{ borderInlineStartColor: cc(e.corner) }}>
-              <span>{fmt(e.t)} · {techName(e.tech)}</span><span className="text-muted-foreground">{[92, 87, 81][i]}%</span>
+          {(r.detected ?? []).map((e, i) => (
+            <div key={i} className="flex justify-between text-sm border-s-4 ps-2" style={{ borderInlineStartColor: cc(e.corner === "blue" ? "blue" : "red") }}>
+              <span>{fmt(n(e.t))} · {techName(e.tech)} · {t(e.zone === "head" ? "head" : "body")}</span><span className="text-muted-foreground">{n(e.confidence)}%</span>
             </div>
           ))}
         </CardContent>
-      </Card>
+      </Card>}
     </div>
   );
 }
@@ -450,13 +498,16 @@ function StatsPanel({ match, events }: { match: Match; events: Ev[] }) {
 function CoachPanel({ match }: { match: Match }) {
   const t = useMatchLabT();
   const [who, setWho] = useState<Corner>("red");
+  const cs = match.report?.coaching?.[who];
+  if (!cs) return <Card><CardContent className="p-6 text-sm text-muted-foreground text-center">{t("coachEmpty")}</CardContent></Card>;
+  const li = (xs?: string[]) => (xs ?? []).map((k) => <div key={k}>• {k}</div>);
   return (
     <div className="space-y-3">
       <Seg options={[["red", match.red], ["blue", match.blue]]} value={who} onChange={(v) => setWho(v as Corner)} colorFor={(v) => cc(v as Corner)} />
       <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("focus")}</CardTitle></CardHeader>
         <CardContent className="space-y-2">
-          {["f1", "f2", "f3"].map((k, i) => (
-            <div key={k} className="flex items-center gap-3 rounded-md border p-2"><span className="font-black text-primary">#{i + 1}</span><span className="text-sm">{t(k)}</span></div>
+          {(cs.focus ?? []).slice(0, 3).map((k, i) => (
+            <div key={k} className="flex items-center gap-3 rounded-md border p-2"><span className="font-black text-primary">#{i + 1}</span><span className="text-sm">{k}</span></div>
           ))}
         </CardContent>
       </Card>
@@ -465,16 +516,14 @@ function CoachPanel({ match }: { match: Match }) {
           {["technique", "strategy", "physical", "mental"].map((k) => <TabsTrigger key={k} value={k} className="text-xs">{t(k)}</TabsTrigger>)}
         </TabsList>
         <TabsContent value="technique"><Card><CardContent className="p-4 text-sm space-y-2">
-          <div className="font-bold">Bandal Chagi</div>
+          {cs.technique?.name && <div className="font-bold">{cs.technique.name}</div>}
           <div className="font-semibold text-xs uppercase text-muted-foreground">{t("tips")}</div>
-          {["t1", "t2", "t3"].map((k) => <div key={k}>• {t(k)}</div>)}
+          {li(cs.technique?.tips)}
           <div className="font-semibold text-xs uppercase text-muted-foreground pt-2">{t("drills")}</div>
-          {["d1", "d2", "d3"].map((k) => <div key={k}>• {t(k)}</div>)}
+          {li(cs.technique?.drills)}
         </CardContent></Card></TabsContent>
-        {[["strategy", ["sg1", "sg2"]], ["physical", ["ph1", "ph2"]], ["mental", ["me1", "me2"]]].map(([v, ks]) => (
-          <TabsContent key={v as string} value={v as string}><Card><CardContent className="p-4 text-sm space-y-2">
-            {(ks as string[]).map((k) => <div key={k}>• {t(k)}</div>)}
-          </CardContent></Card></TabsContent>
+        {(["strategy", "physical", "mental"] as const).map((v) => (
+          <TabsContent key={v} value={v}><Card><CardContent className="p-4 text-sm space-y-2">{li(cs[v])}</CardContent></Card></TabsContent>
         ))}
       </Tabs>
     </div>
