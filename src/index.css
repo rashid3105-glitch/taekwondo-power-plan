@@ -632,3 +632,8 @@ input[type="time"]::-webkit-calendar-picker-indicator:hover {
   --card-foreground: 210 30% 95%;
   --muted-foreground: 220 12% 70%;
 }
+
+/* Match Analyzer lab: corner colours (red = hong, blue = chung) */
+@layer base {
+  :root { --corner-red: 0 78% 52%; --corner-blue: 214 88% 52%; }
+}
