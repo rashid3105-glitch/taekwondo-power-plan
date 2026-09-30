@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { ArrowLeft, Brain, Check, Pencil, Save, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
+import { ArrowLeft, Brain, Check, Pencil, Save, FileDown, RefreshCw, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
 interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string }
-interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean }
+interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number; edited?: boolean; stale?: boolean }
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
@@ -58,6 +58,19 @@ const DEMO_EVENTS: Ev[] = [
 
 const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: false };
 const LAB_KEY = "match_lab_matches_v1";
+
+// Videos stay on this device (IndexedDB), keyed by match id.
+const VDB = "match-lab-videos";
+function vdb(): Promise<IDBDatabase> {
+  return new Promise((res, rej) => { const r = indexedDB.open(VDB, 1); r.onupgradeneeded = () => r.result.createObjectStore("v"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+}
+async function vop<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest): Promise<T> {
+  const db = await vdb();
+  return new Promise((res, rej) => { const q = fn(db.transaction("v", mode).objectStore("v")); q.onsuccess = () => res(q.result as T); q.onerror = () => rej(q.error); });
+}
+const saveVideo = (id: string, b: Blob) => vop<void>("readwrite", (s) => s.put(b, id));
+const loadVideo = (id: string) => vop<Blob | undefined>("readonly", (s) => s.get(id));
+const removeVideo = (id: string) => vop<void>("readwrite", (s) => s.delete(id)).catch(() => undefined);
 const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg)", "Light (-74kg)", "Welter (-80kg)", "Middle (-87kg)", "Heavy (+87kg)"];
 
 export default function MatchAnalyzerLab() {
@@ -72,7 +85,20 @@ export default function MatchAnalyzerLab() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [newOpen, setNewOpen] = useState(false);
   const open = matches.find((m) => m.id === openId) || null;
-  const update = (m: Match) => setMatches((ms) => ms.map((x) => (x.id === m.id ? m : x)));
+  const update = (m: Match) => setMatches((ms) => ms.map((x) => {
+    if (x.id !== m.id) return x;
+    // Events changed after an analysis → mark the AI report as out of date.
+    const stale = m.report && x.events !== m.events ? true : m.stale;
+    return { ...m, stale };
+  }));
+  useEffect(() => {
+    let alive = true;
+    matches.filter((m) => !m.videoUrl).forEach(async (m) => {
+      try { const b = await loadVideo(m.id); if (b && alive) { const url = URL.createObjectURL(b); setMatches((ms) => ms.map((x) => (x.id === m.id && !x.videoUrl ? { ...x, videoUrl: url } : x))); } } catch { /* ignore */ }
+    });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-safe pb-safe">
@@ -81,7 +107,7 @@ export default function MatchAnalyzerLab() {
         {open ? (
           <Studio match={open} onBack={() => setOpenId(null)} onChange={update} />
         ) : (
-          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); return ms.filter((x) => x.id !== id); })} />
+          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); removeVideo(id); return ms.filter((x) => x.id !== id); })} />
         )}
       </div>
       <NewMatchDialog open={newOpen} onOpenChange={setNewOpen} onCreate={(m) => { setMatches((ms) => [m, ...ms]); setOpenId(m.id); }} />
@@ -191,7 +217,9 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
       setLoading(false);
       if (!ok) { URL.revokeObjectURL(videoUrl); toast.error(t("videoError")); return; }
     }
-    onCreate({ id: uid(), ...f, videoUrl, events: [], ai: false });
+    const id = uid();
+    if (file) { try { await saveVideo(id, file); toast.success(t("videoLocal")); } catch { /* quota: keep for this session only */ } }
+    onCreate({ id, ...f, videoUrl, events: [], ai: false });
     onOpenChange(false); setFile(null); setF({ ...f, title: "", red: "", blue: "" });
   };
   return (
@@ -274,19 +302,29 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
         body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
       });
       if (error || !data?.report) throw new Error(data?.error || "ai_error");
-      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed });
+      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed, edited: false, stale: false });
     } catch (e) {
       console.error(e); toast.error(t("aiError"));
     } finally { setAnalyzing(false); }
   };
   const list = cat === "kicks" ? KICKS : PUNCHES;
+  const [confirmOverwrite, setConfirmOverwrite] = useState(false);
+  const [editing, setEditing] = useState<Ev | null>(null);
+  const requestRun = () => (match.edited ? setConfirmOverwrite(true) : runAi());
 
   return (
     <>
       {analyzing && <LogoLoader label={stage === "frames" ? t("stageFrames") : t("stageAi")} />}
+      <AlertDialog open={confirmOverwrite} onOpenChange={setConfirmOverwrite}>
+        <AlertDialogContent>
+          <AlertDialogHeader><AlertDialogTitle>{t("overwriteTitle")}</AlertDialogTitle><AlertDialogDescription>{t("overwriteDesc")}</AlertDialogDescription></AlertDialogHeader>
+          <AlertDialogFooter><AlertDialogCancel>{t("cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => runAi()}>{t("overwrite")}</AlertDialogAction></AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <EditEventDialog ev={editing} rounds={match.rounds} onClose={() => setEditing(null)} onSave={(ev) => { onChange({ ...match, events: match.events.map((x) => (x.id === ev.id ? ev : x)) }); setEditing(null); }} />
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={onBack}><ArrowLeft className="h-4 w-4 me-1" />{t("back")}</Button>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="font-black text-xl truncate">{match.title}: {match.red} vs {match.blue}</h1>
           <p className="text-xs text-muted-foreground">{match.date} · {match.weight}</p>
         </div>
