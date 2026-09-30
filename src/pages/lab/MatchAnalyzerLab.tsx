@@ -12,11 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useMatchLabT } from "@/i18n/matchLab";
+import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
 interface Ev { id: string; t: number; corner: Corner; tech: string; zone: Zone; scored: boolean; pts: number; round: number; note?: string }
-interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean }
+interface Match { id: string; title: string; red: string; blue: string; date: string; weight: string; rounds: number; videoUrl?: string; events: Ev[]; ai: boolean; report?: Report; framesUsed?: number }
 
 const KICKS = [
   { id: "roundhouse", name: "Roundhouse", kr: "Dollyo Chagi", body: 2, head: 3 },
@@ -50,13 +52,8 @@ const DEMO_EVENTS: Ev[] = [
   { id: "d9", t: 118, corner: "red", tech: "punch", zone: "body", scored: true, pts: 1, round: 2 },
   { id: "d10", t: 131, corner: "blue", tech: "front", zone: "body", scored: false, pts: 0, round: 3 },
 ];
-const AI_DETECTED: Ev[] = [
-  { id: "a1", t: 142, corner: "red", tech: "tornado", zone: "head", scored: false, pts: 0, round: 3 },
-  { id: "a2", t: 150, corner: "blue", tech: "roundhouse", zone: "body", scored: false, pts: 0, round: 3 },
-  { id: "a3", t: 158, corner: "red", tech: "roundhouse", zone: "body", scored: false, pts: 0, round: 3 },
-];
 
-const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: true };
+const DEMO: Match = { id: "demo", title: "pol", red: "juaan", blue: "Milad", date: "2026-09-30", weight: "Feather (-68kg)", rounds: 3, events: DEMO_EVENTS, ai: false };
 const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg)", "Light (-74kg)", "Welter (-80kg)", "Middle (-87kg)", "Heavy (+87kg)"];
 
 export default function MatchAnalyzerLab() {
@@ -91,8 +88,8 @@ function Hub({ matches, onOpen, onNew, onBack }: { matches: Match[]; onOpen: (id
   const t = useMatchLabT();
   const total = matches.reduce((s, m) => s + m.events.length, 0);
   const kpis = [
-    [t("totalMatches"), matches.length], [t("inProgress"), matches.filter((m) => !m.ai).length],
-    [t("completed"), matches.filter((m) => m.ai).length], [t("techniquesLogged"), total],
+    [t("totalMatches"), matches.length], [t("inProgress"), matches.filter((m) => !!!m.report).length],
+    [t("completed"), matches.filter((m) => !!m.report).length], [t("techniquesLogged"), total],
   ] as const;
   return (
     <>
@@ -119,7 +116,7 @@ function Hub({ matches, onOpen, onNew, onBack }: { matches: Match[]; onOpen: (id
                 <div className="font-bold">{m.title}</div>
                 <div className="flex gap-2">
                   {m.id === "demo" && <Badge variant="secondary">{t("demo")}</Badge>}
-                  <Badge variant={m.ai ? "default" : "outline"}>{m.ai ? t("completed") : t("inProgress")}</Badge>
+                  <Badge variant={!!m.report ? "default" : "outline"}>{!!m.report ? t("completed") : t("inProgress")}</Badge>
                 </div>
               </div>
               <div className="flex items-center justify-between text-sm">
@@ -213,7 +210,20 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
     }
   };
   const seek = (s: number) => { if (vref.current) vref.current.currentTime = s; setTime(s); };
-  const runAi = () => { setAnalyzing(true); setTimeout(() => { setAnalyzing(false); onChange({ ...match, ai: true }); }, 1500); };
+  const { locale } = useLanguage();
+  const runAi = async () => {
+    setAnalyzing(true);
+    try {
+      const frames = match.videoUrl ? await extractFrames(match.videoUrl, 20) : [];
+      const { data, error } = await supabase.functions.invoke("match-lab-analyze", {
+        body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
+      });
+      if (error || !data?.report) throw new Error(data?.error || "ai_error");
+      onChange({ ...match, ai: true, report: data.report as Report, framesUsed: data.framesUsed });
+    } catch (e) {
+      console.error(e); toast.error(t("aiError"));
+    } finally { setAnalyzing(false); }
+  };
   const list = cat === "kicks" ? KICKS : PUNCHES;
 
   return (
@@ -287,7 +297,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
             </div>
             <Input className="h-11" placeholder={t("note")} value={note} onChange={(e) => setNote(e.target.value)} />
           </TabsContent>
-          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onApply={() => { onChange({ ...match, events: [...match.events, ...AI_DETECTED.map((e) => ({ ...e, id: uid() }))] }); toast.success(t("applied")); }} /></TabsContent>
+          <TabsContent value="ai"><AiPanel match={match} analyzing={analyzing} onRun={runAi} onApply={() => { const det = (match.report?.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => { const k = ALL.find((x) => x.id === d.tech)!; const zone: Zone = d.zone === "head" ? "head" : "body"; return { id: uid(), t: Math.round(d.t || 0), corner: (d.corner === "blue" ? "blue" : "red") as Corner, tech: d.tech, zone, scored: !!d.scored, pts: d.scored ? k[zone] : 0, round: Math.min(match.rounds, Math.floor((d.t || 0) / 120) + 1) }; }); onChange({ ...match, events: [...match.events, ...det], report: match.report ? { ...match.report, detected: [] } : match.report }); toast.success(t("applied")); }} /></TabsContent>
           <TabsContent value="stats"><StatsPanel match={match} events={events} /></TabsContent>
           <TabsContent value="coach"><CoachPanel match={match} /></TabsContent>
         </Tabs>
@@ -340,76 +350,7 @@ function Bar({ label, value, max = 100, suffix = "" }: { label: string; value: n
   );
 }
 
-function AiPanel({ match, analyzing, onRun, onApply }: { match: Match; analyzing: boolean; onRun: () => void; onApply: () => void }) {
-  const t = useMatchLabT();
-  if (!match.ai) return (
-    <Card><CardContent className="p-6 text-center space-y-3">
-      <Sparkles className="h-8 w-8 mx-auto text-primary" />
-      <Button className="h-11" onClick={onRun} disabled={analyzing}><Sparkles className="h-4 w-4 me-1" />{analyzing ? t("analyzing") : t("analyzeAi")}</Button>
-      <p className="text-xs text-muted-foreground">{t("aiDemo")}</p>
-    </CardContent></Card>
-  );
-  const winner = score(match.events, "red") >= score(match.events, "blue") ? "red" : "blue";
-  return (
-    <div className="space-y-3">
-      <p className="text-xs text-muted-foreground">{t("aiDemo")}</p>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("report")}</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          {(["red", "blue"] as Corner[]).map((c) => (
-            <div key={c} className="rounded-lg border p-3 space-y-2 border-s-4" style={{ borderInlineStartColor: cc(c) }}>
-              <div className="flex items-center justify-between">
-                <span className="font-bold" style={{ color: cc(c) }}>{c === "red" ? match.red : match.blue}</span>
-                {winner === c && <Badge>{t("winner")}</Badge>}
-              </div>
-              <p className="text-xs text-muted-foreground">{t("style")}: {t(c === "red" ? "styleRed" : "styleBlue")}</p>
-              <div className="flex flex-wrap gap-1">{(c === "red" ? ["Roundhouse", "Crescent", "Back Kick"] : ["Roundhouse", "Side Kick"]).map((x) => <Badge key={x} variant="secondary">{x}</Badge>)}</div>
-              <div className="text-xs space-y-1">
-                <div className="font-semibold">{t("strengths")}</div>
-                {["s1", "s2"].map((k) => <div key={k} className="flex gap-1"><Check className="h-3 w-3 mt-0.5 text-primary" />{t(k)}</div>)}
-                <div className="font-semibold pt-1">{t("improve")}</div>
-                {["i1", "i2"].map((k) => <div key={k} className="flex gap-1"><X className="h-3 w-3 mt-0.5 text-destructive" />{t(k)}</div>)}
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base flex items-center gap-2"><Brain className="h-4 w-4" />{t("fightIq")} · 78</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {[["distance", 82], ["timing", 76], ["adaptability", 70], ["setups", 64], ["defense", 71], ["pressure", 80]].map(([k, v]) => <Bar key={k} label={t(k as string)} value={v as number} />)}
-        </CardContent>
-      </Card>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("ringControl")}</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-2 gap-3 text-center">
-          {[[t("center"), "58%"], [t("reaction"), "310 ms"], [t("counterRate"), "34%"], [t("attacksMin"), "11.2"]].map(([l, v]) => (
-            <div key={l} className="rounded-md border p-2"><div className="text-lg font-black">{v}</div><div className="text-[11px] text-muted-foreground">{l}</div></div>
-          ))}
-        </CardContent>
-      </Card>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("momentum")}</CardTitle></CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          {[["0:34", "mo1", "red"], ["1:32", "mo2", "blue"], ["2:10", "mo3", "red"]].map(([ts, k, c]) => (
-            <div key={k} className="flex gap-2"><span className="font-mono text-xs w-10" style={{ color: cc(c as Corner) }}>{ts}</span>{t(k)}</div>
-          ))}
-        </CardContent>
-      </Card>
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("mechanics")}</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {[["chamber", 8], ["pivot", 7], ["balance", 6], ["recovery", 7], ["hip", 8], ["flexibility", 6]].map(([k, v]) => <Bar key={k} label={t(k as string)} value={v as number} max={10} suffix="/10" />)}
-        </CardContent>
-      </Card>
-      <Card><CardHeader className="pb-2 flex-row items-center justify-between"><CardTitle className="text-base">{t("detected")}</CardTitle>
-        <Button size="sm" onClick={onApply}><Check className="h-4 w-4 me-1" />{t("applyAll")}</Button></CardHeader>
-        <CardContent className="space-y-2">
-          {AI_DETECTED.map((e, i) => (
-            <div key={e.id} className="flex justify-between text-sm border-s-4 ps-2" style={{ borderInlineStartColor: cc(e.corner) }}>
-              <span>{fmt(e.t)} · {techName(e.tech)}</span><span className="text-muted-foreground">{[92, 87, 81][i]}%</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+__AI__
 
 function StatsPanel({ match, events }: { match: Match; events: Ev[] }) {
   const t = useMatchLabT();
@@ -447,36 +388,4 @@ function StatsPanel({ match, events }: { match: Match; events: Ev[] }) {
   );
 }
 
-function CoachPanel({ match }: { match: Match }) {
-  const t = useMatchLabT();
-  const [who, setWho] = useState<Corner>("red");
-  return (
-    <div className="space-y-3">
-      <Seg options={[["red", match.red], ["blue", match.blue]]} value={who} onChange={(v) => setWho(v as Corner)} colorFor={(v) => cc(v as Corner)} />
-      <Card><CardHeader className="pb-2"><CardTitle className="text-base">{t("focus")}</CardTitle></CardHeader>
-        <CardContent className="space-y-2">
-          {["f1", "f2", "f3"].map((k, i) => (
-            <div key={k} className="flex items-center gap-3 rounded-md border p-2"><span className="font-black text-primary">#{i + 1}</span><span className="text-sm">{t(k)}</span></div>
-          ))}
-        </CardContent>
-      </Card>
-      <Tabs defaultValue="technique">
-        <TabsList className="grid grid-cols-4 w-full">
-          {["technique", "strategy", "physical", "mental"].map((k) => <TabsTrigger key={k} value={k} className="text-xs">{t(k)}</TabsTrigger>)}
-        </TabsList>
-        <TabsContent value="technique"><Card><CardContent className="p-4 text-sm space-y-2">
-          <div className="font-bold">Bandal Chagi</div>
-          <div className="font-semibold text-xs uppercase text-muted-foreground">{t("tips")}</div>
-          {["t1", "t2", "t3"].map((k) => <div key={k}>• {t(k)}</div>)}
-          <div className="font-semibold text-xs uppercase text-muted-foreground pt-2">{t("drills")}</div>
-          {["d1", "d2", "d3"].map((k) => <div key={k}>• {t(k)}</div>)}
-        </CardContent></Card></TabsContent>
-        {[["strategy", ["sg1", "sg2"]], ["physical", ["ph1", "ph2"]], ["mental", ["me1", "me2"]]].map(([v, ks]) => (
-          <TabsContent key={v as string} value={v as string}><Card><CardContent className="p-4 text-sm space-y-2">
-            {(ks as string[]).map((k) => <div key={k}>• {t(k)}</div>)}
-          </CardContent></Card></TabsContent>
-        ))}
-      </Tabs>
-    </div>
-  );
-}
+__COACH__
