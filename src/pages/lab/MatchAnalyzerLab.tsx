@@ -301,7 +301,11 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
       const { data, error } = await supabase.functions.invoke("match-lab-analyze", {
         body: { frames, events: match.events, weight: match.weight, rounds: match.rounds, language: locale },
       });
-      if (error || !data?.report) throw new Error(data?.error || "ai_error");
+      if (error || !data?.report) {
+        let code = data?.error || "ai_error";
+        try { const body = await (error as { context?: Response })?.context?.json(); if (body?.error) code = body.error; } catch { /* ignore */ }
+        throw new Error(code);
+      }
       const rep = data.report as Report;
       // Put the AI's detected events straight on the timeline (marked "AI") so the coach can correct them.
       const aiEvents: Ev[] = (rep.detected ?? []).filter((d) => ALL.some((k) => k.id === d.tech)).map((d) => {
@@ -313,7 +317,9 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
       onChange({ ...match, ai: true, events: [...match.events, ...fresh], report: { ...rep, detected: [] }, framesUsed: data.framesUsed, edited: false, stale: false, savedAt: Date.now() });
       if (fresh.length) toast.success(t("aiAdded")); else toast.info(t("aiNoEvents"));
     } catch (e) {
-      console.error(e); toast.error(t("aiError"));
+      console.error(e);
+      const code = (e as Error)?.message;
+      toast.error(code === "ai_blocked" || code === "no_credits" ? t("aiLimit") : code === "rate_limited" ? t("aiBusy") : t("aiError"));
     } finally { setAnalyzing(false); }
   };
   const list = cat === "kicks" ? KICKS : PUNCHES;
