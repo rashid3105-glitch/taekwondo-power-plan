@@ -791,11 +791,77 @@ async function exportPdf(match: Match, t: (k: string) => string) {
   const list = (a?: string[]) => (a ?? []).forEach((x) => text(`•  ${x}`));
   const r = match.report ?? {};
   const red: [number, number, number] = [220, 40, 40], blue: [number, number, number] = [30, 110, 230];
+  const evs = [...match.events].sort((a, b) => a.t - b.t);
+  const drawGraphics = () => {
+    const cw = W - 2 * M;
+    const st = (c: Corner) => { const e = evs.filter((x) => x.corner === c); const h = e.filter((x) => x.scored).length; return { a: e.length, h, acc: e.length ? Math.round((h / e.length) * 100) : 0, p: score(evs, c) }; };
+    const R = st("red"), B = st("blue");
+    // Stats table
+    head(t("stats")); need(34);
+    doc.setFontSize(9); doc.setFont("helvetica", "bold");
+    doc.setTextColor(...red); doc.text(match.red, M + 110, y, { align: "center" });
+    doc.setTextColor(...blue); doc.text(match.blue, M + 150, y, { align: "center" }); y += 5;
+    ([[t("attempts"), R.a, B.a], [t("hits"), R.h, B.h], [t("accuracy"), `${R.acc}%`, `${B.acc}%`], [t("points"), R.p, B.p]] as [string, unknown, unknown][]).forEach(([l, a, b]) => {
+      doc.setDrawColor(220, 220, 220); doc.line(M, y - 3.5, M + cw, y - 3.5);
+      doc.setFont("helvetica", "normal"); doc.setTextColor(40, 40, 40); doc.text(l, M, y);
+      doc.setFont("helvetica", "bold"); doc.text(String(a), M + 110, y, { align: "center" }); doc.text(String(b), M + 150, y, { align: "center" }); y += 6.5;
+    });
+    // Technique usage bars
+    head(t("usage"));
+    const techs = [...new Set(evs.map((e) => e.tech))];
+    const maxU = Math.max(1, ...techs.flatMap((k) => (["red", "blue"] as Corner[]).map((c) => evs.filter((e) => e.tech === k && e.corner === c).length)));
+    techs.forEach((k) => {
+      need(14); doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(40, 40, 40); doc.text(techName(k), M, y); y += 2;
+      (["red", "blue"] as Corner[]).forEach((c) => {
+        const cnt = evs.filter((e) => e.tech === k && e.corner === c).length; if (!cnt) return;
+        doc.setFillColor(...(c === "red" ? red : blue)); doc.roundedRect(M, y, Math.max(3, (cw - 12) * (cnt / maxU)), 2.5, 1.2, 1.2, "F");
+        doc.setFontSize(7); doc.setTextColor(110, 110, 110); doc.text(String(cnt), M + cw, y + 2.2, { align: "right" }); y += 3.8;
+      });
+      y += 2.5;
+    });
+    // Graphical timeline: red above, blue below the time axis
+    head(t("timeline")); need(62);
+    const end = Math.max(60, ...evs.map((e) => e.t)) * 1.03;
+    const x0 = M + 4, x1 = M + cw - 4, ax = y + 26;
+    const X = (s: number) => x0 + ((x1 - x0) * s) / end;
+    doc.setFillColor(246, 246, 246); doc.rect(M, y, cw, 52, "F");
+    doc.setFontSize(7); doc.setTextColor(...red); doc.text(match.red, M + 2, y + 4);
+    doc.setTextColor(...blue); doc.text(match.blue, M + 2, y + 50);
+    doc.setDrawColor(150, 150, 150); doc.setLineWidth(0.4); doc.line(x0, ax, x1, ax);
+    // round markers (every 120 s) + minute ticks
+    for (let m = 0; m <= end; m += 60) { doc.setDrawColor(180, 180, 180); doc.line(X(m), ax - 1, X(m), ax + 1); doc.setTextColor(120, 120, 120); doc.text(fmt(m), X(m), ax + 4.5, { align: "center" }); }
+    for (let r = 1; r < match.rounds; r++) { const xs = X(r * 120); if (xs > x1) break; doc.setDrawColor(200, 160, 40); doc.setLineDashPattern([1, 1], 0); doc.line(xs, y + 2, xs, y + 50); doc.setLineDashPattern([], 0); doc.setTextColor(180, 130, 20); doc.text(`R${r + 1}`, xs + 1, y + 4); }
+    const lanes: Record<Corner, number[]> = { red: [], blue: [] };
+    evs.forEach((e) => {
+      const col = e.corner === "red" ? red : blue; const dir = e.corner === "red" ? -1 : 1;
+      const x = X(e.t); const used = lanes[e.corner]; let lane = 0; while (used[lane] !== undefined && x - used[lane] < 3.2) lane++; used[lane] = x;
+      const yy = ax + dir * (6 + (lane % 4) * 4.5);
+      doc.setDrawColor(...col); doc.setLineWidth(0.2); doc.line(x, ax, x, yy);
+      if (e.scored) { doc.setFillColor(...col); doc.circle(x, yy, 1.6, "F"); doc.setFontSize(6); doc.setTextColor(...col); doc.text(`+${e.pts}`, x, yy + dir * 3.2 + (dir < 0 ? 0 : 1), { align: "center" }); }
+      else { doc.setFillColor(255, 255, 255); doc.circle(x, yy, 1.3, "FD"); }
+    });
+    y += 55;
+    doc.setFontSize(7); doc.setTextColor(110, 110, 110);
+    doc.setFillColor(80, 80, 80); doc.circle(M + 2, y - 1, 1.3, "F"); doc.text(t("scored"), M + 5, y);
+    doc.setDrawColor(80, 80, 80); doc.setFillColor(255, 255, 255); doc.circle(M + 28, y - 1, 1.2, "FD"); doc.text(t("miss"), M + 31, y);
+    y += 5;
+    // Score progression
+    head(`${t("points")} · ${fmt(0)}–${fmt(Math.round(end))}`); need(40);
+    const top = y, hgt = 30, maxP = Math.max(1, R.p, B.p);
+    doc.setFillColor(246, 246, 246); doc.rect(M, top, cw, hgt + 4, "F");
+    (["red", "blue"] as Corner[]).forEach((c) => {
+      let p = 0, px = X(0), py = top + hgt; doc.setDrawColor(...(c === "red" ? red : blue)); doc.setLineWidth(0.6);
+      evs.filter((e) => e.corner === c && e.scored).forEach((e) => { const nx = X(e.t); doc.line(px, py, nx, py); p += e.pts; const ny = top + hgt - (hgt - 2) * (p / maxP); doc.line(nx, py, nx, ny); px = nx; py = ny; });
+      doc.line(px, py, x1, py); doc.setFontSize(8); doc.setTextColor(...(c === "red" ? red : blue)); doc.text(String(p), x1, py - 1, { align: "right" });
+    });
+    doc.setLineWidth(0.2); y = top + hgt + 8;
+  };
   text(t("pdfTitle"), 18, true);
   text(`${match.title}: ${match.red} vs ${match.blue}`, 13, true);
   text(`${match.date} · ${match.weight} · ${match.rounds} ${t("rounds")}`, 9, false, [110, 110, 110]);
   text(`${match.red} ${score(match.events, "red")} – ${score(match.events, "blue")} ${match.blue}${r.winner ? `   ·   ${t("winner")}: ${r.winner === "red" ? match.red : match.blue}` : ""}`, 12, true);
   if (match.edited) text(t("edited"), 9, false, [110, 110, 110]);
+  drawGraphics();
   if (r.summary) { head(t("summary")); text(r.summary); }
   (["red", "blue"] as Corner[]).forEach((c) => {
     const sd = r[c]; if (!sd) return;
@@ -826,9 +892,6 @@ async function exportPdf(match: Match, t: (k: string) => string) {
     if (cs.physical?.length) { text(t("physical"), 10, true); list(cs.physical); }
     if (cs.mental?.length) { text(t("mental"), 10, true); list(cs.mental); }
   });
-  head(t("pdfEvents"));
-  [...match.events].sort((a, b) => a.t - b.t).forEach((e) =>
-    text(`${fmt(e.t)}  R${e.round}  ${e.corner === "red" ? match.red : match.blue}  ${techName(e.tech)} (${t(e.zone)})  ${e.scored ? `+${e.pts}` : t("miss")}`, 9, false, e.corner === "red" ? red : blue));
   const pages = doc.getNumberOfPages();
   for (let i = 1; i <= pages; i++) { doc.setPage(i); doc.setFontSize(8); doc.setTextColor(140, 140, 140); doc.text(`${t("pdfFooter")} · ${i}/${pages}`, M, 290); }
   const name = `${match.title || "match"}-${match.date}.pdf`.replace(/[^\w.-]+/g, "_");
