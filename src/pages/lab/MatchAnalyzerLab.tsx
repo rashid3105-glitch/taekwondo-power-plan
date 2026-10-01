@@ -77,7 +77,7 @@ export default function MatchAnalyzerLab() {
   const t = useMatchLabT();
   const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>(() => {
-    try { const raw = localStorage.getItem(LAB_KEY); if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; } } catch { /* ignore */ }
+    try { const raw = localStorage.getItem(LAB_KEY); if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr)) return arr; } } catch { /* ignore */ }
     return [DEMO];
   });
   // Keep analyses on this device (video files cannot be stored, so they are left out).
