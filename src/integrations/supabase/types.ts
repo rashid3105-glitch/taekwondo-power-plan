@@ -2007,6 +2007,33 @@ export type Database = {
         }
         Relationships: []
       }
+      cta_clicks: {
+        Row: {
+          created_at: string
+          cta: string
+          device: string | null
+          id: string
+          locale: string | null
+          page: string
+        }
+        Insert: {
+          created_at?: string
+          cta: string
+          device?: string | null
+          id?: string
+          locale?: string | null
+          page: string
+        }
+        Update: {
+          created_at?: string
+          cta?: string
+          device?: string | null
+          id?: string
+          locale?: string | null
+          page?: string
+        }
+        Relationships: []
+      }
       diary_comments: {
         Row: {
           author_role: string
