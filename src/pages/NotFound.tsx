@@ -24,10 +24,10 @@ const NotFound = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <PageMeta title="Page Not Found" />
+    <main className="flex min-h-dvh items-center justify-center bg-background px-4">
+      <PageMeta title="Page Not Found" noindex />
       <div className="text-center space-y-4">
-        <p className="text-6xl font-black text-foreground tracking-tighter">404</p>
+        <h1 className="text-6xl font-black text-foreground tracking-tighter">404</h1>
         <p className="text-sm text-muted-foreground">This page doesn't exist.</p>
         <Button asChild variant="outline" size="sm">
           <Link to="/">
@@ -35,7 +35,7 @@ const NotFound = () => {
           </Link>
         </Button>
       </div>
-    </div>
+    </main>
   );
 };
 
