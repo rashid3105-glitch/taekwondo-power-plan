@@ -1,3 +1,4 @@
+import { trackCta } from "@/lib/ctaTracking";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle } from "lucide-react";
@@ -32,6 +33,7 @@ export default function Contact() {
         .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
       if (error) throw error;
       setSubmitted(true);
+      trackCta("contact_submitted");
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {

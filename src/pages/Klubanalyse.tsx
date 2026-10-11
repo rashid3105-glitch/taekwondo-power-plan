@@ -1,3 +1,4 @@
+import { trackCta } from "@/lib/ctaTracking";
 import { useState, useMemo } from "react";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
@@ -646,7 +647,7 @@ export default function Klubanalyse() {
                 {C.closingP2}
               </p>
               <button
-                onClick={() => navigate("/contact")}
+                onClick={() => { trackCta("analysis_result_contact"); navigate("/contact"); }}
                 style={{ padding: "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
                 {C.cta}
