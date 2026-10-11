@@ -1,4 +1,3 @@
--- Cookieless CTA click counting for the public site. No personal data.
 CREATE TABLE IF NOT EXISTS public.cta_clicks (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   cta text NOT NULL CHECK (char_length(cta) BETWEEN 1 AND 60),
