@@ -158,6 +158,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                     borderRadius: 6,
                     border: active ? `1px solid ${GOLD}` : "1px solid transparent",
                     background: active ? "rgba(212,175,55,0.08)" : "transparent",
+                    fontFamily: "inherit",
                     transition: "all 0.15s ease",
                   }}
                 >
