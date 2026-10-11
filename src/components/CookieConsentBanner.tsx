@@ -33,7 +33,7 @@ export function CookieConsentBanner() {
 
   return (
     <div
-      role="dialog"
+      role="region"
       aria-live="polite"
       aria-label={t("privacyCookies")}
       style={{
@@ -42,85 +42,48 @@ export function CookieConsentBanner() {
         left: 0,
         right: 0,
         zIndex: 9999,
-        background: "rgba(11,12,20,0.98)",
+        background: "rgba(11,12,20,0.97)",
         borderTop: "0.5px solid rgba(212,175,55,0.25)",
         backdropFilter: "blur(10px)",
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
       }}
     >
       <div
         style={{
           maxWidth: 1200,
           margin: "0 auto",
-          padding: "14px 18px",
+          padding: "8px 12px",
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
           gap: 12,
-          alignItems: "flex-start",
         }}
       >
-        <div
+        <Cookie size={16} aria-hidden style={{ color: GOLD, flexShrink: 0 }} />
+        <p style={{ margin: 0, fontSize: 12, lineHeight: 1.4, color: "rgba(255,255,255,0.8)", flex: 1 }}>
+          {t("cookieBannerText")}{" "}
+          <Link to="/privacy" style={{ color: GOLD, textDecoration: "underline", textUnderlineOffset: 2 }}>
+            {t("cookieBannerPrivacy")}
+          </Link>
+        </p>
+        <button
+          type="button"
+          onClick={accept}
           style={{
-            display: "flex",
-            alignItems: "flex-start",
-            gap: 12,
-            width: "100%",
+            background: GOLD,
+            color: "#0B0C14",
+            border: "none",
+            borderRadius: 8,
+            padding: "0 16px",
+            minHeight: 40,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
           }}
         >
-          <Cookie
-            size={20}
-            style={{
-              color: GOLD,
-              marginTop: 2,
-              flexShrink: 0,
-            }}
-          />
-          <p
-            style={{
-              margin: 0,
-              fontSize: 13,
-              lineHeight: 1.55,
-              color: "rgba(255,255,255,0.85)",
-              flex: 1,
-            }}
-          >
-            {t("cookieBannerText")}{" "}
-            <Link
-              to="/privacy"
-              style={{
-                color: GOLD,
-                textDecoration: "underline",
-                textUnderlineOffset: 2,
-              }}
-            >
-              {t("cookieBannerPrivacy")}
-            </Link>
-          </p>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: 10,
-            width: "100%",
-            justifyContent: "flex-end",
-          }}
-        >
-          <button
-            onClick={accept}
-            style={{
-              background: GOLD,
-              color: "#0B0C14",
-              border: "none",
-              borderRadius: 8,
-              padding: "8px 18px",
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {t("cookieBannerAccept")}
-          </button>
-        </div>
+          {t("cookieBannerAccept")}
+        </button>
       </div>
     </div>
   );
