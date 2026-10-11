@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const GOLD = "#D4AF37";
 
 const Terms = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <LandingLayout>

@@ -42,8 +42,8 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="Contact — Sportstalent"
-        description="Get in touch with the Sportstalent team. Questions, partnerships, or feedback — we'd love to hear from you."
+        title={t("seoContactTitle")}
+        description={t("seoContactDesc")}
         canonical="https://sportstalent.dk/contact"
       />
       <Watermark />

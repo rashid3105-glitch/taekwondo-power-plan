@@ -18,10 +18,7 @@ export default function PrivacyPolicy() {
 
   return (
     <LandingLayout>
-      <PageMeta
-        title="Privacy Policy – Sportstalent"
-        description="How Sportstalent processes and protects your personal data under GDPR."
-      />
+      <PageMeta title={t("seoPrivacyTitle")} description={t("seoPrivacyDesc")} canonical="https://sportstalent.dk/privacy" />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px 80px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <button
