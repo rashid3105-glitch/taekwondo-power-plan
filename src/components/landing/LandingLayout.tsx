@@ -141,8 +141,10 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
             {NAV_LINKS.map((l) => {
               const active = isActive(l.href);
               return (
-                <span
+                <button
+                  type="button"
                   key={l.href}
+                  aria-current={active ? "page" : undefined}
                   onClick={() => navigate(l.href)}
                   style={{
                     position: "relative",
@@ -160,7 +162,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
                   }}
                 >
                   {l.label}
-                </span>
+                </button>
               );
             })}
           </div>
@@ -268,7 +270,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
               { label: t("homeFooterTerms"), href: "/terms" },
               ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/contact" }]),
               { label: t("navBlog"), href: "/blog" },
-            ].map(l => <span key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer" }}>{l.label}</span>)}
+            ].map(l => <button type="button" key={l.href} onClick={() => navigate(l.href)} style={{ cursor: "pointer", background: "none", border: 0, padding: "8px 0", color: "inherit", font: "inherit" }}>{l.label}</button>)}
           </div>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>© 2026 Sportstalent.dk</div>
         </div>
