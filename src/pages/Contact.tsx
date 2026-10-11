@@ -1,3 +1,4 @@
+import { trackCta } from "@/lib/ctaTracking";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle } from "lucide-react";
@@ -32,6 +33,7 @@ export default function Contact() {
         .insert({ name: name.trim(), email: email.trim(), message: message.trim() });
       if (error) throw error;
       setSubmitted(true);
+      trackCta("contact_submitted");
     } catch (err: any) {
       toast({ title: t("error"), description: err.message, variant: "destructive" });
     } finally {
@@ -42,8 +44,8 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       <PageMeta
-        title="Contact — Sportstalent"
-        description="Get in touch with the Sportstalent team. Questions, partnerships, or feedback — we'd love to hear from you."
+        title={t("seoContactTitle")}
+        description={t("seoContactDesc")}
         canonical="https://sportstalent.dk/contact"
       />
       <Watermark />

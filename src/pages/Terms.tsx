@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const GOLD = "#D4AF37";
 
 const Terms = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <LandingLayout>
-      <PageMeta title="Vilkår og betingelser · Sportstalent" description="Brugsvilkår for Sportstalent-platformen — rettigheder, ansvar og databehandling for atleter og klubber." canonical="https://sportstalent.dk/terms" />
+      <PageMeta title={t("seoTermsTitle")} description={t("seoTermsDesc")} canonical="https://sportstalent.dk/terms" />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }}>
         <div
           style={{

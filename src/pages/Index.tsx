@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PageMeta } from "@/components/PageMeta";
+import { trackCta } from "@/lib/ctaTracking";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { LandingLayout } from "@/components/landing/LandingLayout";
@@ -199,7 +200,7 @@ const Index = () => {
               {t("homeHeroBadge")}
             </div>
             <h1 style={{ fontSize: isMobile ? "clamp(30px, 7.5vw, 36px)" : "clamp(38px, 5vw, 68px)", fontWeight: 900, lineHeight: isMobile ? 1.05 : 1.03, letterSpacing: "-0.045em", margin: "0 0 16px" }}>
-              {t("homeHeroTitle1")}<br />
+              <span style={{ display: "block", fontSize: isMobile ? 13 : 15, fontWeight: 600, letterSpacing: "0", lineHeight: 1.4, color: "rgba(255,255,255,0.6)", marginBottom: isMobile ? 10 : 14 }}>{t("homeHeroTitle1")}</span>
               {t("homeHeroTitle2Prefix")}<span style={{ color: GOLD, fontStyle: "italic" }}>{t("homeHeroTitle2Em")}</span>
             </h1>
             <p style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, maxWidth: 520, margin: "0 0 22px" }}>
@@ -216,8 +217,8 @@ const Index = () => {
             </ul>
 
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
-              <button onClick={() => navigate("/contact")} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaDemo")}</button>
-              <button onClick={() => navigate("/klubanalyse")} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaAnalysis")}</button>
+              <button onClick={() => { trackCta("home_hero_demo"); navigate("/contact"); }} style={{ padding: isMobile ? "12px 20px" : "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: isMobile ? 13 : 15, fontWeight: 800, cursor: "pointer", boxShadow: isMobile ? "0 6px 18px rgba(212,175,55,0.18)" : "0 10px 30px rgba(212,175,55,0.2)" }}>{t("homeHeroCtaDemo")}</button>
+              <button onClick={() => { trackCta("home_hero_analysis"); navigate("/klubanalyse"); }} style={{ padding: isMobile ? "12px 18px" : "14px 24px", borderRadius: 10, border: "0.5px solid rgba(255,255,255,0.18)", background: "transparent", color: "#fff", fontSize: isMobile ? 13 : 15, fontWeight: 600, cursor: "pointer" }}>{t("homeHeroCtaAnalysis")}</button>
             </div>
 
             {founderCreditOk && (
@@ -449,7 +450,7 @@ const Index = () => {
               {[t("homePriceClub1"), t("homePriceClub2"), t("homePriceClub3"), t("homePriceClub4"), t("homePriceClub5"), t("homePriceClub6"), t("homePriceClub7")].map((f, i) => (
                 <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.85)", display: "flex", gap: 8, marginBottom: 8 }}><span style={{ color: GOLD }}>✓</span>{f}</div>
               ))}
-              <button onClick={() => navigate("/contact")} style={{ width: "100%", marginTop: 18, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: BG, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("homePriceClubCta")}</button>
+              <button onClick={() => { trackCta("home_price_cta"); navigate("/contact"); }} style={{ width: "100%", marginTop: 18, padding: "13px", borderRadius: 8, border: "none", background: GOLD, color: BG, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>{t("homePriceClubCta")}</button>
             </div>
             <div style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 14, padding: "26px" }}>
               <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.14em", color: "rgba(255,255,255,0.62)", textTransform: "uppercase", marginBottom: 10 }}>{t("homePriceFedTier")}</div>
@@ -511,11 +512,11 @@ const Index = () => {
           <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", maxWidth: 460, margin: "0 auto 32px", lineHeight: 1.65 }}>
             {t("homeCtaBody")}
           </p>
-          <button onClick={() => navigate("/contact")} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
+          <button onClick={() => { trackCta("home_bottom_cta"); navigate("/contact"); }} style={{ padding: "15px 38px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 15px 40px rgba(212,175,55,0.25)" }}>{t("homeCtaButton")}</button>
           <div style={{ marginTop: 16, fontSize: 12, color: "rgba(255,255,255,0.5)", fontFamily: MONO, letterSpacing: "0.06em" }}>{t("homeCtaTrust")}</div>
           <div style={{ marginTop: 20, fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
             {t("homeCtaNotReady")}{" "}
-            <button onClick={() => navigate("/klubanalyse")} style={{ background: "none", border: "none", padding: 0, color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>
+            <button onClick={() => { trackCta("home_bottom_analysis"); navigate("/klubanalyse"); }} style={{ background: "none", border: "none", padding: 0, color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>
               {t("homeCtaAnalysisLink")}
             </button>
           </div>

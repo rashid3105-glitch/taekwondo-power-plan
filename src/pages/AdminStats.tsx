@@ -16,6 +16,7 @@ import { ConsentFunnelCard } from "@/components/admin/ConsentFunnelCard";
 import { ConsentAgeOverviewCard } from "@/components/admin/ConsentAgeOverviewCard";
 
 import { JobRunsCard } from "@/components/admin/JobRunsCard";
+import { CtaClicksCard } from "@/components/admin/CtaClicksCard";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
 
 type StatUser = {
@@ -257,6 +258,8 @@ export default function AdminStats() {
 
         <ConsentAgeOverviewCard />
 
+
+        <CtaClicksCard />
 
         <JobRunsCard />
 

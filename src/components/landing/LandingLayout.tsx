@@ -85,7 +85,7 @@ export function LandingLayout({ children }: { children: React.ReactNode }) {
         <div style={{ padding: "0 16px", height: isMobile ? 48 : 56, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <BrandLogo height={isMobile ? 30 : 40} onClick={() => navigate("/")} />
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <LanguageSwitcher compact={isMobile} />
+            <LanguageSwitcher compact={isMobile} variant="dark" />
             <button
               onClick={() => navigate("/auth")}
               style={{

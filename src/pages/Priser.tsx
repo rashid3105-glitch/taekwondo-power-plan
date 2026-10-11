@@ -1,3 +1,4 @@
+import { trackCta } from "@/lib/ctaTracking";
 import { useState } from "react";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
@@ -250,7 +251,7 @@ export default function Priser() {
 
         <div style={{ marginTop: 40, paddingTop: 24, borderTop: "0.5px solid rgba(255,255,255,0.08)", textAlign: "center", fontSize: 13, color: "rgba(255,255,255,0.45)" }}>
           Usikker på, hvad I har brug for?{" "}
-          <button onClick={() => navigate("/klubanalyse")} style={{ background: "none", border: "none", padding: 0, color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>
+          <button onClick={() => { trackCta("pricing_analysis"); navigate("/klubanalyse"); }} style={{ background: "none", border: "none", padding: 0, color: "rgba(255,255,255,0.7)", fontSize: 13, textDecoration: "underline", cursor: "pointer" }}>
             Tag Klubanalysen først
           </button>
         </div>
