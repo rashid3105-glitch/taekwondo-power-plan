@@ -16,7 +16,7 @@ interface PageMetaProps {
  */
 export const PageMeta = ({ title, description, canonical, noindex, ogType, ogImage }: PageMetaProps) => {
   const suffix = "Sportstalent";
-  const fullTitle = title.toLowerCase().includes(suffix.toLowerCase()) ? title : `${title} | ${suffix}`;
+  const fullTitle = title.toLowerCase().includes(suffix.toLowerCase()) || title.includes("سبورتستالنت") ? title : `${title} | ${suffix}`;
   const robots = noindex ? "noindex, nofollow" : canonical ? "index, follow" : undefined;
 
   return (
