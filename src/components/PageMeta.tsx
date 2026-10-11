@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 
 interface PageMetaProps {
   title: string;
@@ -9,87 +9,30 @@ interface PageMetaProps {
   ogImage?: string;
 }
 
+/**
+ * Per-page head tags. Rendered through react-helmet-async so the page's own
+ * (translated) values win over the route-level PublicSeo defaults in App.tsx —
+ * deeper Helmet instances take precedence.
+ */
 export const PageMeta = ({ title, description, canonical, noindex, ogType, ogImage }: PageMetaProps) => {
-  useEffect(() => {
-    const suffix = "Sportstalent";
-    // Only append the brand suffix if the title doesn't already contain it
-    document.title = title.toLowerCase().includes(suffix.toLowerCase())
-      ? title
-      : `${title} | ${suffix}`;
+  const suffix = "Sportstalent";
+  const fullTitle = title.toLowerCase().includes(suffix.toLowerCase()) ? title : `${title} | ${suffix}`;
+  const robots = noindex ? "noindex, nofollow" : canonical ? "index, follow" : undefined;
 
-    if (description) {
-      let meta = document.querySelector('meta[name="description"]');
-      if (meta) {
-        meta.setAttribute("content", description);
-      }
-    }
-
-    // Ensure a canonical <link> exists so we can set it per-route
-    let canonicalEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-    if (!canonicalEl) {
-      canonicalEl = document.createElement("link");
-      canonicalEl.setAttribute("rel", "canonical");
-      document.head.appendChild(canonicalEl);
-    }
-    if (canonical) {
-      canonicalEl.setAttribute("href", canonical);
-    }
-
-
-    // Update og:url
-    const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (canonical && ogUrl) {
-      ogUrl.setAttribute("content", canonical);
-    }
-
-    // Update og:title and twitter:title
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute("content", document.title);
-    const twTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twTitle) twTitle.setAttribute("content", document.title);
-
-    // Update og:type
-    const ogTypeEl = document.querySelector('meta[property="og:type"]');
-    if (ogTypeEl) ogTypeEl.setAttribute("content", ogType || "website");
-
-    // Update og:image / twitter:image per-page
-    if (ogImage) {
-      const ogImg = document.querySelector('meta[property="og:image"]');
-      if (ogImg) ogImg.setAttribute("content", ogImage);
-      const twImg = document.querySelector('meta[name="twitter:image"]');
-      if (twImg) twImg.setAttribute("content", ogImage);
-    }
-
-    // Update og:description and twitter:description
-    if (description) {
-      const ogDesc = document.querySelector('meta[property="og:description"]');
-      if (ogDesc) ogDesc.setAttribute("content", description);
-      const twDesc = document.querySelector('meta[name="twitter:description"]');
-      if (twDesc) twDesc.setAttribute("content", description);
-    }
-
-    // Handle robots. Default in index.html is now noindex,nofollow (private-by-default).
-    // We only flip to index,follow when explicitly noindex=false OR a canonical is provided
-    // (which marks the page as a public, indexable route).
-    const robotsMeta = document.querySelector('meta[name="robots"]');
-    const previousRobots = robotsMeta?.getAttribute("content") ?? null;
-    if (robotsMeta) {
-      if (noindex) {
-        robotsMeta.setAttribute("content", "noindex, nofollow");
-      } else if (canonical || noindex === false) {
-        robotsMeta.setAttribute("content", "index, follow");
-      }
-    }
-
-    return () => {
-      // Restore the sitewide default on unmount so a public page's index,follow
-      // doesn't leak into a subsequently-rendered private page.
-      if (robotsMeta && previousRobots !== null) {
-        robotsMeta.setAttribute("content", previousRobots);
-      }
-    };
-
-  }, [title, description, canonical, noindex, ogType, ogImage]);
-
-  return null;
+  return (
+    <Helmet>
+      <title>{fullTitle}</title>
+      {description ? <meta name="description" content={description} /> : null}
+      {robots ? <meta name="robots" content={robots} /> : null}
+      {canonical ? <link rel="canonical" href={canonical} /> : null}
+      {canonical ? <meta property="og:url" content={canonical} /> : null}
+      <meta property="og:title" content={fullTitle} />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta property="og:type" content={ogType || "website"} />
+      {description ? <meta property="og:description" content={description} /> : null}
+      {description ? <meta name="twitter:description" content={description} /> : null}
+      {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+      {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+    </Helmet>
+  );
 };
