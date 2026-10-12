@@ -217,7 +217,7 @@ const AnimatedRoutes = () => {
     <>
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Page><PublicSeo path="/" title="Sportstalent — Operating System for Elite Talent Development in Danish Clubs" description="Sportstalent is the operating system Danish sports clubs use to develop elite talent: periodized training, readiness tracking, and squad management in one place." /><Index /></Page>} />
+        <Route path="/" element={<Page><PublicSeo path="/" title="Sportstalent — Klubsystem til udvikling af sportstalenter" description="Sikker, GDPR-klar platform til danske sportsklubber. Træningsplaner, dagbog, tests og trænerdashboard ét sted — bygget af en træner med 40 år i sporten." /><Index /></Page>} />
         <Route path="/for-traenere" element={<Page><PublicSeo path="/for-traenere" title="For trænere og klubber — Sportstalent" description="Værktøjer til trænere og klubber i enhver sportsgren: sæsonplaner, holdstyring, tests og fremgang for hver atlet — samlet ét sted." /><CoachLanding /></Page>} />
         <Route path="/v3" element={<Navigate to="/for-traenere" replace />} />
         <Route path="/klubanalyse" element={<Page><PublicSeo path="/klubanalyse" title="Klubanalysen — hvor står jeres klub? | Sportstalent" description="15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber." /><Klubanalyse /></Page>} />

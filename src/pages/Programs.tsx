@@ -2,9 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, Zap, Target, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PublicNav } from "@/components/PublicNav";
-import { AppFooter } from "@/components/AppFooter";
-import { Watermark } from "@/components/Watermark";
+import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekPlanPreview } from "@/components/landing/WeekPlanPreview";
@@ -20,14 +18,13 @@ export default function Programs() {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative">
+    <LandingLayout>
+    <div className="bg-background flex flex-col relative">
       <PageMeta
         title="Training Programs — Sportstalent"
         description="Explore periodized training programs for combat-sport and martial-arts athletes. Competition prep, general S&C, and discipline-specific programs."
         canonical="https://sportstalent.dk/programs"
       />
-      <Watermark />
-      <PublicNav />
 
       <main className="flex-1">
         {/* Hero */}
@@ -102,8 +99,7 @@ export default function Programs() {
           </section>
         </div>
       </main>
-
-      <AppFooter />
     </div>
+    </LandingLayout>
   );
 }
