@@ -8,6 +8,13 @@
       "when": 1791721388602,
       "tag": "0000_cta_clicks",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791785929878,
+      "tag": "0001_tighten_public_bucket_listing_and_cta_insert",
+      "breakpoints": true
     }
   ]
 }
