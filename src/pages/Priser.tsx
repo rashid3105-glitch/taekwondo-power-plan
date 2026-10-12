@@ -46,7 +46,7 @@ const PRICING_JSONLD = {
 
 export default function Priser() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -183,13 +183,13 @@ export default function Priser() {
 
         {(() => {
           const TR = {
-            da: ["GDPR-klar med samtykkestyring", "Data isoleret pr. klub", "Forældre får læseadgang", "Data opbevares i EU"],
-            en: ["GDPR-ready consent management", "Data isolated per club", "Parents get read-only access", "Data stored in the EU"],
-            sv: ["GDPR-redo samtyckeshantering", "Data isolerad per klubb", "Föräldrar får läsbehörighet", "Data lagras i EU"],
-            de: ["DSGVO-konforme Einwilligungsverwaltung", "Daten pro Verein isoliert", "Eltern erhalten Lesezugriff", "Datenspeicherung in der EU"],
-            ar: ["إدارة موافقة متوافقة مع GDPR", "بيانات معزولة لكل نادٍ", "وصول للقراءة فقط لأولياء الأمور", "تخزين البيانات في الاتحاد الأوروبي"],
-            no: ["GDPR-klar samtykkehåndtering", "Data isolert per klubb", "Foreldre får lesetilgang", "Data lagres i EU"],
-            es: ["Gestión de consentimiento conforme al RGPD", "Datos aislados por club", "Los padres tienen acceso de lectura", "Datos almacenados en la UE"],
+            da: ["GDPR-klar med samtykkestyring", "Data isoleret pr. klub", "Forældre får læseadgang", "Tofaktor-login (2FA)"],
+            en: ["GDPR-ready consent management", "Data isolated per club", "Parents get read-only access", "Two-factor login (2FA)"],
+            sv: ["GDPR-redo samtyckeshantering", "Data isolerad per klubb", "Föräldrar får läsbehörighet", "Tvåfaktorsinloggning (2FA)"],
+            de: ["DSGVO-konforme Einwilligungsverwaltung", "Daten pro Verein isoliert", "Eltern erhalten Lesezugriff", "Zwei-Faktor-Login (2FA)"],
+            ar: ["إدارة موافقة متوافقة مع GDPR", "بيانات معزولة لكل نادٍ", "وصول للقراءة فقط لأولياء الأمور", "تسجيل دخول بخطوتين (2FA)"],
+            no: ["GDPR-klar samtykkehåndtering", "Data isolert per klubb", "Foreldre får lesetilgang", "Tofaktor-innlogging (2FA)"],
+            es: ["Gestión de consentimiento conforme al RGPD", "Datos aislados por club", "Los padres tienen acceso de lectura", "Inicio de sesión en dos pasos (2FA)"],
           } as const;
           const items = TR[locale as keyof typeof TR] ?? TR.en;
           return (
