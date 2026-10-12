@@ -2,9 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Zap, Shield, Brain, Target, TrendingUp, RefreshCw } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { PublicNav } from "@/components/PublicNav";
-import { AppFooter } from "@/components/AppFooter";
-import { Watermark } from "@/components/Watermark";
+import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { PeriodizationDiagram } from "@/components/PeriodizationDiagram";
 
@@ -124,15 +122,13 @@ export default function Methodology() {
   const tt = (key: TranslationKey) => t(key);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative">
+    <LandingLayout>
+    <div className="bg-background flex flex-col relative">
       <PageMeta
         title={tt("methPageTitle")}
         description={tt("methPageDesc")}
         canonical="https://sportstalent.dk/methodology"
       />
-      <Watermark />
-
-      <PublicNav />
 
       <main className="flex-1">
         {/* Hero */}
@@ -237,8 +233,7 @@ export default function Methodology() {
           </Button>
         </div>
       </main>
-
-      <AppFooter />
     </div>
+    </LandingLayout>
   );
 }

@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { PublicNav } from "@/components/PublicNav";
-import { AppFooter } from "@/components/AppFooter";
-import { Watermark } from "@/components/Watermark";
+import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,14 +40,13 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative">
+    <LandingLayout>
+    <div className="bg-background flex flex-col relative">
       <PageMeta
         title={t("seoContactTitle")}
         description={t("seoContactDesc")}
         canonical="https://sportstalent.dk/contact"
       />
-      <Watermark />
-      <PublicNav />
 
       <main className="flex-1">
         {/* Hero */}
@@ -149,8 +146,7 @@ export default function Contact() {
           </section>
         </div>
       </main>
-
-      <AppFooter />
     </div>
+    </LandingLayout>
   );
 }
