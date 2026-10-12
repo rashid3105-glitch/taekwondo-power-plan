@@ -123,6 +123,7 @@ export default function Methodology() {
 
   return (
     <LandingLayout>
+    <div className="theme-public-dark">
     <div className="bg-background flex flex-col relative">
       <PageMeta
         title={tt("methPageTitle")}
@@ -135,7 +136,7 @@ export default function Methodology() {
         <section className="relative overflow-hidden">
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] opacity-15 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
+            style={{ background: "radial-gradient(ellipse, hsl(46 65% 52% / 0.35), transparent 70%)" }}
             aria-hidden="true"
           />
           <div className="relative max-w-2xl mx-auto px-5 pt-10 pb-8 sm:pt-16 sm:pb-12">
@@ -159,9 +160,8 @@ export default function Methodology() {
         </section>
 
         {/* Gradient transition */}
-        <div className="h-20 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
 
-        <div className="theme-light-section">
+        <div className="">
         {/* Periodization diagram */}
         <section className="max-w-2xl mx-auto px-5">
           <PeriodizationDiagram />
@@ -233,6 +233,7 @@ export default function Methodology() {
           </Button>
         </div>
       </main>
+    </div>
     </div>
     </LandingLayout>
   );

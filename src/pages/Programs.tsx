@@ -19,6 +19,7 @@ export default function Programs() {
 
   return (
     <LandingLayout>
+    <div className="theme-public-dark">
     <div className="bg-background flex flex-col relative">
       <PageMeta
         title="Training Programs — Sportstalent"
@@ -31,7 +32,7 @@ export default function Programs() {
         <section className="relative overflow-hidden">
           <div
             className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[400px] opacity-15 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
+            style={{ background: "radial-gradient(ellipse, hsl(46 65% 52% / 0.35), transparent 70%)" }}
             aria-hidden="true"
           />
           <div className="relative max-w-3xl mx-auto px-5 pt-14 pb-8 sm:pt-20 sm:pb-10 text-center">
@@ -55,9 +56,8 @@ export default function Programs() {
         </section>
 
         {/* Gradient transition */}
-        <div className="h-20 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
 
-        <div className="theme-light-section">
+        <div className="">
           {/* Program cards */}
           <section className="max-w-3xl mx-auto px-5 pb-14">
             <div className="grid gap-5 sm:grid-cols-3">
@@ -99,6 +99,7 @@ export default function Programs() {
           </section>
         </div>
       </main>
+    </div>
     </div>
     </LandingLayout>
   );

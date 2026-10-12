@@ -41,6 +41,7 @@ export default function Contact() {
 
   return (
     <LandingLayout>
+    <div className="theme-public-dark">
     <div className="bg-background flex flex-col relative">
       <PageMeta
         title={t("seoContactTitle")}
@@ -53,7 +54,7 @@ export default function Contact() {
         <section className="relative overflow-hidden">
           <div
             className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[400px] opacity-15 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse, hsl(190 95% 50% / 0.35), transparent 70%)" }}
+            style={{ background: "radial-gradient(ellipse, hsl(46 65% 52% / 0.35), transparent 70%)" }}
             aria-hidden="true"
           />
           <div className="relative max-w-3xl mx-auto px-5 pt-14 pb-8 sm:pt-20 sm:pb-10 text-center">
@@ -77,9 +78,8 @@ export default function Contact() {
         </section>
 
         {/* Gradient transition */}
-        <div className="h-20 bg-gradient-to-b from-background to-[hsl(210,20%,97%)]" aria-hidden="true" />
 
-        <div className="theme-light-section">
+        <div className="">
           <section className="max-w-lg mx-auto px-5 pb-16">
             {submitted ? (
               <motion.div
@@ -146,6 +146,7 @@ export default function Contact() {
           </section>
         </div>
       </main>
+    </div>
     </div>
     </LandingLayout>
   );
