@@ -180,6 +180,28 @@ export default function Priser() {
         </div>
 
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 16, lineHeight: 1.6 }}>{t("pricingTermsNote")}</div>
+
+        {(() => {
+          const TR = {
+            da: ["GDPR-klar med samtykkestyring", "Data isoleret pr. klub", "Forældre får læseadgang", "Data opbevares i EU"],
+            en: ["GDPR-ready consent management", "Data isolated per club", "Parents get read-only access", "Data stored in the EU"],
+            sv: ["GDPR-redo samtyckeshantering", "Data isolerad per klubb", "Föräldrar får läsbehörighet", "Data lagras i EU"],
+            de: ["DSGVO-konforme Einwilligungsverwaltung", "Daten pro Verein isoliert", "Eltern erhalten Lesezugriff", "Datenspeicherung in der EU"],
+            ar: ["إدارة موافقة متوافقة مع GDPR", "بيانات معزولة لكل نادٍ", "وصول للقراءة فقط لأولياء الأمور", "تخزين البيانات في الاتحاد الأوروبي"],
+            no: ["GDPR-klar samtykkehåndtering", "Data isolert per klubb", "Foreldre får lesetilgang", "Data lagres i EU"],
+            es: ["Gestión de consentimiento conforme al RGPD", "Datos aislados por club", "Los padres tienen acceso de lectura", "Datos almacenados en la UE"],
+          } as const;
+          const items = TR[locale as keyof typeof TR] ?? TR.en;
+          return (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 10, marginTop: 20 }}>
+              {items.map((it, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13, color: "rgba(255,255,255,0.75)", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "10px 12px" }}>
+                  <span style={{ color: GOLD }}>✓</span>{it}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
 
