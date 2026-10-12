@@ -15,6 +15,13 @@
       "when": 1791785929878,
       "tag": "0001_tighten_public_bucket_listing_and_cta_insert",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791786035110,
+      "tag": "0002_admin_only_consent_settings",
+      "breakpoints": true
     }
   ]
 }
