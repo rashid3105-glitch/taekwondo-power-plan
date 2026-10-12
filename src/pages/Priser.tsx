@@ -87,14 +87,26 @@ export default function Priser() {
 
 
 
+  const [sendError, setSendError] = useState(false);
   const handleSubmit = async () => {
     if (!form.email || !form.name) return;
     setSending(true);
-    try {
-      await supabase.functions.invoke("send-contact-email", {
-        body: { name: form.name, email: form.email, club: form.club, message: form.message },
-      });
-    } catch (e) { /* silent */ }
+    setSendError(false);
+    // Store the lead first — success is only shown once it is safely saved.
+    const msg = [form.club.trim() && `Klub: ${form.club.trim()}`, form.message.trim()].filter(Boolean).join("\n\n") || "-";
+    const { error } = await supabase
+      .from("contact_submissions")
+      .insert({ name: form.name.trim().slice(0, 100), email: form.email.trim().slice(0, 255), message: msg.slice(0, 1000) });
+    if (error) {
+      setSending(false);
+      setSendError(true);
+      return;
+    }
+    // Email notification is best-effort; the stored lead is the source of truth.
+    supabase.functions.invoke("send-contact-email", {
+      body: { name: form.name, email: form.email, club: form.club, message: form.message },
+    }).catch(() => undefined);
+    trackCta("contact_submitted");
     setSending(false);
     setSent(true);
   };
@@ -245,6 +257,11 @@ export default function Priser() {
               <button onClick={handleSubmit} disabled={sending || !form.name || !form.email} style={{ padding: "13px", borderRadius: 8, border: "none", background: form.name && form.email ? GOLD : "rgba(255,255,255,0.1)", color: form.name && form.email ? "#0B0C14" : "rgba(255,255,255,0.3)", fontSize: 14, fontWeight: 800, cursor: form.name && form.email ? "pointer" : "not-allowed" }}>
                 {sending ? t("pricingSending") : t("pricingSend")}
               </button>
+              {sendError && (
+                <div role="alert" style={{ fontSize: 13, color: "#f87171", textAlign: "center" }}>
+                  {t("error")} — <a href="/contact" style={{ color: "#f87171", textDecoration: "underline" }}>{t("pricingContactUs")}</a>
+                </div>
+              )}
             </div>
           )}
         </div>
