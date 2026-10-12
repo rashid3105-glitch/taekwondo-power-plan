@@ -141,6 +141,31 @@
   }
 }
 
+/* Public marketing pages — dark navy + gold, matching the front page */
+.theme-public-dark {
+  --background: 233 29% 6%;
+  --foreground: 0 0% 98%;
+  --card: 225 23% 13%;
+  --card-foreground: 0 0% 98%;
+  --popover: 225 23% 13%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 46 65% 52%;
+  --primary-foreground: 233 29% 6%;
+  --secondary: 225 20% 17%;
+  --secondary-foreground: 0 0% 92%;
+  --muted: 225 20% 15%;
+  --muted-foreground: 225 10% 65%;
+  --accent: 46 65% 52%;
+  --accent-foreground: 233 29% 6%;
+  --border: 225 15% 22%;
+  --input: 225 15% 24%;
+  --ring: 46 65% 52%;
+  --energy: 46 65% 52%;
+  --speed: 46 65% 52%;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+}
+
 /* Light content sections — override semantic tokens locally */
 .theme-light-section {
   --background: var(--light-bg);
