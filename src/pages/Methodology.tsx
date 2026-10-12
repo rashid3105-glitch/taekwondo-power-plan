@@ -226,7 +226,6 @@ export default function Methodology() {
         </div>
 
         {/* CTA — back to dark */}
-        <div className="bg-gradient-to-b from-[hsl(210,20%,97%)] to-background h-12" aria-hidden="true" />
         <div className="text-center pb-12">
           <Button onClick={() => navigate("/auth")} size="lg" className="px-7 font-bold text-sm shadow-glow">
             {t("getStarted")} <ArrowRight className="h-4 w-4 ml-1.5" />
