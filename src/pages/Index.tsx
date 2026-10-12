@@ -429,7 +429,39 @@ const Index = () => {
         </div>
       </section>
 
-      {/* TODO: named club testimonial */}
+      {(() => {
+        const KA = {
+          da: { eb: "Gratis klubanalyse", h: "Hvor moden er jeres klub?", p: "20 spørgsmål, ca. 7 minutter. I får en ærlig score på fem områder — og ser, hvor det svageste led er. Ingen login, ingen binding.", dims: ["Rød tråd", "Trænerkapacitet", "Data & dokumentation", "Kultur & fastholdelse", "Ledelse & retning"], cta: "Start klubanalysen", note: "Resultatet sendes til din e-mail" },
+          en: { eb: "Free club analysis", h: "How mature is your club?", p: "20 questions, about 7 minutes. Get an honest score across five areas — and see where your weakest link is. No login, no commitment.", dims: ["Common thread", "Coaching capacity", "Data & documentation", "Culture & retention", "Leadership & direction"], cta: "Start the club analysis", note: "Results are sent to your email" },
+          sv: { eb: "Gratis klubbanalys", h: "Hur mogen är er klubb?", p: "20 frågor, cirka 7 minuter. Ni får en ärlig poäng inom fem områden — och ser var den svagaste länken finns. Ingen inloggning, ingen bindning.", dims: ["Röd tråd", "Tränarkapacitet", "Data & dokumentation", "Kultur & kvarhållning", "Ledning & riktning"], cta: "Starta klubbanalysen", note: "Resultatet skickas till din e-post" },
+          de: { eb: "Kostenlose Vereinsanalyse", h: "Wie reif ist Ihr Verein?", p: "20 Fragen, ca. 7 Minuten. Sie erhalten eine ehrliche Bewertung in fünf Bereichen — und sehen, wo das schwächste Glied liegt. Kein Login, keine Bindung.", dims: ["Roter Faden", "Trainerkapazität", "Daten & Dokumentation", "Kultur & Bindung", "Führung & Richtung"], cta: "Vereinsanalyse starten", note: "Das Ergebnis wird per E-Mail gesendet" },
+          ar: { eb: "تحليل مجاني للنادي", h: "ما مدى نضج ناديكم؟", p: "20 سؤالًا، حوالي 7 دقائق. تحصلون على تقييم صادق في خمسة مجالات — وترون أين تكمن الحلقة الأضعف. بدون تسجيل دخول وبدون التزام.", dims: ["الخيط المشترك", "قدرات المدربين", "البيانات والتوثيق", "الثقافة والاحتفاظ", "القيادة والتوجه"], cta: "ابدأ تحليل النادي", note: "تُرسل النتيجة إلى بريدك الإلكتروني" },
+          no: { eb: "Gratis klubbanalyse", h: "Hvor moden er klubben deres?", p: "20 spørsmål, ca. 7 minutter. Dere får en ærlig score på fem områder — og ser hvor det svakeste leddet er. Ingen innlogging, ingen binding.", dims: ["Rød tråd", "Trenerkapasitet", "Data & dokumentasjon", "Kultur & fastholdelse", "Ledelse & retning"], cta: "Start klubbanalysen", note: "Resultatet sendes til e-posten din" },
+          es: { eb: "Análisis de club gratuito", h: "¿Qué tan madura es tu club?", p: "20 preguntas, unos 7 minutos. Obtén una puntuación honesta en cinco áreas — y descubre dónde está el eslabón más débil. Sin registro, sin compromiso.", dims: ["Hilo conductor", "Capacidad de entrenadores", "Datos y documentación", "Cultura y retención", "Liderazgo y dirección"], cta: "Iniciar el análisis de club", note: "El resultado se envía a tu correo" },
+        } as const;
+        const k = KA[locale as keyof typeof KA] ?? KA.en;
+        return (
+          <section style={{ maxWidth: 1080, margin: "0 auto", padding: `${isMobile ? 56 : 88}px ${pad}px` }}>
+            <div style={{ background: "linear-gradient(135deg, rgba(212,175,55,0.10), rgba(255,255,255,0.02))", border: "0.5px solid rgba(212,175,55,0.3)", borderRadius: 18, padding: isMobile ? "28px 20px" : "44px 40px", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 1fr", gap: isMobile ? 24 : 40, alignItems: "center" }}>
+              <div>
+                <SectionEyebrow>{k.eb}</SectionEyebrow>
+                <h2 style={{ fontSize: "clamp(26px,4vw,38px)", fontWeight: 900, letterSpacing: "-0.035em", lineHeight: 1.1, margin: "0 0 14px" }}>{k.h}</h2>
+                <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.65, margin: "0 0 22px" }}>{k.p}</p>
+                <button onClick={() => { trackCta("home_klubanalyse_section"); navigate("/klubanalyse"); }} style={{ padding: "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: BG, fontSize: 15, fontWeight: 800, cursor: "pointer" }}>{k.cta} →</button>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 10 }}>{k.note}</div>
+              </div>
+              <div style={{ display: "grid", gap: 10 }}>
+                {k.dims.map((d, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "12px 14px" }}>
+                    <span style={{ fontFamily: MONO, fontSize: 12, fontWeight: 700, color: GOLD }}>0{i + 1}</span>
+                    <span style={{ fontSize: 14, fontWeight: 600 }}>{d}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {!native && <Chapter n="06" label={t("homeCh7Label")} title={t("homeCh7Title")} />}
       {!native && (

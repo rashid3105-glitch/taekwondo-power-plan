@@ -46,7 +46,7 @@ const PRICING_JSONLD = {
 
 export default function Priser() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", club: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
@@ -180,6 +180,28 @@ export default function Priser() {
         </div>
 
         <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 16, lineHeight: 1.6 }}>{t("pricingTermsNote")}</div>
+
+        {(() => {
+          const TR = {
+            da: ["GDPR-klar med samtykkestyring", "Data isoleret pr. klub", "Forældre får læseadgang", "Tofaktor-login (2FA)"],
+            en: ["GDPR-ready consent management", "Data isolated per club", "Parents get read-only access", "Two-factor login (2FA)"],
+            sv: ["GDPR-redo samtyckeshantering", "Data isolerad per klubb", "Föräldrar får läsbehörighet", "Tvåfaktorsinloggning (2FA)"],
+            de: ["DSGVO-konforme Einwilligungsverwaltung", "Daten pro Verein isoliert", "Eltern erhalten Lesezugriff", "Zwei-Faktor-Login (2FA)"],
+            ar: ["إدارة موافقة متوافقة مع GDPR", "بيانات معزولة لكل نادٍ", "وصول للقراءة فقط لأولياء الأمور", "تسجيل دخول بخطوتين (2FA)"],
+            no: ["GDPR-klar samtykkehåndtering", "Data isolert per klubb", "Foreldre får lesetilgang", "Tofaktor-innlogging (2FA)"],
+            es: ["Gestión de consentimiento conforme al RGPD", "Datos aislados por club", "Los padres tienen acceso de lectura", "Inicio de sesión en dos pasos (2FA)"],
+          } as const;
+          const items = TR[locale as keyof typeof TR] ?? TR.en;
+          return (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 10, marginTop: 20 }}>
+              {items.map((it, i) => (
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13, color: "rgba(255,255,255,0.75)", background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "10px 12px" }}>
+                  <span style={{ color: GOLD }}>✓</span>{it}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
 
