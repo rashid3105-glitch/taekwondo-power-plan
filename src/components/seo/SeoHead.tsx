@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { publicSeoPaths } from "./publicSeoRegistry";
 
 const SITE = "https://sportstalent.dk";
 
@@ -15,6 +16,7 @@ interface PublicSeoProps {
  * Overrides the app-wide default noindex.
  */
 export const PublicSeo = ({ title, description, path, ogType = "website", ogImage }: PublicSeoProps) => {
+  publicSeoPaths.add(path);
   const url = `${SITE}${path.startsWith("/") ? path : `/${path}`}`;
   return (
     <Helmet>
