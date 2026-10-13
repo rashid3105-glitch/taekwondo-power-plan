@@ -1,4 +1,6 @@
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
+import { publicSeoPaths } from "@/components/seo/publicSeoRegistry";
 
 interface PageMetaProps {
   title: string;
@@ -15,6 +17,8 @@ interface PageMetaProps {
  * deeper Helmet instances take precedence.
  */
 export const PageMeta = ({ title, description, canonical, noindex, ogType, ogImage }: PageMetaProps) => {
+  const { pathname } = useLocation();
+  if (publicSeoPaths.has(pathname)) return null;
   const suffix = "Sportstalent";
   const fullTitle = title.toLowerCase().includes(suffix.toLowerCase()) || title.includes("سبورتستالنت") ? title : `${title} | ${suffix}`;
   const robots = noindex ? "noindex, nofollow" : canonical ? "index, follow" : undefined;
