@@ -28127,7 +28127,7 @@ const esOverrides: Partial<Record<TranslationKey, string>> = {
   consentsParentEmailMissing: "Falta el correo del padre/madre",
   homeSeoTitle: "Sportstalent — sistema de talento para clubes",
   homeSeoDesc: "Planes de entrenamiento, carga, pruebas, lesiones y forma mental en un perfil de atleta propiedad del club. RGPD, datos en la UE.",
-  pricingSeoDesc: "Un precio anual fijo para todo el club: desde 7.500 DKK hasta 50 miembros hasta 18.000 DKK de 121 a 250. IVA no incluido, facturación anual. Atletas y familias no pagan nada.",
+  pricingSeoDesc: "Un precio anual fijo para todo el club: desde 7.500 DKK hasta 50 miembros hasta 18.000 DKK de 101 a 250. IVA no incluido, facturación anual. Atletas y familias no pagan nada.",
   pricingSeoTitle: "Precios — licencia de club para clubes deportivos",
   pricingBadge: "PRECIOS",
   pricingH1a: "Pagad por los atletas ",
