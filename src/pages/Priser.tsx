@@ -122,6 +122,9 @@ export default function Priser() {
     { q: t("pricingFaqQ2"), a: t("pricingFaqA2") },
     { q: t("pricingFaqQ3"), a: t("pricingFaqA3") },
     { q: t("pricingFaqQ4"), a: t("pricingFaqA4") },
+    { q: t("pricingFaqQ5"), a: t("pricingFaqA5") },
+    { q: t("pricingFaqQ6"), a: t("pricingFaqA6") },
+    { q: t("pricingFaqQ7"), a: t("pricingFaqA7") },
   ];
 
   return (
