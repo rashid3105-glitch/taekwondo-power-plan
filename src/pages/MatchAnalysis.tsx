@@ -172,7 +172,7 @@ export default function MatchAnalysis() {
 
       const { data: vids } = await supabase
         .from("match_videos").select("*")
-        .eq("athlete_id", targetAthlete)
+        .eq("athlete_id", targetAthlete).is("pro_analysis", null)
         .order("created_at", { ascending: false });
       setServerVideos((vids || []) as MatchVideoRow[]);
     } else {
@@ -584,7 +584,7 @@ export default function MatchAnalysis() {
             </h1>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button size="sm" onClick={() => navigate("/lab/match-analyzer")}>
+            <Button size="sm" onClick={() => navigate(`/match-analysis/${athleteId || "me"}/pro`)}>
               {labT("title")}
             </Button>
             {!offline.online && (

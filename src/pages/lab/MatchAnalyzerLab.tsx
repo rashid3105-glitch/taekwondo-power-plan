@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Brain, Check, Pencil, Save, FileDown, RefreshCw, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,23 +74,46 @@ const removeVideo = (id: string) => vop<void>("readwrite", (s) => s.delete(id)).
 const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg)", "Light (-74kg)", "Welter (-80kg)", "Middle (-87kg)", "Heavy (+87kg)"];
 
 export default function MatchAnalyzerLab() {
+  const { athleteId } = useParams<{ athleteId?: string }>();
+  return athleteId ? <CloudAnalyzer athleteParam={athleteId} /> : <LocalAnalyzer />;
+}
+
+function Shell({ matches, setMatches, update, onCreate, onDelete, readOnly }: {
+  matches: Match[]; setMatches?: unknown; update: (m: Match) => void;
+  onCreate: (m: Match, file: File | null) => void | Promise<void>; onDelete: (id: string) => void; readOnly?: boolean;
+}) {
   const t = useMatchLabT();
   const navigate = useNavigate();
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [newOpen, setNewOpen] = useState(false);
+  const open = matches.find((m) => m.id === openId) || null;
+  return (
+    <div className="min-h-screen bg-background text-foreground pt-safe pb-safe">
+      <Helmet><title>{t("title")} · Sportstalent</title><meta name="robots" content="noindex" /></Helmet>
+      <div className="mx-auto max-w-7xl p-4 md:p-6 space-y-6">
+        {open ? (
+          <Studio match={open} onBack={() => setOpenId(null)} onChange={readOnly ? () => toast.error(t("readOnly")) : update} />
+        ) : (
+          <Hub matches={matches} onOpen={setOpenId} onNew={() => (readOnly ? toast.error(t("readOnly")) : setNewOpen(true))} onBack={() => navigate(-1)} onDelete={onDelete} />
+        )}
+      </div>
+      <NewMatchDialog open={newOpen} onOpenChange={setNewOpen} onCreate={async (m, file) => { await onCreate(m, file); setOpenId(m.id); }} />
+    </div>
+  );
+}
+
+const markStale = (x: Match, m: Match): Match => {
+  const stale = m.report && x.events !== m.events && m.report === x.report ? true : m.stale;
+  return { ...m, stale };
+};
+
+function LocalAnalyzer() {
   const [matches, setMatches] = useState<Match[]>(() => {
     try { const raw = localStorage.getItem(LAB_KEY); if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr)) return arr; } } catch { /* ignore */ }
     return [DEMO];
   });
-  // Keep analyses on this device (video files cannot be stored, so they are left out).
   useEffect(() => { try { localStorage.setItem(LAB_KEY, JSON.stringify(matches.map(({ videoUrl: _v, ...m }) => m))); } catch { /* quota */ } }, [matches]);
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [newOpen, setNewOpen] = useState(false);
-  const open = matches.find((m) => m.id === openId) || null;
-  const update = (m: Match) => setMatches((ms) => ms.map((x) => {
-    if (x.id !== m.id) return x;
-    // Events changed after an analysis → mark the AI report as out of date.
-    const stale = m.report && x.events !== m.events && m.report === x.report ? true : m.stale;
-    return { ...m, stale };
-  }));
+  const update = (m: Match) => setMatches((ms) => ms.map((x) => (x.id === m.id ? markStale(x, m) : x)));
   useEffect(() => {
     let alive = true;
     matches.filter((m) => !m.videoUrl).forEach(async (m) => {
@@ -99,20 +122,88 @@ export default function MatchAnalyzerLab() {
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
-    <div className="min-h-screen bg-background text-foreground pt-safe pb-safe">
-      <Helmet><title>{t("title")} · Sportstalent</title><meta name="robots" content="noindex" /></Helmet>
-      <div className="mx-auto max-w-7xl p-4 md:p-6 space-y-6">
-        {open ? (
-          <Studio match={open} onBack={() => setOpenId(null)} onChange={update} />
-        ) : (
-          <Hub matches={matches} onOpen={setOpenId} onNew={() => setNewOpen(true)} onBack={() => navigate(-1)} onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); removeVideo(id); return ms.filter((x) => x.id !== id); })} />
-        )}
-      </div>
-      <NewMatchDialog open={newOpen} onOpenChange={setNewOpen} onCreate={(m) => { setMatches((ms) => [m, ...ms]); setOpenId(m.id); }} />
-    </div>
+    <Shell matches={matches} update={update}
+      onCreate={async (m, file) => { if (file) { try { await saveVideo(m.id, file); } catch { /* quota */ } } setMatches((ms) => [m, ...ms]); }}
+      onDelete={(id) => setMatches((ms) => { const m = ms.find((x) => x.id === id); if (m?.videoUrl) URL.revokeObjectURL(m.videoUrl); removeVideo(id); return ms.filter((x) => x.id !== id); })} />
   );
+}
+
+// Saved online and tied to the athlete (match_videos.pro_analysis). Only coaches can write.
+function CloudAnalyzer({ athleteParam }: { athleteParam: string }) {
+  const t = useMatchLabT();
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [paths, setPaths] = useState<Record<string, string>>({});
+  const [ctx, setCtx] = useState<{ me: string; athlete: string; club: string | null; coach: boolean } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const timers = useRef<Record<string, number>>({});
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const athlete = athleteParam === "me" ? user.id : athleteParam;
+      const [{ data: prof }, { data: role }] = await Promise.all([
+        supabase.from("profiles").select("club_id").eq("user_id", athlete).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "coach").maybeSingle(),
+      ]);
+      setCtx({ me: user.id, athlete, club: (prof as any)?.club_id ?? null, coach: !!role });
+      const { data: rows } = await supabase.from("match_videos").select("id, storage_path, pro_analysis")
+        .eq("athlete_id", athlete).not("pro_analysis", "is", null).order("created_at", { ascending: false });
+      const list: Match[] = []; const p: Record<string, string> = {};
+      for (const r of (rows || []) as any[]) {
+        const m = { ...(r.pro_analysis as Match), id: r.id } as Match;
+        p[r.id] = r.storage_path;
+        if (r.storage_path) {
+          const { data } = await supabase.storage.from("match_videos").createSignedUrl(r.storage_path, 60 * 60 * 6);
+          if (data?.signedUrl) m.videoUrl = data.signedUrl;
+        }
+        list.push(m);
+      }
+      setPaths(p); setMatches(list); setLoading(false);
+    })();
+  }, [athleteParam]);
+
+  const persist = (m: Match) => {
+    window.clearTimeout(timers.current[m.id]);
+    timers.current[m.id] = window.setTimeout(async () => {
+      const { videoUrl: _v, id: _i, ...data } = m;
+      const { error } = await supabase.from("match_videos").update({ pro_analysis: data as any, title: m.title }).eq("id", m.id);
+      if (error) toast.error(t("saveFailed"));
+    }, 800);
+  };
+  const update = (m: Match) => setMatches((ms) => ms.map((x) => { if (x.id !== m.id) return x; const n = markStale(x, m); persist(n); return n; }));
+
+  const onCreate = async (m: Match, file: File | null) => {
+    if (!ctx) return;
+    let path = "";
+    if (file) {
+      path = `${ctx.me}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+      const { error } = await supabase.storage.from("match_videos").upload(path, file, { upsert: false });
+      if (error) { toast.error(t("saveFailed")); return; }
+    }
+    const { videoUrl, id: _i, ...data } = m;
+    const { data: row, error } = await supabase.from("match_videos").insert({
+      athlete_id: ctx.athlete, coach_id: ctx.me, club_id: ctx.club, title: m.title, storage_path: path,
+      opponent_name: m.blue, match_date: m.date || null, discipline: "sparring", pro_analysis: data as any,
+    }).select("id").single();
+    if (error || !row) { if (path) await supabase.storage.from("match_videos").remove([path]); toast.error(t("saveFailed")); return; }
+    m.id = row.id;
+    setPaths((p) => ({ ...p, [row.id]: path }));
+    setMatches((ms) => [{ ...m, videoUrl }, ...ms]);
+    toast.success(t("savedOnline"));
+  };
+
+  const onDelete = async (id: string) => {
+    const path = paths[id];
+    const { error } = await supabase.from("match_videos").delete().eq("id", id);
+    if (error) { toast.error(t("saveFailed")); return; }
+    if (path) await supabase.storage.from("match_videos").remove([path]);
+    setMatches((ms) => ms.filter((x) => x.id !== id));
+  };
+
+  if (loading) return <LogoLoader label={t("loading")} />;
+  return <Shell matches={matches} update={update} onCreate={onCreate} onDelete={onDelete} readOnly={!ctx?.coach} />;
 }
 
 function LogoLoader({ label }: { label: string }) {
@@ -197,7 +288,7 @@ function Hub({ matches, onOpen, onNew, onBack, onDelete }: { matches: Match[]; o
   );
 }
 
-function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpenChange: (o: boolean) => void; onCreate: (m: Match) => void }) {
+function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpenChange: (o: boolean) => void; onCreate: (m: Match, file: File | null) => Promise<void> | void }) {
   const t = useMatchLabT();
   const [f, setF] = useState({ title: "", red: "", blue: "", date: new Date().toISOString().slice(0, 10), weight: WEIGHTS[3], rounds: 3 });
   const [file, setFile] = useState<File | null>(null);
@@ -218,8 +309,8 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
       if (!ok) { URL.revokeObjectURL(videoUrl); toast.error(t("videoError")); return; }
     }
     const id = uid();
-    if (file) { try { await saveVideo(id, file); toast.success(t("videoLocal")); } catch { /* quota: keep for this session only */ } }
-    onCreate({ id, ...f, videoUrl, events: [], ai: false });
+    setLoading(true);
+    try { await onCreate({ id, ...f, videoUrl, events: [], ai: false }, file); } finally { setLoading(false); }
     onOpenChange(false); setFile(null); setF({ ...f, title: "", red: "", blue: "" });
   };
   return (
