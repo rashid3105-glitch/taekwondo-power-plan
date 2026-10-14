@@ -104,7 +104,7 @@ export function ShareButton({ videoId }: { videoId: string }) {
   };
   return (
     <div className="flex gap-2">
-      <Button variant="outline" className="h-11" disabled={busy} onClick={() => call("create")}><Share2 className="h-4 w-4 me-1" />{token ? t("shareCopy") : t("share")}</Button>
+      <Button variant="outline" className="h-11" disabled={busy} onClick={async () => { if (token) { const url = `${window.location.origin}/match/share/${token}`; try { await navigator.clipboard.writeText(url); toast.success(t("shareCopied")); } catch { toast.success(url); } } else void call("create"); }}><Share2 className="h-4 w-4 me-1" />{token ? t("shareCopy") : t("share")}</Button>
       {token && <Button variant="ghost" size="icon" className="h-11 w-11" disabled={busy} title={t("shareRevoke")} aria-label={t("shareRevoke")} onClick={() => call("revoke")}><Link2Off className="h-4 w-4" /></Button>}
     </div>
   );

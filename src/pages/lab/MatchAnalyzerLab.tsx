@@ -17,6 +17,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useMatchLabT } from "@/i18n/matchLab";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { ProCloudCtx, useProCloud, DrawLayer, ShareButton } from "@/components/match/ProCloudTools";
 
 type Corner = "red" | "blue";
 type Zone = "body" | "head";
@@ -78,8 +79,8 @@ export default function MatchAnalyzerLab() {
   return athleteId ? <CloudAnalyzer athleteParam={athleteId} /> : <LocalAnalyzer />;
 }
 
-function Shell({ matches, setMatches, update, onCreate, onDelete, readOnly }: {
-  matches: Match[]; setMatches?: unknown; update: (m: Match) => void;
+function Shell({ matches, update, onCreate, onDelete, readOnly, cloud }: {
+  matches: Match[]; cloud?: { me: string; canEdit: boolean } | null; update: (m: Match) => void;
   onCreate: (m: Match, file: File | null) => void | Promise<void>; onDelete: (id: string) => void; readOnly?: boolean;
 }) {
   const t = useMatchLabT();
@@ -88,6 +89,7 @@ function Shell({ matches, setMatches, update, onCreate, onDelete, readOnly }: {
   const [newOpen, setNewOpen] = useState(false);
   const open = matches.find((m) => m.id === openId) || null;
   return (
+    <ProCloudCtx.Provider value={cloud ?? null}>
     <div className="min-h-screen bg-background text-foreground pt-safe pb-safe">
       <Helmet><title>{t("title")} · Sportstalent</title><meta name="robots" content="noindex" /></Helmet>
       <div className="mx-auto max-w-7xl p-4 md:p-6 space-y-6">
@@ -99,6 +101,7 @@ function Shell({ matches, setMatches, update, onCreate, onDelete, readOnly }: {
       </div>
       <NewMatchDialog open={newOpen} onOpenChange={setNewOpen} onCreate={async (m, file) => { await onCreate(m, file); setOpenId(m.id); }} />
     </div>
+    </ProCloudCtx.Provider>
   );
 }
 
@@ -203,7 +206,7 @@ function CloudAnalyzer({ athleteParam }: { athleteParam: string }) {
   };
 
   if (loading) return <LogoLoader label={t("loading")} />;
-  return <Shell matches={matches} update={update} onCreate={onCreate} onDelete={onDelete} readOnly={!ctx?.coach} />;
+  return <Shell matches={matches} update={update} onCreate={onCreate} onDelete={onDelete} readOnly={!ctx?.coach} cloud={ctx ? { me: ctx.me, canEdit: ctx.coach } : null} />;
 }
 
 function LogoLoader({ label }: { label: string }) {
@@ -356,6 +359,7 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
 function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void; onChange: (m: Match) => void }) {
   const t = useMatchLabT();
   const vref = useRef<HTMLVideoElement>(null);
+  const cloud = useProCloud();
   const [time, setTime] = useState(0);
   const [round, setRound] = useState(1);
   const [corner, setCorner] = useState<Corner>("red");
@@ -434,6 +438,7 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
           <h1 className="font-black text-xl truncate">{match.title}: {match.red} vs {match.blue}</h1>
           <p className="text-xs text-muted-foreground">{match.date} · {match.weight}</p>
         </div>
+        {cloud && <ShareButton videoId={match.id} />}
         {match.report && <Button variant="outline" className="h-11 me-12" onClick={() => exportPdf(match, t)}><FileDown className="h-4 w-4 me-1" />{t("exportPdf")}</Button>}
       </div>
       {match.report && match.stale && (
@@ -445,9 +450,12 @@ function Studio({ match, onBack, onChange }: { match: Match; onBack: () => void;
       <div className="grid lg:grid-cols-[1.3fr_1fr_0.8fr] gap-4">
         {/* Video + scoreboard */}
         <div className="space-y-3">
-          <div className="aspect-video rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
+          <div className="relative aspect-video rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
             {match.videoUrl ? (
+              <>
               <video ref={vref} src={match.videoUrl} controls playsInline className="w-full h-full" onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)} />
+              {cloud && <DrawLayer videoId={match.id} videoRef={vref} time={time} />}
+              </>
             ) : (
               <div className="text-center text-muted-foreground text-sm p-6"><Play className="h-8 w-8 mx-auto mb-2" />{t("noVideo")}</div>
             )}
