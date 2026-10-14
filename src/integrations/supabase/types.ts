@@ -2562,6 +2562,7 @@ export type Database = {
           notes: string
           opponent_name: string | null
           poomsae_type: string | null
+          pro_analysis: Json | null
           share_expires_at: string | null
           share_token: string | null
           storage_path: string
@@ -2582,6 +2583,7 @@ export type Database = {
           notes?: string
           opponent_name?: string | null
           poomsae_type?: string | null
+          pro_analysis?: Json | null
           share_expires_at?: string | null
           share_token?: string | null
           storage_path: string
@@ -2602,6 +2604,7 @@ export type Database = {
           notes?: string
           opponent_name?: string | null
           poomsae_type?: string | null
+          pro_analysis?: Json | null
           share_expires_at?: string | null
           share_token?: string | null
           storage_path?: string
