@@ -32,11 +32,17 @@ Deno.serve(async (req) => {
     const video = (data as any).video;
     const tags = (data as any).tags || [];
 
-    // 1-hour signed URL for playback
-    const { data: signed, error: signErr } = await supa.storage
-      .from("match_videos")
-      .createSignedUrl(video.storage_path, 60 * 60);
-    if (signErr) throw signErr;
+    // 1-hour signed URL for playback (pro analyses may have no video)
+    let videoUrl: string | null = null;
+    if (video.storage_path) {
+      const { data: signed, error: signErr } = await supa.storage
+        .from("match_videos")
+        .createSignedUrl(video.storage_path, 60 * 60);
+      if (signErr) throw signErr;
+      videoUrl = signed.signedUrl;
+    }
+    const { data: proRow } = await supa.from("match_videos").select("pro_analysis").eq("id", video.id).maybeSingle();
+    const pro = proRow?.pro_analysis ?? null;
 
     return new Response(JSON.stringify({
       video: {
@@ -49,7 +55,8 @@ Deno.serve(async (req) => {
         match_date: video.match_date,
         duration_seconds: video.duration_seconds,
       },
-      video_url: signed.signedUrl,
+      video_url: videoUrl,
+      pro: pro ? { red: pro.red, blue: pro.blue, weight: pro.weight, events: pro.events ?? [], summary: pro.report?.summary ?? null, winner: pro.report?.winner ?? null } : null,
       tags,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

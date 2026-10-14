@@ -21,6 +21,12 @@ interface SharedTag {
   notes: string;
 }
 
+interface ProShare {
+  red: string; blue: string; weight?: string; summary: string | null; winner: string | null;
+  events: { id: string; t: number; corner: "red" | "blue"; tech: string; zone: string; scored: boolean; pts: number }[];
+}
+const proScore = (p: ProShare, c: "red" | "blue") => p.events.filter((e) => e.corner === c && e.scored).reduce((s, e) => s + e.pts, 0);
+
 interface SharedVideo {
   id: string;
   title: string;
@@ -43,6 +49,7 @@ export default function MatchShare() {
   const [speed, setSpeed] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pro, setPro] = useState<ProShare | null>(null);
 
   useEffect(() => { void load(); /* eslint-disable-next-line */ }, [token]);
 
@@ -62,7 +69,13 @@ export default function MatchShare() {
       } else {
         setVideo(data.video);
         setVideoUrl(data.video_url);
-        setTags(data.tags || []);
+        const p: ProShare | null = data.pro ?? null;
+        setPro(p);
+        setTags(p ? p.events.map((e) => ({
+          id: e.id, timestamp_seconds: e.t, technique: e.tech, side: "n/a" as const,
+          outcome: e.scored ? "scored" as const : "none" as const,
+          notes: `${e.corner === "red" ? p.red : p.blue} · ${e.zone}${e.scored ? ` +${e.pts}` : ""}`,
+        })) : (data.tags || []));
       }
     } catch (e: any) {
       setError(e.message);
@@ -117,6 +130,16 @@ export default function MatchShare() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
+                {pro && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-semibold" style={{ color: "hsl(var(--corner-red))" }}>{pro.red}</span>
+                      <span className="font-black text-2xl">{proScore(pro, "red")} – {proScore(pro, "blue")}</span>
+                      <span className="font-semibold" style={{ color: "hsl(var(--corner-blue))" }}>{pro.blue}</span>
+                    </div>
+                    {pro.summary && <p className="text-sm text-muted-foreground">{pro.summary}</p>}
+                  </div>
+                )}
                 {videoUrl && (
                   <div className="space-y-2">
                     <video
@@ -178,7 +201,7 @@ export default function MatchShare() {
                 </div>
               </CardContent>
             </Card>
-            {tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
+            {!pro && tags.length > 0 && <MatchSummary tags={tags} discipline={video.discipline} />}
           </>
         ) : null}
       </div>
