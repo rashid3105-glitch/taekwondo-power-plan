@@ -58,6 +58,7 @@ export default function MatchAnalysis() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const labT = useMatchLabT();
   const offline = useMatchOffline();
   const { activeClubId } = useActiveClub();
   const { matchAnalysisEnabled, loading: sportLoading } = useMatchAnalysisEnabled();
