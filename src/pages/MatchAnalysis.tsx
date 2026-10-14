@@ -18,6 +18,7 @@ import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
 import { PageMeta } from "@/components/PageMeta";
 import { VideoTagger } from "@/components/match/VideoTagger";
+import { useMatchLabT } from "@/i18n/matchLab";
 import type { Discipline } from "@/lib/tkdTechniques";
 import { useMatchOffline } from "@/hooks/useMatchOffline";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
@@ -57,6 +58,7 @@ export default function MatchAnalysis() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+  const labT = useMatchLabT();
   const offline = useMatchOffline();
   const { activeClubId } = useActiveClub();
   const { matchAnalysisEnabled, loading: sportLoading } = useMatchAnalysisEnabled();
@@ -582,6 +584,9 @@ export default function MatchAnalysis() {
             </h1>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
+            <Button size="sm" onClick={() => navigate("/lab/match-analyzer")}>
+              {labT("title")}
+            </Button>
             {!offline.online && (
               <Badge variant="outline" className="gap-1 border-destructive/40 text-destructive">
                 <WifiOff className="h-3 w-3" /> {t("matchOfflineNoConnection")}

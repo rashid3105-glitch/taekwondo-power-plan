@@ -340,6 +340,8 @@ const AnimatedRoutes = () => {
         <Route path="/prototypes/post-training-log-v2" element={<PostTrainingLogV2 />} />
         <Route path="/lab/post-training-log" element={<Page><PostTrainingLogLive /></Page>} />
         <Route path="/lab/match-analyzer" element={<Page><MatchAnalyzerLab /></Page>} />
+        <Route path="/index" element={<Navigate to="/" replace />} />
+        <Route path="/index.html" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Page><NotFound /></Page>} />
       </Routes>
       </AnimatePresence>
