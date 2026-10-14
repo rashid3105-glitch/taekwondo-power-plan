@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Brain, Check, Pencil, Save, FileDown, RefreshCw, Plus, Sparkles, Trash2, Upload, X, Target, Shield, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -288,7 +288,7 @@ function Hub({ matches, onOpen, onNew, onBack, onDelete }: { matches: Match[]; o
   );
 }
 
-function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpenChange: (o: boolean) => void; onCreate: (m: Match) => void }) {
+function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpenChange: (o: boolean) => void; onCreate: (m: Match, file: File | null) => Promise<void> | void }) {
   const t = useMatchLabT();
   const [f, setF] = useState({ title: "", red: "", blue: "", date: new Date().toISOString().slice(0, 10), weight: WEIGHTS[3], rounds: 3 });
   const [file, setFile] = useState<File | null>(null);
@@ -309,8 +309,8 @@ function NewMatchDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpe
       if (!ok) { URL.revokeObjectURL(videoUrl); toast.error(t("videoError")); return; }
     }
     const id = uid();
-    if (file) { try { await saveVideo(id, file); toast.success(t("videoLocal")); } catch { /* quota: keep for this session only */ } }
-    onCreate({ id, ...f, videoUrl, events: [], ai: false });
+    setLoading(true);
+    try { await onCreate({ id, ...f, videoUrl, events: [], ai: false }, file); } finally { setLoading(false); }
     onOpenChange(false); setFile(null); setF({ ...f, title: "", red: "", blue: "" });
   };
   return (
