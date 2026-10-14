@@ -110,7 +110,6 @@ import Health from "./pages/Health";
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
 import PublicAthlete from "./pages/PublicAthlete";
-import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
 const ProRedirect = () => { const p = window.location.pathname.replace(/\/pro\/?$/, ""); return <Navigate to={p} replace />; };
 import SeasonPlan from "./pages/SeasonPlan";
