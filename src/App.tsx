@@ -110,8 +110,8 @@ import Health from "./pages/Health";
 import Competitions from "./pages/Competitions";
 import CompetitionReflection from "./pages/CompetitionReflection";
 import PublicAthlete from "./pages/PublicAthlete";
-import MatchAnalysis from "./pages/MatchAnalysis";
 import MatchShare from "./pages/MatchShare";
+const ProRedirect = () => { const p = window.location.pathname.replace(/\/pro\/?$/, ""); return <Navigate to={p} replace />; };
 import SeasonPlan from "./pages/SeasonPlan";
 import JoinInvite from "./pages/JoinInvite";
 import SignupCoach from "./pages/SignupCoach";
@@ -307,9 +307,9 @@ const AnimatedRoutes = () => {
         <Route path="/competitions" element={<Page><UpgradeGate module="competitions"><Competitions /></UpgradeGate></Page>} />
         <Route path="/competitions/:id/reflect" element={<Page><UpgradeGate module="competitions"><CompetitionReflection /></UpgradeGate></Page>} />
         <Route path="/season" element={<Page><UpgradeGate module="season_plan"><SeasonPlan /></UpgradeGate></Page>} />
-        <Route path="/match-analysis/:athleteId/pro" element={<Page><UpgradeGate module="match_analysis"><MatchAnalyzerLab /></UpgradeGate></Page>} />
-        <Route path="/match-analysis/me" element={<Page><UpgradeGate module="match_analysis"><MatchAnalysis /></UpgradeGate></Page>} />
-        <Route path="/match-analysis/:athleteId" element={<Page><UpgradeGate module="match_analysis"><MatchAnalysis /></UpgradeGate></Page>} />
+        <Route path="/match-analysis/:athleteId/pro" element={<ProRedirect />} />
+        <Route path="/match-analysis/me" element={<Page><UpgradeGate module="match_analysis"><MatchAnalyzerLab /></UpgradeGate></Page>} />
+        <Route path="/match-analysis/:athleteId" element={<Page><UpgradeGate module="match_analysis"><MatchAnalyzerLab /></UpgradeGate></Page>} />
         <Route path="/match/share/:token" element={<Page><MatchShare /></Page>} />
         <Route path="/athlete/:code" element={<Page><PublicAthlete /></Page>} />
         <Route path="/join/:code" element={<Page><JoinInvite /></Page>} />
@@ -340,7 +340,7 @@ const AnimatedRoutes = () => {
         <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
         <Route path="/prototypes/post-training-log-v2" element={<PostTrainingLogV2 />} />
         <Route path="/lab/post-training-log" element={<Page><PostTrainingLogLive /></Page>} />
-        <Route path="/lab/match-analyzer" element={<Page><MatchAnalyzerLab /></Page>} />
+        <Route path="/lab/match-analyzer" element={<Navigate to="/match-analysis/me" replace />} />
         <Route path="/index" element={<Navigate to="/" replace />} />
         <Route path="/index.html" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Page><NotFound /></Page>} />
