@@ -7,6 +7,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { trackCta } from "@/lib/ctaTracking";
 import { useIsMobile } from "@/hooks/use-mobile";
 import coachSitting from "@/assets/coach-sitting.png";
+import { BENEFIT_SLUGS, UI_COPY } from "./DraftBenefit";
 
 // Draft of a lighter, simpler front page. Not linked anywhere, noindex.
 const C = {
@@ -195,11 +196,14 @@ export default function DraftHome() {
             {k.b.map((b, i) => {
               const Icon = ICONS[i];
               return (
-                <div key={i} style={{ background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.line}` }}>
+                <button key={i} onClick={() => navigate(`/draft-home/${BENEFIT_SLUGS[i]}`)} style={{ textAlign: "start", font: "inherit", color: "inherit", cursor: "pointer", background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.line}`, transition: "transform .15s, box-shadow .15s" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 36px -20px rgba(15,23,42,0.35)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
                   <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(31,91,216,0.1)", color: C.blue, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}><Icon size={24} /></div>
                   <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{b.t}</div>
                   <div style={{ fontSize: 15, color: C.muted, lineHeight: 1.55 }}>{b.d}</div>
-                </div>
+                  <div style={{ marginTop: 16, color: C.blue, fontWeight: 700, fontSize: 14 }}>{(UI_COPY[locale] ?? UI_COPY.en).readMore} {locale === "ar" ? "←" : "→"}</div>
+                </button>
               );
             })}
           </div>
