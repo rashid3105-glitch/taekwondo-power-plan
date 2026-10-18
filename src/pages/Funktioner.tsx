@@ -1,10 +1,11 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#D4AF37";
+const GOLD = "hsl(var(--primary))";
 
 const MODULE_DEFS = [
   { icon: "📋", tag: "funcTagCoach", n: 1 },
@@ -38,20 +39,20 @@ export default function Funktioner() {
     <LandingLayout>
       <PageMeta title={`${t("navFeatures")} — Sportstalent`} description={t("funcSeoDesc")} canonical="https://sportstalent.dk/funktioner" />
 
-      <section style={{ padding: "56px 20px 40px", textAlign: "center", borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(212,175,55,0.1)", border: "0.5px solid rgba(212,175,55,0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 20 }}>
+      <section style={{ padding: "56px 20px 40px", textAlign: "center", borderBottom: "0.5px solid hsl(var(--border))" }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "hsl(var(--primary) / 0.1)", border: "0.5px solid hsl(var(--primary) / 0.28)", borderRadius: 20, padding: "4px 14px", fontSize: 11, color: GOLD, fontWeight: 700, letterSpacing: "0.08em", marginBottom: 20 }}>
           ⚡ {t("funcBadge")}
         </div>
-        <h1 style={{ fontSize: "clamp(30px,5vw,54px)", fontWeight: 900, lineHeight: 1.07, letterSpacing: "-0.04em", margin: "0 0 16px", maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
+        <h1 style={{ fontSize: "54px", fontWeight: 900, lineHeight: 1.07, letterSpacing: "0", margin: "0 0 16px", maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
           {t("funcH1a")}<br /><span style={{ color: GOLD }}>{t("funcH1b")}</span>
         </h1>
-        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.55)", lineHeight: 1.6, maxWidth: 460, margin: "0 auto" }}>
+        <p style={{ fontSize: 15, color: "hsl(var(--muted-foreground))", lineHeight: 1.6, maxWidth: 460, margin: "0 auto" }}>
           {t("funcSub")}
         </p>
       </section>
 
       <section style={{ maxWidth: 720, margin: "0 auto", padding: "32px 16px 0" }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 10 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "hsl(var(--muted-foreground))", marginBottom: 10 }}>
           {t("funcNewSectionTitle")}
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10 }}>
@@ -62,9 +63,9 @@ export default function Funktioner() {
             <div
               key={i}
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "0.5px solid rgba(212,175,55,0.28)",
-                borderRadius: 14,
+                background: "hsl(var(--border))",
+                border: "0.5px solid hsl(var(--primary) / 0.28)",
+                borderRadius: 8,
                 padding: "16px 18px",
                 display: "flex",
                 gap: 12,
@@ -75,11 +76,11 @@ export default function Funktioner() {
               <div style={{ minWidth: 0 }}>
                 <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
                   <span style={{ fontSize: 15, fontWeight: 800 }}>{p.title}</span>
-                  <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, letterSpacing: "0.08em", border: `0.5px solid rgba(212,175,55,0.4)`, borderRadius: 20, padding: "1px 7px" }}>
+                  <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, letterSpacing: "0.08em", border: `0.5px solid hsl(var(--primary) / 0.4)`, borderRadius: 20, padding: "1px 7px" }}>
                     {t("funcNewBadge")}
                   </span>
                 </div>
-                <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 1.55, margin: 0 }}>{p.desc}</p>
+                <p style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.55, margin: 0 }}>{p.desc}</p>
               </div>
             </div>
           ))}
@@ -93,20 +94,20 @@ export default function Funktioner() {
             <div
               key={i}
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: `0.5px solid ${open ? "rgba(212,175,55,0.4)" : "rgba(255,255,255,0.08)"}`,
-                borderRadius: 14,
+                background: "hsl(var(--border))",
+                border: `0.5px solid ${open ? "hsl(var(--primary) / 0.4)" : "hsl(var(--border))"}`,
+                borderRadius: 8,
                 overflow: "hidden",
                 transition: "border-color 0.2s",
               }}
             >
-              <button
+              <Button
                 onClick={() => setOpenIdx(open ? null : i)}
                 style={{
                   width: "100%",
                   background: "transparent",
                   border: "none",
-                  color: "#fff",
+                  color: "hsl(var(--foreground))",
                   padding: "16px 18px",
                   display: "flex",
                   alignItems: "center",
@@ -122,25 +123,25 @@ export default function Funktioner() {
                     <span style={{ fontSize: 15, fontWeight: 800 }}>{m.title}</span>
                     <span style={{ fontSize: 10, color: GOLD, fontWeight: 700, letterSpacing: "0.05em" }}>{m.tag.toUpperCase()}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", lineHeight: 1.4 }}>{m.short}</div>
+                  <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.4 }}>{m.short}</div>
                 </div>
                 <ChevronDown
                   size={18}
                   style={{
-                    color: "rgba(255,255,255,0.5)",
+                    color: "hsl(var(--muted-foreground))",
                     flexShrink: 0,
                     transform: open ? "rotate(180deg)" : "rotate(0deg)",
                     transition: "transform 0.2s",
                   }}
                 />
-              </button>
+              </Button>
               {open && (
-                <div style={{ padding: "0 18px 18px 56px", borderTop: "0.5px solid rgba(255,255,255,0.05)", paddingTop: 14 }}>
-                  <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.7)", lineHeight: 1.65, margin: "0 0 14px" }}>{m.desc}</p>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>{t("funcContains")}</div>
+                <div style={{ padding: "0 18px 18px 56px", borderTop: "0.5px solid hsl(var(--border))", paddingTop: 14 }}>
+                  <p style={{ fontSize: 13.5, color: "hsl(var(--muted-foreground))", lineHeight: 1.65, margin: "0 0 14px" }}>{m.desc}</p>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "hsl(var(--muted-foreground))", marginBottom: 8 }}>{t("funcContains")}</div>
                   <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 7 }}>
                     {m.features.map((f, j) => (
-                      <li key={j} style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", display: "flex", gap: 8, alignItems: "flex-start", lineHeight: 1.5 }}>
+                      <li key={j} style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", display: "flex", gap: 8, alignItems: "flex-start", lineHeight: 1.5 }}>
                         <span style={{ color: GOLD, flexShrink: 0, marginTop: 1 }}>✓</span>{f}
                       </li>
                     ))}
@@ -152,10 +153,10 @@ export default function Funktioner() {
         })}
       </div>
 
-      <div style={{ background: "#13141F", borderTop: "0.5px solid rgba(255,255,255,0.07)", padding: "56px 24px", textAlign: "center" }}>
-        <h2 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12, lineHeight: 1.1 }}>{t("funcCtaTitle")}</h2>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", maxWidth: 400, margin: "0 auto 24px", lineHeight: 1.65 }}>{t("funcCtaSub")}</p>
-        <button onClick={() => window.location.href = "/auth"} style={{ padding: "13px 28px", borderRadius: 10, border: "none", background: GOLD, color: "#0B0C14", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>{t("funcCtaBtn")}</button>
+      <div style={{ background: "hsl(var(--muted))", borderTop: "0.5px solid hsl(var(--border))", padding: "56px 24px", textAlign: "center" }}>
+        <h2 style={{ fontSize: "40px", fontWeight: 900, letterSpacing: "0", marginBottom: 12, lineHeight: 1.1 }}>{t("funcCtaTitle")}</h2>
+        <p style={{ fontSize: 14, color: "hsl(var(--muted-foreground))", maxWidth: 400, margin: "0 auto 24px", lineHeight: 1.65 }}>{t("funcCtaSub")}</p>
+        <Button onClick={() => window.location.href = "/auth"} style={{ padding: "13px 28px", borderRadius: 8, border: "none", background: GOLD, color: "hsl(var(--primary-foreground))", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>{t("funcCtaBtn")}</Button>
       </div>
     </LandingLayout>
   );

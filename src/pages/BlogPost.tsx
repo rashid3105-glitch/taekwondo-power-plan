@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { LandingLayout } from "@/components/landing/LandingLayout";
@@ -6,7 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getPostBySlug, getTranslations, sanitizeHtml, type BlogPost, type BlogLocale } from "@/lib/blogApi";
 import BlogComments from "@/components/blog/BlogComments";
 
-const GOLD = "#D4AF37";
+const GOLD = "hsl(var(--primary))";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -48,7 +49,7 @@ const BlogPostPage = () => {
   if (loading) {
     return (
       <LandingLayout>
-        <div style={{ padding: 80, textAlign: "center", color: "rgba(255,255,255,0.62)" }}>…</div>
+        <div style={{ padding: 80, textAlign: "center", color: "hsl(var(--muted-foreground))" }}>…</div>
       </LandingLayout>
     );
   }
@@ -59,10 +60,10 @@ const BlogPostPage = () => {
         <PageMeta title="Not found · Sportstalent" />
         <div style={{ maxWidth: 600, margin: "0 auto", padding: "100px 24px", textAlign: "center" }}>
           <h1 style={{ fontSize: 48, fontWeight: 900, marginBottom: 16 }}>404</h1>
-          <p style={{ color: "rgba(255,255,255,0.6)", marginBottom: 24 }}>Artiklen findes ikke / Article not found.</p>
-          <button onClick={() => navigate("/blog")} style={{ padding: "12px 24px", borderRadius: 10, border: "none", background: GOLD, color: "#0B0C14", fontWeight: 800, cursor: "pointer" }}>
+          <p style={{ color: "hsl(var(--muted-foreground))", marginBottom: 24 }}>Artiklen findes ikke / Article not found.</p>
+          <Button onClick={() => navigate("/blog")} style={{ padding: "12px 24px", borderRadius: 8, border: "none", background: GOLD, color: "hsl(var(--primary-foreground))", fontWeight: 800, cursor: "pointer" }}>
             ← Blog
-          </button>
+          </Button>
         </div>
       </LandingLayout>
     );
@@ -109,36 +110,36 @@ const BlogPostPage = () => {
 
 
       <article style={{ maxWidth: 720, margin: "0 auto", padding: "48px 20px 80px" }}>
-        <button
+        <Button
           onClick={() => navigate("/blog")}
-          style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: 13, marginBottom: 24, padding: 0 }}
+          style={{ background: "transparent", border: "none", color: "hsl(var(--muted-foreground))", cursor: "pointer", fontSize: 13, marginBottom: 24, padding: 0 }}
         >
           ← Blog
-        </button>
+        </Button>
 
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.62)", marginBottom: 12, letterSpacing: "0.05em" }}>
+        <div style={{ fontSize: 12, color: "hsl(var(--muted-foreground))", marginBottom: 12, letterSpacing: "0.05em" }}>
           {post.published_at && new Date(post.published_at).toLocaleDateString(post.locale === "da" ? "da-DK" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
-          <span style={{ marginLeft: 12, padding: "2px 8px", border: "0.5px solid rgba(255,255,255,0.15)", borderRadius: 20, fontSize: 10, fontWeight: 700 }}>
+          <span style={{ marginLeft: 12, padding: "2px 8px", border: "0.5px solid hsl(var(--border))", borderRadius: 20, fontSize: 10, fontWeight: 700 }}>
             {post.locale.toUpperCase()}
           </span>
         </div>
 
-        <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.1, margin: "0 0 16px" }}>
+        <h1 style={{ fontSize: "52px", fontWeight: 900, letterSpacing: "0", lineHeight: 1.1, margin: "0 0 16px" }}>
           {post.title}
         </h1>
 
         {post.excerpt && (
-          <p style={{ fontSize: 18, color: "rgba(255,255,255,0.7)", lineHeight: 1.55, margin: "0 0 32px" }}>{post.excerpt}</p>
+          <p style={{ fontSize: 18, color: "hsl(var(--muted-foreground))", lineHeight: 1.55, margin: "0 0 32px" }}>{post.excerpt}</p>
         )}
 
         {otherLangPost && (
           <div style={{ marginBottom: 28, fontSize: 13 }}>
-            <button
+            <Button
               onClick={() => navigate(`/blog/${otherLangPost.slug}`)}
-              style={{ background: "rgba(212,175,55,0.1)", border: `0.5px solid ${GOLD}`, color: GOLD, borderRadius: 8, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 12 }}
+              style={{ background: "hsl(var(--primary) / 0.1)", border: `0.5px solid ${GOLD}`, color: GOLD, borderRadius: 8, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 12 }}
             >
               {otherLangPost.locale === "en" ? "Read in English" : "Læs på dansk"}
-            </button>
+            </Button>
           </div>
         )}
 
@@ -146,16 +147,16 @@ const BlogPostPage = () => {
           <img
             src={post.cover_image_url}
             alt=""
-            style={{ width: "100%", borderRadius: 16, marginBottom: 32, display: "block" }}
+            style={{ width: "100%", borderRadius: 8, marginBottom: 32, display: "block" }}
           />
         )}
 
         <div
-          className="prose prose-invert max-w-none"
+          className="prose max-w-none"
           style={{
             fontSize: 17,
             lineHeight: 1.75,
-            color: "rgba(255,255,255,0.85)",
+            color: "hsl(var(--muted-foreground))",
           }}
           dangerouslySetInnerHTML={{ __html: safeHtml }}
         />

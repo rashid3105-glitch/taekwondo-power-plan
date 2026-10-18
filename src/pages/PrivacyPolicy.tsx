@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { LandingLayout } from "@/components/landing/LandingLayout";
@@ -5,15 +6,15 @@ import { PageMeta } from "@/components/PageMeta";
 import { useNavigate } from "react-router-dom";
 import { SUBPROCESSORS } from "@/data/subprocessors";
 
-const GOLD = "#D4AF37";
+const GOLD = "hsl(var(--primary))";
 
 export default function PrivacyPolicy() {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  const h2: React.CSSProperties = { fontSize: 20, fontWeight: 800, marginBottom: 10, letterSpacing: "-0.01em", color: "#fff" };
-  const p: React.CSSProperties = { fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.78)" };
-  const ul: React.CSSProperties = { fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.78)", paddingLeft: 20, margin: 0 };
+  const h2: React.CSSProperties = { fontSize: 20, fontWeight: 800, marginBottom: 10, letterSpacing: "0", color: "hsl(var(--foreground))" };
+  const p: React.CSSProperties = { fontSize: 15, lineHeight: 1.7, color: "hsl(var(--muted-foreground))" };
+  const ul: React.CSSProperties = { fontSize: 15, lineHeight: 1.7, color: "hsl(var(--muted-foreground))", paddingLeft: 20, margin: 0 };
   const section: React.CSSProperties = { marginBottom: 32 };
 
   return (
@@ -21,20 +22,20 @@ export default function PrivacyPolicy() {
       <PageMeta title={t("seoPrivacyTitle")} description={t("seoPrivacyDesc")} canonical="https://sportstalent.dk/privacy" />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 32px 80px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-          <button
+          <Button
             onClick={() => navigate(-1)}
-            style={{ background: "transparent", border: "0.5px solid rgba(255,255,255,0.15)", color: "#fff", padding: "8px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer" }}
+            style={{ background: "transparent", border: "0.5px solid hsl(var(--border))", color: "hsl(var(--foreground))", padding: "8px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer" }}
           >
             ← {t("back")}
-          </button>
+          </Button>
           <LanguageSwitcher />
         </div>
 
-        <h1 style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 24, color: "#fff" }}>
+        <h1 style={{ fontSize: 44, fontWeight: 900, letterSpacing: "0", marginBottom: 24, color: "hsl(var(--foreground))" }}>
           {t("privacyPolicyTitle")}
         </h1>
 
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
+        <p style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", marginBottom: 40 }}>
           {t("privacyLastUpdated")}: 2026-08-03 · {t("privacyVersion")}
         </p>
 
@@ -155,19 +156,19 @@ export default function PrivacyPolicy() {
               <tbody>
                 {SUBPROCESSORS.map((s) => (
                   <tr key={s.name}>
-                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "#fff", verticalAlign: "top" }}>
-                      <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: "#fff", textDecoration: "underline" }}>
+                    <td style={{ padding: "10px", borderBottom: "1px solid hsl(var(--border))", color: "hsl(var(--foreground))", verticalAlign: "top" }}>
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ color: "hsl(var(--foreground))", textDecoration: "underline" }}>
                         {s.name}
                       </a>
-                      <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, marginTop: 2 }}>{s.country}</div>
+                      <div style={{ color: "hsl(var(--muted-foreground))", fontSize: 12, marginTop: 2 }}>{s.country}</div>
                     </td>
-                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.78)", verticalAlign: "top", lineHeight: 1.6 }}>
+                    <td style={{ padding: "10px", borderBottom: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))", verticalAlign: "top", lineHeight: 1.6 }}>
                       {t(s.purposeKey)}
                     </td>
-                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.78)", verticalAlign: "top" }}>
+                    <td style={{ padding: "10px", borderBottom: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))", verticalAlign: "top" }}>
                       {t(s.locationKey)}
                     </td>
-                    <td style={{ padding: "10px", borderBottom: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.78)", verticalAlign: "top" }}>
+                    <td style={{ padding: "10px", borderBottom: "1px solid hsl(var(--border))", color: "hsl(var(--muted-foreground))", verticalAlign: "top" }}>
                       {t(s.basisKey)}
                     </td>
                   </tr>
@@ -199,7 +200,7 @@ export default function PrivacyPolicy() {
         <section style={section}>
           <h2 style={h2}>{t("privacyContact")}</h2>
           <p style={p}>{t("privacyContactDesc")}</p>
-          <p style={{ fontSize: 15, color: "#fff", fontWeight: 600, marginTop: 8 }}>kontakt@sportstalent.dk</p>
+          <p style={{ fontSize: 15, color: "hsl(var(--foreground))", fontWeight: 600, marginTop: 8 }}>kontakt@sportstalent.dk</p>
         </section>
       </div>
     </LandingLayout>
