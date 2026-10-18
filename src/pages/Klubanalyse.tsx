@@ -159,16 +159,17 @@ const GREEN = "#4CAF7D";
 type Stage = "intro" | "q" | "milestone" | "gate" | "result";
 
 const card: React.CSSProperties = {
-  background: "rgba(15,23,42,0.04)",
-  border: "0.5px solid rgba(15,23,42,0.12)",
-  borderRadius: 14,
+  background: "#fff",
+  border: "1px solid #E4E8F0",
+  borderRadius: 16,
+  boxShadow: "0 12px 30px -24px rgba(15,23,42,0.35)",
   padding: 20,
 };
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
   background: "rgba(15,23,42,0.05)",
-  border: "0.5px solid rgba(15,23,42,0.12)",
+  border: "1px solid #E4E8F0",
   borderRadius: 8,
   padding: "12px 14px",
   fontSize: 15,
@@ -393,7 +394,7 @@ export default function Klubanalyse() {
                       textAlign: "left",
                       padding: "16px 18px",
                       borderRadius: 12,
-                      border: `0.5px solid ${selected ? BLUE : "rgba(15,23,42,0.14)"}`,
+                      border: `1px solid ${selected ? BLUE : "rgba(15,23,42,0.14)"}`,
                       background: selected ? "rgba(31,91,216,0.08)" : "rgba(15,23,42,0.04)",
                       color: INK,
                       fontSize: 15,
