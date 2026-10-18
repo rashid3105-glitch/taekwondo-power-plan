@@ -2,7 +2,7 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 const translations = {
   en: {
-    changelog_2026_10_18: "18 October 2026",
+    publicNavigation: "Navigation",    changelog_2026_10_18: "18 October 2026",
     changelogPublicLight: "The public website and every club assessment step, result and chart now share a light design. Content and prices are unchanged.",
     videoConsentNotice: "This video plays from {provider}. When you click, data is sent to {provider}.",
     videoConsentPlay: "Play video",
@@ -4716,7 +4716,7 @@ const translations = {
     homeFaq6A: "You can export the club's data at any time. If you cancel, we delete the data as agreed and no later than the end of the retention period. We do not sell data and use it only to run the platform.",
   },
   da: {
-    changelog_2026_10_18: "18. oktober 2026",
+    publicNavigation: "Navigation",    changelog_2026_10_18: "18. oktober 2026",
     changelogPublicLight: "Hjemmesidens offentlige sider og alle klubanalysens trin, resultater og grafer har nu samme lyse design. Indhold og priser er uændrede.",
     videoConsentNotice: "Videoen afspilles fra {provider}. Når du klikker, sendes data til {provider}.",
     videoConsentPlay: "Afspil video",
@@ -9413,7 +9413,7 @@ const translations = {
     homeFaq6A: "I kan til enhver tid eksportere klubbens data. Siger I op, sletter vi data efter aftale og senest når opbevaringsfristen udløber. Vi sælger ikke data og bruger dem ikke til andet end at drive platformen.",
   },
   sv: {
-    changelog_2026_10_18: "18 oktober 2026",
+    publicNavigation: "Navigering",    changelog_2026_10_18: "18 oktober 2026",
     changelogPublicLight: "Webbplatsens offentliga sidor och klubbbedömningens alla steg, resultat och diagram har nu samma ljusa design. Innehåll och priser är oförändrade.",
     videoConsentNotice: "Videon spelas upp från {provider}. När du klickar skickas data till {provider}.",
     videoConsentPlay: "Spela upp video",
@@ -14069,7 +14069,7 @@ const translations = {
     homeFaq6A: "Ni kan när som helst exportera klubbens data. Om ni säger upp avtalet raderar vi data enligt överenskommelse och senast när lagringstiden löper ut. Vi säljer inte data och använder dem bara för att driva plattformen.",
   },
   de: {
-    changelog_2026_10_18: "18. Oktober 2026",
+    publicNavigation: "Navigation",    changelog_2026_10_18: "18. Oktober 2026",
     changelogPublicLight: "Öffentliche Seiten sowie alle Schritte, Ergebnisse und Diagramme der Vereinsanalyse haben jetzt ein einheitliches helles Design. Inhalte und Preise bleiben unverändert.",
     videoConsentNotice: "Das Video wird von {provider} abgespielt. Wenn du klickst, werden Daten an {provider} gesendet.",
     videoConsentPlay: "Video abspielen",
@@ -18675,7 +18675,7 @@ const translations = {
     homeFaq6A: "Ihr könnt die Vereinsdaten jederzeit exportieren. Bei einer Kündigung löschen wir die Daten wie vereinbart, spätestens nach Ablauf der Aufbewahrungsfrist. Wir verkaufen keine Daten und nutzen sie nur für den Betrieb der Plattform.",
   },
   ar: {
-    changelog_2026_10_18: "18 أكتوبر 2026",
+    publicNavigation: "التنقل",    changelog_2026_10_18: "18 أكتوبر 2026",
     changelogPublicLight: "تستخدم الصفحات العامة وجميع مراحل تقييم النادي ونتائجه ورسومه تصميماً فاتحاً موحداً. لم يتغير المحتوى أو الأسعار.",
     videoConsentNotice: "يتم تشغيل الفيديو من {provider}. عند النقر، يتم إرسال البيانات إلى {provider}.",
     videoConsentPlay: "تشغيل الفيديو",
@@ -23282,7 +23282,7 @@ const translations = {
     homeFaq6A: "يمكنكم تصدير بيانات النادي في أي وقت. وعند الإنهاء نحذف البيانات وفق الاتفاق وبحد أقصى عند انتهاء مدة الاحتفاظ. لا نبيع البيانات ولا نستخدمها إلا لتشغيل المنصة.",
   },
   no: {
-    changelog_2026_10_18: "18. oktober 2026",
+    publicNavigation: "Navigasjon",    changelog_2026_10_18: "18. oktober 2026",
     changelogPublicLight: "Nettsidens offentlige sider og alle trinn, resultater og grafer i klubbanalysen har nå samme lyse design. Innhold og priser er uendret.",
     videoConsentNotice: "Videoen spilles av fra {provider}. Når du klikker, sendes data til {provider}.",
     videoConsentPlay: "Spill av video",
@@ -27948,6 +27948,7 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  publicNavigation: "Navegación",
   changelog_2026_10_18: "18 de octubre de 2026",
   changelogPublicLight: "Las páginas públicas y todos los pasos, resultados y gráficos del análisis del club comparten ahora un diseño claro. El contenido y los precios no han cambiado.",
   videoConsentNotice: "El vídeo se reproduce desde {provider}. Al hacer clic, se envían datos a {provider}.",

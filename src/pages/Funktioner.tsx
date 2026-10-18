@@ -63,7 +63,7 @@ export default function Funktioner() {
             <div
               key={i}
               style={{
-                background: "hsl(var(--border))",
+                background: "hsl(var(--muted))",
                 border: "0.5px solid hsl(var(--primary) / 0.28)",
                 borderRadius: 8,
                 padding: "16px 18px",
@@ -94,7 +94,7 @@ export default function Funktioner() {
             <div
               key={i}
               style={{
-                background: "hsl(var(--border))",
+                background: "hsl(var(--muted))",
                 border: `0.5px solid ${open ? "hsl(var(--primary) / 0.4)" : "hsl(var(--border))"}`,
                 borderRadius: 8,
                 overflow: "hidden",

@@ -92,7 +92,7 @@ const Blog = () => {
                 key={p.id}
                 onClick={() => navigate(`/blog/${p.slug}`)}
                 style={{
-                  background: "hsl(var(--border))",
+                  background: "hsl(var(--muted))",
                   border: "0.5px solid hsl(var(--border))",
                   borderRadius: 8,
                   overflow: "hidden",

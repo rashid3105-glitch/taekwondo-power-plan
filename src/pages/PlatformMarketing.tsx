@@ -55,7 +55,7 @@ export default function PlatformMarketing() {
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 20 }}>
           {BENEFITS.map((b, i) => (
-            <div key={i} style={{ background: "hsl(var(--border))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "24px 22px" }}>
+            <div key={i} style={{ background: "hsl(var(--muted))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "24px 22px" }}>
               <div style={{ fontSize: 28, marginBottom: 12 }}>{b.icon}</div>
               <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>{b.title}</div>
               <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.65 }}>{b.desc}</div>

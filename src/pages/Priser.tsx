@@ -112,7 +112,7 @@ export default function Priser() {
     setSent(true);
   };
 
-  const inputStyle = { width: "100%", background: "hsl(var(--border))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "11px 14px", fontSize: 14, color: "hsl(var(--foreground))", outline: "none", boxSizing: "border-box" as const };
+  const inputStyle = { width: "100%", background: "hsl(var(--muted))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "11px 14px", fontSize: 14, color: "hsl(var(--foreground))", outline: "none", boxSizing: "border-box" as const };
 
   const starterFeatures = [t("pricingStarterF1"), t("pricingStarterF2"), t("pricingStarterF3"), t("pricingStarterF4"), t("pricingStarterF5"), t("pricingStarterF6"), t("pricingStarterF7")];
   const starterMissing = [t("pricingMissingVideo"), t("pricingMissingPdf"), t("pricingMissingCal")];
@@ -199,7 +199,7 @@ export default function Priser() {
           return (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 10, marginTop: 20 }}>
               {items.map((it, i) => (
-                <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13, color: "hsl(var(--muted-foreground))", background: "hsl(var(--border))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "10px 12px" }}>
+                <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13, color: "hsl(var(--muted-foreground))", background: "hsl(var(--muted))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "10px 12px" }}>
                   <span style={{ color: GOLD }}>✓</span>{it}
                 </div>
               ))}
@@ -238,7 +238,7 @@ export default function Priser() {
             <h2 style={{ fontSize: "32px", fontWeight: 900, letterSpacing: "0", marginTop: 8 }}>{t("pricingFaqTitle")}</h2>
           </div>
           {faqs.map((faq, i) => (
-            <div key={i} style={{ background: "hsl(var(--border))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "20px" }}>
+            <div key={i} style={{ background: "hsl(var(--muted))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "20px" }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{faq.q}</div>
               <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.65 }}>{faq.a}</div>
             </div>
@@ -261,7 +261,7 @@ export default function Priser() {
               <div style={{ fontSize: 14, color: "hsl(var(--muted-foreground))" }}>{t("pricingContactSuccessSub")}</div>
             </div>
           ) : (
-            <div style={{ background: "hsl(var(--border))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "32px", display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ background: "hsl(var(--muted))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "32px", display: "flex", flexDirection: "column", gap: 14 }}>
               <div className="pricing-fields" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 11, color: "hsl(var(--muted-foreground))", display: "block", marginBottom: 6 }}>{t("pricingLabelName")}</label>

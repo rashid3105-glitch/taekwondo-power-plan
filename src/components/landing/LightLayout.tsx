@@ -40,7 +40,7 @@ export function LightLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-2">
             <LanguageSwitcher compact />
             <Button asChild variant="outline" className="text-xs sm:text-sm"><Link to="/auth">{t("signIn")}</Link></Button>
-            <Button variant="ghost" size="icon" className="sm:hidden" aria-label={t("menu")} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</Button>
+            <Button variant="ghost" size="icon" className="sm:hidden" aria-label={t("publicNavigation")} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</Button>
           </div>
         </div>
         <nav className={`${open ? "flex" : "hidden"} sm:flex flex-wrap justify-center gap-2 px-5 pb-3`}>

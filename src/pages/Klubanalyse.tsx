@@ -169,7 +169,7 @@ const card: React.CSSProperties = {
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "hsl(var(--border))",
+  background: "hsl(var(--muted))",
   border: "1px solid hsl(var(--border))",
   borderRadius: 8,
   padding: "12px 14px",
@@ -342,7 +342,7 @@ export default function Klubanalyse() {
 
       {/* Progressbar */}
       {stage !== "intro" && stage !== "result" && (
-        <div style={{ height: 3, background: "hsl(var(--border))" }}>
+        <div style={{ height: 3, background: "hsl(var(--muted))" }}>
           <div style={{ height: "100%", width: `${progress}%`, background: GOLD, transition: "width .25s ease" }} />
         </div>
       )}
@@ -557,7 +557,7 @@ export default function Klubanalyse() {
                           height: 130,
                           borderRadius: 8,
                           border: isWeak ? `2px dashed ${RED}` : "0.5px solid hsl(var(--border))",
-                          background: "hsl(var(--border))",
+                          background: "hsl(var(--muted))",
                           position: "relative",
                           overflow: "hidden",
                           display: "flex",
@@ -611,7 +611,7 @@ export default function Klubanalyse() {
                       <span>{d.name}</span>
                       <span style={{ color: GOLD, fontWeight: 700 }}>{C.level} {levels[i]}</span>
                     </div>
-                    <div style={{ height: 8, borderRadius: 4, background: "hsl(var(--border))", overflow: "hidden" }}>
+                    <div style={{ height: 8, borderRadius: 4, background: "hsl(var(--muted))", overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${(scores[i] / MAX_DIM_SCORE) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
                     </div>
                   </div>

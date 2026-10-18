@@ -104,7 +104,7 @@ export default function BlogComments({ postId, postLocale }: Props) {
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
-    background: "hsl(var(--border))",
+    background: "hsl(var(--muted))",
     border: "0.5px solid hsl(var(--border))",
     borderRadius: 8,
     padding: "12px 14px",
@@ -142,7 +142,7 @@ export default function BlogComments({ postId, postLocale }: Props) {
             <li
               key={c.id}
               style={{
-                background: "hsl(var(--border))",
+                background: "hsl(var(--muted))",
                 border: "0.5px solid hsl(var(--border))",
                 borderRadius: 8,
                 padding: "16px 18px",
@@ -166,7 +166,7 @@ export default function BlogComments({ postId, postLocale }: Props) {
 
       <div
         style={{
-          background: "hsl(var(--border))",
+          background: "hsl(var(--muted))",
           border: "0.5px solid hsl(var(--border))",
           borderRadius: 8,
           padding: 24,

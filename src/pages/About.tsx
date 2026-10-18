@@ -114,7 +114,7 @@ export default function About() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
             {VALUES.map((v, i) => (
-              <div key={i} style={{ background: "hsl(var(--border))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "22px" }}>
+              <div key={i} style={{ background: "hsl(var(--muted))", border: "0.5px solid hsl(var(--border))", borderRadius: 8, padding: "22px" }}>
                 <div style={{ fontSize: 26, marginBottom: 10 }}>{v.icon}</div>
                 <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{v.title}</div>
                 <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", lineHeight: 1.65 }}>{v.desc}</div>
