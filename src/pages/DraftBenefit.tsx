@@ -11,7 +11,7 @@ import { EditableImage } from "@/components/EditableImage";
 const IMGS = import.meta.glob("@/assets/draft/*.jpg", { eager: true, import: "default" }) as Record<string, string>;
 const img = (k: string) => Object.entries(IMGS).find(([p]) => p.endsWith(`/${k}.jpg`))?.[1];
 
-// Draft benefit subpages linked from /draft-home. Not public, noindex.
+// Public benefit subpages at /fordele/:slug, linked from the front page.
 const C = { bg: "#FFFFFF", soft: "#F5F7FB", ink: "#0F172A", muted: "#526079", line: "#E4E8F0", blue: "#1F5BD8", gold: "#C9A227" };
 
 export const BENEFIT_SLUGS = ["spar-tid", "trivsel", "roed-traad", "videoanalyse"] as const;
@@ -182,7 +182,7 @@ export default function DraftBenefit() {
   const navigate = useNavigate();
   const { locale } = useLanguage();
   const m = useIsMobile();
-  if (!slug || !(BENEFIT_SLUGS as readonly string[]).includes(slug)) return <Navigate to="/draft-home" replace />;
+  if (!slug || !(BENEFIT_SLUGS as readonly string[]).includes(slug)) return <Navigate to="/" replace />;
   const u = UI_COPY[locale] ?? UI_COPY.en;
   const p = (P[locale] ?? P.en)[slug as Slug];
   const pad = m ? 20 : 40;
@@ -191,15 +191,13 @@ export default function DraftBenefit() {
 
   return (
     <div style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", minHeight: "100vh" }}>
-      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
-      <div style={{ background: C.gold, textAlign: "center", fontSize: 12, fontWeight: 700, padding: "6px 0" }}>{u.draft}</div>
       <header style={{ maxWidth: 1120, margin: "0 auto", padding: `16px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <BrandLogo height={m ? 34 : 40} textColor={C.ink} accentColor={C.gold} />
         <LanguageSwitcher />
       </header>
 
       <section style={{ maxWidth: 900, margin: "0 auto", padding: `${m ? 16 : 32}px ${pad}px ${m ? 40 : 64}px` }}>
-        <button onClick={() => navigate("/draft-home")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", color: C.blue, fontWeight: 600, fontSize: 14, cursor: "pointer", padding: 0, marginBottom: 24 }}>
+        <button onClick={() => navigate("/")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", color: C.blue, fontWeight: 600, fontSize: 14, cursor: "pointer", padding: 0, marginBottom: 24 }}>
           <ArrowLeft size={16} style={{ transform: locale === "ar" ? "scaleX(-1)" : undefined }} />{u.back}
         </button>
         <h1 style={{ fontSize: m ? 32 : 48, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 18px" }}>{p.h1}</h1>

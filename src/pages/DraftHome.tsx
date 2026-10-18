@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "react-helmet-async";
 import { Clock, HeartPulse, Route as RouteIcon, Check, Video } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -10,7 +12,7 @@ import coachSitting from "@/assets/coach-sitting.png";
 import { BENEFIT_SLUGS, UI_COPY } from "./DraftBenefit";
 import { EditableImage } from "@/components/EditableImage";
 
-// Draft of a lighter, simpler front page. Not linked anywhere, noindex.
+// Public front page (light design). Benefit cards link to /fordele/:slug.
 const C = {
   bg: "#FFFFFF",
   soft: "#F5F7FB",
@@ -214,7 +216,7 @@ export default function DraftHome() {
             {k.b.map((b, i) => {
               const Icon = ICONS[i];
               return (
-                <button key={i} onClick={() => navigate(`/draft-home/${BENEFIT_SLUGS[i]}`)} style={{ textAlign: "start", font: "inherit", color: "inherit", cursor: "pointer", background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.line}`, transition: "transform .15s, box-shadow .15s" }}
+                <button key={i} onClick={() => navigate(`/fordele/${BENEFIT_SLUGS[i]}`)} style={{ textAlign: "start", font: "inherit", color: "inherit", cursor: "pointer", background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.line}`, transition: "transform .15s, box-shadow .15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 36px -20px rgba(15,23,42,0.35)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
                   <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(31,91,216,0.1)", color: C.blue, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}><Icon size={24} /></div>
