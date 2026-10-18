@@ -159,15 +159,25 @@ export default function DraftHome() {
   const m = useIsMobile();
   const k = COPY[locale] ?? COPY.en;
   const pad = m ? 20 : 40;
+  const [checking, setChecking] = useState(true);
+
+  // Signed-in users go to their dashboard; platform admins stay so they can swap images.
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { setChecking(false); return; }
+      const { data: admin } = await supabase.rpc("is_admin", { _user_id: user.id });
+      if (admin) setChecking(false);
+      else navigate("/dashboard", { replace: true });
+    });
+  }, [navigate]);
 
   const primary: React.CSSProperties = { padding: m ? "14px 22px" : "15px 28px", borderRadius: 999, border: "none", background: C.blue, color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", boxShadow: "0 10px 24px -10px rgba(31,91,216,0.6)" };
   const secondary: React.CSSProperties = { padding: m ? "14px 22px" : "15px 28px", borderRadius: 999, border: `1px solid ${C.line}`, background: "#fff", color: C.ink, fontSize: 15, fontWeight: 600, cursor: "pointer" };
 
+  if (checking) return null;
+
   return (
     <div style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", minHeight: "100vh" }}>
-      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
-
-      <div style={{ background: C.gold, color: C.ink, textAlign: "center", fontSize: 12, fontWeight: 700, padding: "6px 0" }}>{k.draft}</div>
 
       <header style={{ maxWidth: 1120, margin: "0 auto", padding: `16px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <div style={{ color: C.ink }}><BrandLogo height={m ? 34 : 40} textColor={C.ink} accentColor={C.gold} /></div>
