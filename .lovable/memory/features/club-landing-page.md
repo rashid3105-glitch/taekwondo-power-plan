@@ -1,10 +1,11 @@
 ---
 name: Landing page routes
-description: Public marketing routes — Index at /, CoachLanding at /for-traenere (with /v3 redirect)
+description: Public marketing routes — light DraftHome at /, benefit subpages at /fordele/:slug, CoachLanding at /for-traenere
 type: feature
 ---
-- `/` → `Index` (dark/gold marketing landing, Danish, founder section, hero + stats + features + pricing).
-- `/for-traenere` → `CoachLanding` (coach-focused Everfit-style page). Legacy `/v3` redirects here.
-- `/signup` → `/auth?tab=signup`, `/login` → `/auth?tab=signin`.
-- Logged-in users on `/` redirect to `/dashboard` (handled inside Index).
-- Per-route SEO metadata via `PublicSeo` (react-helmet-async). Private routes inherit `noindex,nofollow` from `index.html`.
+- `/` → `DraftHome` (light design approved Oct 2026; replaced the dark/gold `Index`, which is kept in code but unrouted).
+- `/fordele/spar-tid|trivsel|roed-traad|videoanalyse` → `DraftBenefit`. Old `/draft-home(/:slug)` redirect here.
+- Page images are swappable inline by platform admins ("Skift billede"); screenshots must not show real names, club names or athlete codes.
+- Signed-in non-admins on `/` redirect to `/dashboard`; admins stay to edit images.
+- `/for-traenere` → `CoachLanding`. `/signup` → `/auth?tab=signup`, `/login` → `/auth?tab=signin`.
+- Per-route SEO via `PublicSeo` (Danish).

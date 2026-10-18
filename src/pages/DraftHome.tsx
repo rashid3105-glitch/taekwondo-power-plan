@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { supabase } from "@/integrations/supabase/client";
 import { Clock, HeartPulse, Route as RouteIcon, Check, Video } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -10,7 +11,7 @@ import coachSitting from "@/assets/coach-sitting.png";
 import { BENEFIT_SLUGS, UI_COPY } from "./DraftBenefit";
 import { EditableImage } from "@/components/EditableImage";
 
-// Draft of a lighter, simpler front page. Not linked anywhere, noindex.
+// Public front page (light design). Benefit cards link to /fordele/:slug.
 const C = {
   bg: "#FFFFFF",
   soft: "#F5F7FB",
@@ -159,15 +160,25 @@ export default function DraftHome() {
   const m = useIsMobile();
   const k = COPY[locale] ?? COPY.en;
   const pad = m ? 20 : 40;
+  const [checking, setChecking] = useState(true);
+
+  // Signed-in users go to their dashboard; platform admins stay so they can swap images.
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { setChecking(false); return; }
+      const { data: admin } = await supabase.rpc("is_admin", { _user_id: user.id });
+      if (admin) setChecking(false);
+      else navigate("/dashboard", { replace: true });
+    });
+  }, [navigate]);
 
   const primary: React.CSSProperties = { padding: m ? "14px 22px" : "15px 28px", borderRadius: 999, border: "none", background: C.blue, color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", boxShadow: "0 10px 24px -10px rgba(31,91,216,0.6)" };
   const secondary: React.CSSProperties = { padding: m ? "14px 22px" : "15px 28px", borderRadius: 999, border: `1px solid ${C.line}`, background: "#fff", color: C.ink, fontSize: 15, fontWeight: 600, cursor: "pointer" };
 
+  if (checking) return null;
+
   return (
     <div style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", minHeight: "100vh" }}>
-      <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
-
-      <div style={{ background: C.gold, color: C.ink, textAlign: "center", fontSize: 12, fontWeight: 700, padding: "6px 0" }}>{k.draft}</div>
 
       <header style={{ maxWidth: 1120, margin: "0 auto", padding: `16px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <div style={{ color: C.ink }}><BrandLogo height={m ? 34 : 40} textColor={C.ink} accentColor={C.gold} /></div>
@@ -204,7 +215,7 @@ export default function DraftHome() {
             {k.b.map((b, i) => {
               const Icon = ICONS[i];
               return (
-                <button key={i} onClick={() => navigate(`/draft-home/${BENEFIT_SLUGS[i]}`)} style={{ textAlign: "start", font: "inherit", color: "inherit", cursor: "pointer", background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.line}`, transition: "transform .15s, box-shadow .15s" }}
+                <button key={i} onClick={() => navigate(`/fordele/${BENEFIT_SLUGS[i]}`)} style={{ textAlign: "start", font: "inherit", color: "inherit", cursor: "pointer", background: "#fff", borderRadius: 20, padding: 28, border: `1px solid ${C.line}`, transition: "transform .15s, box-shadow .15s" }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 16px 36px -20px rgba(15,23,42,0.35)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
                   <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(31,91,216,0.1)", color: C.blue, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}><Icon size={24} /></div>
