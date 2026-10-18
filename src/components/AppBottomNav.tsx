@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 const HIDDEN_PREFIXES = [
   "/auth", "/login", "/signup", "/invite", "/join", "/parent-join",
   "/reset-password", "/pending-approval", "/onboarding", "/consent",
-  "/blog", "/pricing", "/priser", "/privacy", "/terms", "/about", "/contact",
+  "/blog", "/pricing", "/priser", "/privacy", "/terms", "/about", "/contact", "/fordele", "/klubanalyse",
   "/programs", "/platform", "/methodology", "/for-traenere", "/draft-home",
   "/funktioner", "/features", "/poomsae", "/staevneforberedelse",
   "/tekniktraening", "/traeningsprogram", "/fysiske-test",
