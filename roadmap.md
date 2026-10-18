@@ -1,4 +1,4 @@
 - Parental consent Release A (birth-date capture, coach set, guardian conversion, funnel, age-field removal) — plan awaiting approval
 - Parental consent Release B (threshold config, server enforcement, staggered grace) — blocked on legal review
 - Match monitoring — complete: both existing matches already converted; /match-analysis/me now uses cloud data, regression tests pass, authenticated create/reload/open/delete verified.
-- Public light design — update the nine requested pages, shared navigation, and every club assessment step/result/chart; verify the public flows.
+- Public light design — complete: nine requested pages, blog articles/comments and shared navigation updated; desktop/mobile checks passed, club assessment submitted with test addresses and result/contact flow verified; content and prices preserved. Not published.
