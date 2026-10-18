@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LandingLayout } from "@/components/landing/LandingLayout";
@@ -5,7 +6,7 @@ import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { listPublishedPosts, type BlogPost, type BlogLocale } from "@/lib/blogApi";
 
-const GOLD = "#D4AF37";
+const GOLD = "hsl(var(--primary))";
 
 const COPY = {
   da: {
@@ -70,18 +71,18 @@ const Blog = () => {
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.2em", color: GOLD, marginBottom: 16 }}>
             {t.tag}
           </div>
-          <h1 style={{ fontSize: "clamp(36px,6vw,64px)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 16 }}>
+          <h1 style={{ fontSize: "64px", fontWeight: 900, letterSpacing: "0", lineHeight: 1.05, marginBottom: 16 }}>
             {t.title}
           </h1>
-          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
+          <p style={{ fontSize: 16, color: "hsl(var(--muted-foreground))", lineHeight: 1.6, maxWidth: 520, margin: "0 auto" }}>
             {t.sub}
           </p>
         </div>
 
         {loading ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.62)", padding: 60 }}>…</div>
+          <div style={{ textAlign: "center", color: "hsl(var(--muted-foreground))", padding: 60 }}>…</div>
         ) : posts.length === 0 ? (
-          <div style={{ textAlign: "center", color: "rgba(255,255,255,0.62)", padding: 80, border: "0.5px dashed rgba(255,255,255,0.1)", borderRadius: 16 }}>
+          <div style={{ textAlign: "center", color: "hsl(var(--muted-foreground))", padding: 80, border: "0.5px dashed hsl(var(--border))", borderRadius: 16 }}>
             {t.empty}
           </div>
         ) : (
@@ -91,15 +92,15 @@ const Blog = () => {
                 key={p.id}
                 onClick={() => navigate(`/blog/${p.slug}`)}
                 style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "0.5px solid rgba(255,255,255,0.08)",
-                  borderRadius: 14,
+                  background: "hsl(var(--muted))",
+                  border: "0.5px solid hsl(var(--border))",
+                  borderRadius: 8,
                   overflow: "hidden",
                   cursor: "pointer",
                   transition: "border-color 0.2s, transform 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(212,175,55,0.4)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "hsl(var(--primary) / 0.4)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "hsl(var(--border))"; }}
               >
                 {p.cover_image_url && (
                   <img
@@ -110,13 +111,13 @@ const Blog = () => {
                 )}
                 <div style={{ padding: "18px 20px 20px" }}>
                   {p.published_at && (
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.62)", marginBottom: 8, letterSpacing: "0.05em" }}>
+                    <div style={{ fontSize: 11, color: "hsl(var(--muted-foreground))", marginBottom: 8, letterSpacing: "0.05em" }}>
                       {new Date(p.published_at).toLocaleDateString(locale === "da" ? "da-DK" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
                     </div>
                   )}
-                  <h2 style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.3, margin: "0 0 10px", letterSpacing: "-0.01em" }}>{p.title}</h2>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.3, margin: "0 0 10px", letterSpacing: "0" }}>{p.title}</h2>
                   {p.excerpt && (
-                    <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.6)", lineHeight: 1.6, margin: "0 0 14px" }}>{p.excerpt}</p>
+                    <p style={{ fontSize: 13.5, color: "hsl(var(--muted-foreground))", lineHeight: 1.6, margin: "0 0 14px" }}>{p.excerpt}</p>
                   )}
                   <div style={{ fontSize: 13, color: GOLD, fontWeight: 700 }}>{t.readMore}</div>
                 </div>

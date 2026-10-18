@@ -87,7 +87,7 @@ const sections = [
     titleKey: "methErrorTitle" as TranslationKey,
     bodyKey: "methErrorIntro" as TranslationKey,
     color: "text-[hsl(var(--tab-mental))]",
-    bgColor: "bg-[hsl(330_60%_72%/0.1)]",
+    bgColor: "bg-tab-mental/10",
     listKeys: [
       "methErrorList1",
       "methErrorList2",
@@ -123,7 +123,7 @@ export default function Methodology() {
 
   return (
     <LandingLayout>
-    <div className="theme-public-dark">
+    <div className="theme-public-light">
     <div className="bg-background flex flex-col relative">
       <PageMeta
         title={tt("methPageTitle")}
@@ -134,11 +134,6 @@ export default function Methodology() {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] opacity-15 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse, hsl(46 65% 52% / 0.35), transparent 70%)" }}
-            aria-hidden="true"
-          />
           <div className="relative max-w-2xl mx-auto px-5 pt-10 pb-8 sm:pt-16 sm:pb-12">
             <Button
               variant="ghost"

@@ -1,9 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { LandingLayout } from "@/components/landing/LandingLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 
-const GOLD = "#D4AF37";
+const GOLD = "hsl(var(--primary))";
 
 const Terms = () => {
   const navigate = useNavigate();
@@ -15,11 +16,11 @@ const Terms = () => {
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "64px 32px" }}>
         <div
           style={{
-            background: "rgba(212,175,55,0.1)",
-            border: "1px solid rgba(212,175,55,0.35)",
+            background: "hsl(var(--primary) / 0.1)",
+            border: "1px solid hsl(var(--primary) / 0.35)",
             color: GOLD,
             padding: "12px 16px",
-            borderRadius: 10,
+            borderRadius: 8,
             fontSize: 13,
             fontWeight: 600,
             marginBottom: 32,
@@ -28,10 +29,10 @@ const Terms = () => {
           UDKAST — opdateres løbende
         </div>
 
-        <h1 style={{ fontSize: 44, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12 }}>
+        <h1 style={{ fontSize: 44, fontWeight: 900, letterSpacing: "0", marginBottom: 12 }}>
           Vilkår og betingelser
         </h1>
-        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
+        <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", marginBottom: 40 }}>
           Sidst opdateret: 6. august 2026 · Version 0.1 — udkast
         </div>
 
@@ -111,8 +112,8 @@ const Terms = () => {
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div style={{ marginBottom: 32 }}>
-    <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10, letterSpacing: "-0.01em" }}>{title}</h2>
-    <p style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.78)" }}>{children}</p>
+    <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10, letterSpacing: "0" }}>{title}</h2>
+    <p style={{ fontSize: 15, lineHeight: 1.7, color: "hsl(var(--muted-foreground))" }}>{children}</p>
   </div>
 );
 

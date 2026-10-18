@@ -8,9 +8,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { WeekPlanPreview } from "@/components/landing/WeekPlanPreview";
 
 const programCards = [
-  { icon: Zap, titleKey: "programCompTitle" as const, descKey: "programCompDesc" as const, gradient: "from-[hsl(190,95%,50%)] to-[hsl(210,90%,56%)]" },
-  { icon: Target, titleKey: "programSCTitle" as const, descKey: "programSCDesc" as const, gradient: "from-[hsl(35,100%,55%)] to-[hsl(15,90%,55%)]" },
-  { icon: Shield, titleKey: "programPoomsaeTitle" as const, descKey: "programPoomsaeDesc" as const, gradient: "from-[hsl(330,60%,72%)] to-[hsl(280,60%,65%)]" },
+  { icon: Zap, titleKey: "programCompTitle" as const, descKey: "programCompDesc" as const, gradient: "from-speed to-primary" },
+  { icon: Target, titleKey: "programSCTitle" as const, descKey: "programSCDesc" as const, gradient: "from-explosive to-energy" },
+  { icon: Shield, titleKey: "programPoomsaeTitle" as const, descKey: "programPoomsaeDesc" as const, gradient: "from-tab-mental to-primary" },
 ];
 
 export default function Programs() {
@@ -19,7 +19,7 @@ export default function Programs() {
 
   return (
     <LandingLayout>
-    <div className="theme-public-dark">
+    <div className="theme-public-light">
     <div className="bg-background flex flex-col relative">
       <PageMeta
         title="Training Programs — Sportstalent"
@@ -30,11 +30,6 @@ export default function Programs() {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden">
-          <div
-            className="absolute top-0 inset-x-0 mx-auto w-[700px] h-[400px] opacity-15 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse, hsl(46 65% 52% / 0.35), transparent 70%)" }}
-            aria-hidden="true"
-          />
           <div className="relative max-w-3xl mx-auto px-5 pt-14 pb-8 sm:pt-20 sm:pb-10 text-center">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -71,7 +66,7 @@ export default function Programs() {
                   className="rounded-xl border border-border bg-card p-5 shadow-sm flex flex-col"
                 >
                   <div className={`mb-3 h-10 w-10 rounded-lg bg-gradient-to-br ${card.gradient} flex items-center justify-center`}>
-                    <card.icon className="h-5 w-5 text-white" />
+                    <card.icon className="h-5 w-5 text-primary-foreground" />
                   </div>
                   <h3 className="text-sm font-bold text-card-foreground mb-2">{t(card.titleKey)}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed flex-1">{t(card.descKey)}</p>

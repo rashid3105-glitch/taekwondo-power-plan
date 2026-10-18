@@ -1,7 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const GOLD = "#D4AF37";
+const GOLD = "hsl(var(--primary))";
 
 interface Comment {
   id: string;
@@ -103,11 +104,11 @@ export default function BlogComments({ postId, postLocale }: Props) {
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
-    background: "rgba(255,255,255,0.04)",
-    border: "0.5px solid rgba(255,255,255,0.15)",
-    borderRadius: 10,
+    background: "hsl(var(--muted))",
+    border: "0.5px solid hsl(var(--border))",
+    borderRadius: 8,
     padding: "12px 14px",
-    color: "#fff",
+    color: "hsl(var(--foreground))",
     fontSize: 14,
     fontFamily: "inherit",
     outline: "none",
@@ -118,44 +119,44 @@ export default function BlogComments({ postId, postLocale }: Props) {
     display: "block",
     fontSize: 12,
     fontWeight: 700,
-    color: "rgba(255,255,255,0.7)",
+    color: "hsl(var(--muted-foreground))",
     marginBottom: 6,
     letterSpacing: "0.02em",
   };
 
   return (
-    <section style={{ marginTop: 56, paddingTop: 40, borderTop: "0.5px solid rgba(255,255,255,0.12)" }}>
-      <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-0.02em", marginBottom: 24, color: "#fff" }}>
+    <section style={{ marginTop: 56, paddingTop: 40, borderTop: "0.5px solid hsl(var(--border))" }}>
+      <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: "0", marginBottom: 24, color: "hsl(var(--foreground))" }}>
         {T.heading} {comments.length > 0 && (
-          <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 700, fontSize: 18 }}>({comments.length})</span>
+          <span style={{ color: "hsl(var(--muted-foreground))", fontWeight: 700, fontSize: 18 }}>({comments.length})</span>
         )}
       </h2>
 
       {loading ? (
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>…</p>
+        <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14 }}>…</p>
       ) : comments.length === 0 ? (
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, marginBottom: 32 }}>{T.empty}</p>
+        <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, marginBottom: 32 }}>{T.empty}</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0, margin: "0 0 40px", display: "flex", flexDirection: "column", gap: 16 }}>
           {comments.map((c) => (
             <li
               key={c.id}
               style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "0.5px solid rgba(255,255,255,0.10)",
-                borderRadius: 12,
+                background: "hsl(var(--muted))",
+                border: "0.5px solid hsl(var(--border))",
+                borderRadius: 8,
                 padding: "16px 18px",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6, gap: 8, flexWrap: "wrap" }}>
-                <strong style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>{c.author_name}</strong>
-                <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>
+                <strong style={{ color: "hsl(var(--foreground))", fontSize: 14, fontWeight: 700 }}>{c.author_name}</strong>
+                <span style={{ color: "hsl(var(--muted-foreground))", fontSize: 11 }}>
                   {new Date(c.created_at).toLocaleDateString(isDa ? "da-DK" : "en-US", {
                     year: "numeric", month: "short", day: "numeric",
                   })}
                 </span>
               </div>
-              <p style={{ color: "rgba(255,255,255,0.85)", fontSize: 14, lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>
+              <p style={{ color: "hsl(var(--muted-foreground))", fontSize: 14, lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap" }}>
                 {c.content}
               </p>
             </li>
@@ -165,13 +166,13 @@ export default function BlogComments({ postId, postLocale }: Props) {
 
       <div
         style={{
-          background: "rgba(255,255,255,0.02)",
-          border: "0.5px solid rgba(255,255,255,0.12)",
-          borderRadius: 14,
+          background: "hsl(var(--muted))",
+          border: "0.5px solid hsl(var(--border))",
+          borderRadius: 8,
           padding: 24,
         }}
       >
-        <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: "0 0 16px" }}>
+        <h3 style={{ fontSize: 16, fontWeight: 800, color: "hsl(var(--foreground))", margin: "0 0 16px" }}>
           {T.formTitle}
         </h3>
 
@@ -204,7 +205,7 @@ export default function BlogComments({ postId, postLocale }: Props) {
                 onChange={(e) => setEmail(e.target.value)}
                 style={inputStyle}
               />
-              <p style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", margin: "6px 0 0", lineHeight: 1.5 }}>
+              <p style={{ fontSize: 11, color: "hsl(var(--muted-foreground))", margin: "6px 0 0", lineHeight: 1.5 }}>
                 {T.emailNote}
               </p>
             </div>
@@ -236,17 +237,17 @@ export default function BlogComments({ postId, postLocale }: Props) {
             </div>
 
             {error && (
-              <p style={{ color: "#ff8a8a", fontSize: 13, margin: 0 }}>{error}</p>
+              <p style={{ color: "hsl(var(--destructive))", fontSize: 13, margin: 0 }}>{error}</p>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={submitting}
               style={{
                 background: GOLD,
-                color: "#0B0C14",
+                color: "hsl(var(--primary-foreground))",
                 border: "none",
-                borderRadius: 10,
+                borderRadius: 8,
                 padding: "12px 22px",
                 fontWeight: 800,
                 fontSize: 14,
@@ -256,7 +257,7 @@ export default function BlogComments({ postId, postLocale }: Props) {
               }}
             >
               {submitting ? T.sending : T.submit}
-            </button>
+            </Button>
           </form>
         )}
       </div>

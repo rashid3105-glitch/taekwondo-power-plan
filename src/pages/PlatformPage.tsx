@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { PageMeta } from "@/components/PageMeta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { LightLayout } from "@/components/landing/LightLayout";
 import { platformStrings, type PlatformSlug } from "./platformPageStrings";
 
 import coachDashboardImg from "@/assets/screenshots/coach-dashboard.png";
@@ -52,10 +53,10 @@ export default function PlatformPage() {
 
   const idx = ORDER.indexOf(slug as Slug);
   const next = ORDER[(idx + 1) % ORDER.length];
-  const audienceColor = meta.audience === "coach" ? "#E63946" : "#0EA5E9";
+  const audienceColor = "hsl(var(--primary))";
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <LightLayout>
       <PageMeta
         title={`${data.title} — Sportstalent`}
         description={data.metaDesc}
@@ -83,7 +84,7 @@ export default function PlatformPage() {
           >
             <span
               className="inline-block text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full"
-              style={{ background: `${audienceColor}1A`, color: audienceColor }}
+              style={{ background: "hsl(var(--primary) / 0.08)", color: audienceColor }}
             >
               {meta.audience === "coach" ? ui.forCoaches : ui.forAthletes}
             </span>
@@ -104,12 +105,12 @@ export default function PlatformPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="relative rounded-2xl border border-border bg-card shadow-2xl overflow-hidden"
-            style={{ boxShadow: `0 30px 80px -20px ${audienceColor}33` }}
+            style={{ boxShadow: "var(--shadow-card)" }}
           >
             <div className="flex items-center gap-1.5 px-4 py-2 bg-muted/40 border-b border-border">
-              <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-accent/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-success/70" />
               <span className="ml-3 text-[11px] text-muted-foreground font-mono">
                 sportstalent.dk
               </span>
@@ -154,7 +155,6 @@ export default function PlatformPage() {
             onClick={() => navigate("/auth?tab=signup")}
             size="lg"
             className="px-8 font-bold"
-            style={{ background: audienceColor, color: "#fff" }}
           >
             {ui.startFree} <ArrowRight className="h-4 w-4 ml-1.5" />
           </Button>
@@ -172,6 +172,6 @@ export default function PlatformPage() {
           </div>
         </section>
       </main>
-    </div>
+    </LightLayout>
   );
 }
