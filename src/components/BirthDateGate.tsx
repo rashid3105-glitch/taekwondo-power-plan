@@ -16,7 +16,7 @@ const PUBLIC_PREFIXES = [
   "/features/", "/platform/", "/match/share/", "/athlete/",
 ];
 const PUBLIC_EXACT = new Set([
-  "/", "/v1", "/v2", "/pricing", "/about", "/contact",
+  "/", "/v1", "/v2", "/pricing", "/about", "/contact", "/fordele", "/klubanalyse",
   "/methodology", "/programs", "/signup/coach", "/traeningsprogram",
   "/tekniktraening", "/staevneforberedelse", "/fysiske-test", "/poomsae",
   "/payment-success",

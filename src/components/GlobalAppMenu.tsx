@@ -82,7 +82,7 @@ const HIDDEN_PATHS_EXACT = new Set<string>([
   "/funktioner",
   "/about",
   "/methodology",
-  "/contact",
+  "/contact", "/fordele", "/klubanalyse",
   "/terms",
   "/consent",
   "/unsubscribe",
