@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Clock, HeartPulse, Route as RouteIcon, Check } from "lucide-react";
+import { Clock, HeartPulse, Route as RouteIcon, Check, Video } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -150,7 +150,7 @@ const COPY: Record<string, Copy> = {
   },
 };
 
-const ICONS = [Clock, HeartPulse, RouteIcon];
+const ICONS = [Clock, HeartPulse, RouteIcon, Video];
 
 export default function DraftHome() {
   const navigate = useNavigate();
