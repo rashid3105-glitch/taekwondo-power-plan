@@ -8,6 +8,7 @@ import { trackCta } from "@/lib/ctaTracking";
 import { useIsMobile } from "@/hooks/use-mobile";
 import coachSitting from "@/assets/coach-sitting.png";
 import { BENEFIT_SLUGS, UI_COPY } from "./DraftBenefit";
+import { EditableImage } from "@/components/EditableImage";
 
 // Draft of a lighter, simpler front page. Not linked anywhere, noindex.
 const C = {
@@ -191,7 +192,7 @@ export default function DraftHome() {
         </div>
         <div style={{ position: "relative" }}>
           <div aria-hidden style={{ position: "absolute", inset: m ? "-12px" : "-24px", background: `linear-gradient(135deg, rgba(31,91,216,0.12), rgba(201,162,39,0.18))`, borderRadius: 32 }} />
-          <img src={coachSitting} alt="" width={1200} height={1200} style={{ position: "relative", width: "100%", height: "auto", borderRadius: 24, display: "block", boxShadow: "0 30px 60px -30px rgba(15,23,42,0.35)" }} />
+          <EditableImage slot="draft-home-hero" fallback={coachSitting} width={1200} height={1200} style={{ position: "relative", width: "100%", height: "auto", borderRadius: 24, display: "block", boxShadow: "0 30px 60px -30px rgba(15,23,42,0.35)" }} />
         </div>
       </section>
 
@@ -219,7 +220,7 @@ export default function DraftHome() {
 
       {/* Founder */}
       <section style={{ maxWidth: 820, margin: "0 auto", padding: `${m ? 56 : 88}px ${pad}px`, display: "flex", flexDirection: m ? "column" : "row", alignItems: "center", gap: 28, textAlign: m ? "center" : "start" }}>
-        <img src="/founder-farooq.jpg" alt="Farooq Rashid" width={120} height={120} loading="lazy" style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", border: `4px solid ${C.gold}`, flexShrink: 0 }} />
+        <div style={{ flexShrink: 0 }}><EditableImage slot="draft-home-founder" fallback="/founder-farooq.jpg" alt="Farooq Rashid" width={120} height={120} loading="lazy" style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", border: `4px solid ${C.gold}` }} /></div>
         <div>
           <p style={{ fontSize: m ? 20 : 24, fontWeight: 600, lineHeight: 1.4, margin: "0 0 12px" }}>“{k.fQuote}”</p>
           <div style={{ fontWeight: 700 }}>Farooq Rashid</div>

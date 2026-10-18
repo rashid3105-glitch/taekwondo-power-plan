@@ -6,6 +6,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { trackCta } from "@/lib/ctaTracking";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { EditableImage } from "@/components/EditableImage";
 
 const IMGS = import.meta.glob("@/assets/draft/*.jpg", { eager: true, import: "default" }) as Record<string, string>;
 const img = (k: string) => Object.entries(IMGS).find(([p]) => p.endsWith(`/${k}.jpg`))?.[1];
@@ -158,14 +159,21 @@ const P: Record<string, Record<Slug, Page>> = {
   },
 };
 
-function Placeholder({ label, hint, tall, src }: { label: string; hint: string; tall?: boolean; src?: string }) {
-  if (src) return <img src={src} alt="" loading="lazy" style={{ width: "100%", aspectRatio: tall ? "4 / 3" : "16 / 9", objectFit: "cover", objectPosition: "top", borderRadius: 20, border: `1px solid ${C.line}`, boxShadow: "0 20px 40px -24px rgba(15,23,42,0.4)", display: "block" }} />;
+function Placeholder({ label, hint, tall, slot }: { label: string; hint: string; tall?: boolean; slot: string }) {
   return (
-    <div style={{ aspectRatio: tall ? "4 / 3" : "16 / 9", borderRadius: 20, border: `2px dashed ${C.line}`, background: `linear-gradient(135deg, rgba(31,91,216,0.06), rgba(201,162,39,0.10))`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: C.muted, textAlign: "center", padding: 16 }}>
-      <ImageIcon size={32} color={C.blue} />
-      <div style={{ fontWeight: 700, color: C.ink }}>{label}</div>
-      <div style={{ fontSize: 13 }}>{hint}</div>
-    </div>
+    <EditableImage
+      slot={`draft-${slot}`}
+      fallback={img(slot)}
+      loading="lazy"
+      style={{ width: "100%", aspectRatio: tall ? "4 / 3" : "16 / 9", objectFit: "cover", objectPosition: "top", borderRadius: 20, border: `1px solid ${C.line}`, boxShadow: "0 20px 40px -24px rgba(15,23,42,0.4)", display: "block" }}
+      placeholder={
+        <div style={{ aspectRatio: tall ? "4 / 3" : "16 / 9", borderRadius: 20, border: `2px dashed ${C.line}`, background: `linear-gradient(135deg, rgba(31,91,216,0.06), rgba(201,162,39,0.10))`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: C.muted, textAlign: "center", padding: 16 }}>
+          <ImageIcon size={32} color={C.blue} />
+          <div style={{ fontWeight: 700, color: C.ink }}>{label}</div>
+          <div style={{ fontSize: 13 }}>{hint}</div>
+        </div>
+      }
+    />
   );
 }
 
@@ -196,7 +204,7 @@ export default function DraftBenefit() {
         </button>
         <h1 style={{ fontSize: m ? 32 : 48, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 18px" }}>{p.h1}</h1>
         <p style={{ fontSize: m ? 16 : 19, color: C.muted, lineHeight: 1.55, margin: "0 0 32px" }}>{p.intro}</p>
-        <Placeholder label={u.img} hint={u.imgHint} src={img(`${slug}-hero`)} />
+        <Placeholder label={u.img} hint={u.imgHint} slot={`${slug}-hero`} />
       </section>
 
       <section style={{ background: C.soft }}>
@@ -218,7 +226,7 @@ export default function DraftBenefit() {
                 </div>
                 <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.6, margin: 0 }}>{pt.d}</p>
               </div>
-              <Placeholder label={u.img} hint={u.imgHint} tall src={img(`${slug}-${i + 1}`)} />
+              <Placeholder label={u.img} hint={u.imgHint} tall slot={`${slug}-${i + 1}`} />
             </div>
           ))}
         </div>
