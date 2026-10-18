@@ -166,6 +166,64 @@
   background-color: hsl(var(--background));
 }
 
+/* Public website theme is isolated from signed-in coach/club themes. */
+.theme-public-light {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 75% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 43% 97%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 220 43% 97%;
+  --muted-foreground: 219 19% 40%;
+  --accent: 45 71% 42%;
+  --accent-foreground: 0 0% 100%;
+  --border: 220 29% 92%;
+  --input: 220 29% 88%;
+  --ring: 221 75% 48%;
+  --destructive: 0 68% 47%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 151 56% 35%;
+  --energy: 221 75% 48%;
+  --power: 151 56% 35%;
+  --speed: 190 85% 35%;
+  --explosive: 350 75% 45%;
+  --tab-mental: 280 55% 45%;
+  --shadow-card: 0 8px 24px -12px hsl(var(--foreground) / 0.12);
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color-scheme: light;
+}
+.theme-public-light :is(h1,h2,h3,h4) {
+  font-family: inherit;
+  letter-spacing: 0 !important;
+  overflow-wrap: anywhere;
+}
+.theme-public-light :is(button,input,textarea,select) { font-family: inherit; }
+.theme-public-light :is(button,input,select) { min-height: 44px; }
+.theme-public-light button { white-space: normal; height: auto; }
+.theme-public-light :is(input,textarea,select):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.theme-public-light .public-content { min-width: 0; }
+.theme-public-light .public-content > :is(div,section) { max-width: 100%; }
+.theme-public-light .prose { color: hsl(var(--foreground)); }
+.theme-public-light .prose :is(h1,h2,h3,strong) { color: hsl(var(--foreground)); }
+.theme-public-light .prose a { color: hsl(var(--primary)); }
+@media (max-width: 640px) {
+  .theme-public-light .public-content > :is(div,section) { padding-inline: 20px !important; }
+  .theme-public-light .public-content h1 { font-size: 32px !important; }
+  .theme-public-light .public-content h2 { font-size: 24px; }
+  .theme-public-light .pricing-faq-grid,
+  .theme-public-light .pricing-fields { grid-template-columns: 1fr !important; }
+}
+
 /* Light content sections — override semantic tokens locally */
 .theme-light-section {
   --background: var(--light-bg);
