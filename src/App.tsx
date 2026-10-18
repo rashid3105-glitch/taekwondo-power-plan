@@ -33,6 +33,7 @@ import CoachLanding from "./pages/CoachLanding";
 import Klubanalyse from "./pages/Klubanalyse";
 import DraftHome from "./pages/DraftHome";
 import DraftBenefit from "./pages/DraftBenefit";
+const DraftSlugRedirect = () => { const { slug } = useParams(); return <Navigate to={`/fordele/${slug ?? ""}`} replace />; };
 import { PublicSeo, DefaultNoIndex } from "@/components/seo/SeoHead";
 import FeatureDetail from "./pages/FeatureDetail";
 import PlatformPage from "./pages/PlatformPage";
@@ -219,9 +220,10 @@ const AnimatedRoutes = () => {
     <>
     <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Page><PublicSeo path="/" title="Sportstalent — Klubsystem til udvikling af sportstalenter" description="Sikker, GDPR-klar platform til danske sportsklubber. Træningsplaner, dagbog, tests og trænerdashboard ét sted — bygget af en træner med 40 år i sporten." /><Index /></Page>} />
-        <Route path="/draft-home" element={<Page><DraftHome /></Page>} />
-        <Route path="/draft-home/:slug" element={<Page><DraftBenefit /></Page>} />
+        <Route path="/" element={<Page><PublicSeo path="/" title="Sportstalent — Klubsystem til udvikling af sportstalenter" description="Ét system til hele klubben: træningsplaner, fremmøde, trivsel, beskeder og kampanalyse samlet ét sted. GDPR-klar og bygget af en træner med 40 års erfaring." /><DraftHome /></Page>} />
+        <Route path="/fordele/:slug" element={<Page><DraftBenefit /></Page>} />
+        <Route path="/draft-home" element={<Navigate to="/" replace />} />
+        <Route path="/draft-home/:slug" element={<DraftSlugRedirect />} />
         <Route path="/for-traenere" element={<Page><PublicSeo path="/for-traenere" title="For trænere og klubber — Sportstalent" description="Værktøjer til trænere og klubber i enhver sportsgren: sæsonplaner, holdstyring, tests og fremgang for hver atlet — samlet ét sted." /><CoachLanding /></Page>} />
         <Route path="/v3" element={<Navigate to="/for-traenere" replace />} />
         <Route path="/klubanalyse" element={<Page><PublicSeo path="/klubanalyse" title="Klubanalysen — hvor står jeres klub? | Sportstalent" description="15 spørgsmål og et ærligt billede af klubbens modenhed: rød tråd, trænerkapacitet, data, kultur og ledelse. Gratis selvevaluering for sportsklubber." /><Klubanalyse /></Page>} />

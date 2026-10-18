@@ -1,5 +1,5 @@
 import { useNavigate, useParams, Navigate } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
+import { PublicSeo } from "@/components/seo/SeoHead";
 import { ArrowLeft, Image as ImageIcon, Check } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -191,6 +191,7 @@ export default function DraftBenefit() {
 
   return (
     <div style={{ background: C.bg, color: C.ink, fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", minHeight: "100vh" }}>
+      <PublicSeo path={`/fordele/${slug}`} title={`${P.da[slug as Slug].h1} | Sportstalent`} description={P.da[slug as Slug].intro} />
       <header style={{ maxWidth: 1120, margin: "0 auto", padding: `16px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <BrandLogo height={m ? 34 : 40} textColor={C.ink} accentColor={C.gold} />
         <LanguageSwitcher />

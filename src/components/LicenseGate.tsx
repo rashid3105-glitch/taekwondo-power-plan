@@ -26,7 +26,7 @@ const GATE_ENABLED = import.meta.env.VITE_LICENSE_GATE_ENABLED === "true";
 const PUBLIC_PREFIXES = [
   "/auth", "/reset-password", "/consent/", "/privacy", "/unsubscribe",
   "/parent-join/", "/join/", "/invite/", "/signup",
-  "/features/", "/platform/", "/match/share/", "/athlete/",
+  "/features/", "/platform/", "/match/share/", "/athlete/", "/fordele/",
 ];
 const PUBLIC_EXACT = new Set([
   "/", "/v1", "/v2", "/pricing", "/priser", "/about", "/contact",
