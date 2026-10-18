@@ -6,6 +6,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { isNativeApp } from "@/lib/platform";
+import { PublicFooter } from "./PublicFooter";
 
 // CSS owns the public palette; these aliases support existing inline layouts.
 export const LIGHT = {
@@ -26,12 +27,6 @@ export function LightLayout({ children }: { children: React.ReactNode }) {
     { label: t("navAbout"), href: "/about" },
     { label: t("navBlog"), href: "/blog" },
   ];
-  const footerLinks = [
-    ...links.filter(l => l.href !== "/"),
-    { label: t("homeFooterPrivacy"), href: "/privacy" },
-    { label: t("homeFooterTerms"), href: "/terms" },
-    ...(isNativeApp() ? [] : [{ label: t("homeFooterContact"), href: "/contact" }]),
-  ];
   return (
     <div className="theme-public-light min-h-screen flex flex-col" dir={locale === "ar" ? "rtl" : "ltr"}>
       <header className="border-b border-border bg-background">
@@ -48,12 +43,7 @@ export function LightLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </header>
       <main className="public-content flex-1">{children}</main>
-      <footer className="border-t border-border bg-muted">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 py-6 flex flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div className="flex flex-wrap gap-x-5 gap-y-2">{footerLinks.map(l => <Link key={l.href} to={l.href} className="py-2 hover:text-primary">{l.label}</Link>)}</div>
-          <div>© Sportstalent.dk · CVR 33685815</div>
-        </div>
-      </footer>
+      <PublicFooter />
     </div>
   );
 }
