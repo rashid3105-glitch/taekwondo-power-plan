@@ -3712,6 +3712,27 @@ export type Database = {
           },
         ]
       }
+      site_image_slots: {
+        Row: {
+          slot: string
+          storage_path: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          slot: string
+          storage_path?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          slot?: string
+          storage_path?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       stripe_webhook_events: {
         Row: {
           error: string | null

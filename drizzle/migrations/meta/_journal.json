@@ -29,6 +29,13 @@
       "when": 1791951449265,
       "tag": "0003_match_videos_pro_analysis",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792294299585,
+      "tag": "0004_site_image_slots",
+      "breakpoints": true
     }
   ]
 }
