@@ -27,8 +27,8 @@ import { Button as UIButton } from "@/components/ui/button";
 import { isDeviceRemembered, rememberDevice } from "@/lib/mfaRemember";
 import coachAthlete from "@/assets/coach-athlete.jpg";
 
-const GOLD = "#D4AF37";
-const BG = "#0B0C14";
+const GOLD = "hsl(var(--primary))";
+const BG = "hsl(var(--background))";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -251,23 +251,23 @@ export default function AuthPage() {
     width: "100%",
     height: 46,
     padding: "0 14px",
-    borderRadius: 10,
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    color: "#fff",
+    borderRadius: 8,
+    background: "hsl(var(--background))",
+    border: "1px solid hsl(var(--input))",
+    color: "hsl(var(--foreground))",
     fontSize: 15,
     outline: "none",
   };
   const labelStyle: React.CSSProperties = {
     fontSize: 12,
     fontWeight: 600,
-    color: "rgba(255,255,255,0.7)",
+    color: "hsl(var(--muted-foreground))",
     marginBottom: 6,
     display: "block",
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, color: "#fff", fontFamily: "Inter, sans-serif" }}>
+    <div className="theme-public-light" style={{ minHeight: "100vh", background: BG, color: "hsl(var(--foreground))" }}>
       <PageMeta
         title="Log ind – Sportstalent"
         description="Log ind på din Sportstalent-konto."
@@ -281,12 +281,12 @@ export default function AuthPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: "0.5px solid rgba(255,255,255,0.08)",
+          borderBottom: "1px solid hsl(var(--border))",
         }}
       >
         <div
           onClick={() => navigate("/")}
-          style={{ fontSize: 20, fontWeight: 900, letterSpacing: "-0.03em", cursor: "pointer" }}
+          style={{ fontSize: 20, fontWeight: 900, letterSpacing: 0, cursor: "pointer" }}
         >
           Sports<span style={{ color: GOLD }}>talent</span>
         </div>
@@ -298,7 +298,7 @@ export default function AuthPage() {
           style={{
             fontSize: 32,
             fontWeight: 900,
-            letterSpacing: "-0.02em",
+            letterSpacing: 0,
             textAlign: "center",
             marginBottom: 32,
           }}
@@ -308,16 +308,16 @@ export default function AuthPage() {
 
         {passkeyAvailable && (
           <>
-            <button
+            <UIButton
               type="button"
               onClick={handlePasskeyLogin}
               disabled={passkeyLoading}
               style={{
                 width: "100%",
                 height: 46,
-                borderRadius: 10,
-                background: "rgba(212,175,55,0.1)",
-                border: "1px solid rgba(212,175,55,0.35)",
+                borderRadius: 8,
+                background: "hsl(var(--primary) / 0.08)",
+                border: "1px solid hsl(var(--primary) / 0.25)",
                 color: GOLD,
                 fontWeight: 700,
                 fontSize: 14,
@@ -336,8 +336,8 @@ export default function AuthPage() {
                   <Fingerprint className="h-4 w-4" /> {t("continueWithFaceId")}
                 </>
               )}
-            </button>
-            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.62)", marginBottom: 16, letterSpacing: "0.1em" }}>
+            </UIButton>
+            <div style={{ textAlign: "center", fontSize: 11, color: "hsl(var(--muted-foreground))", marginBottom: 16, letterSpacing: "0.1em" }}>
               {t("usePasswordInstead")}
             </div>
           </>
@@ -345,16 +345,16 @@ export default function AuthPage() {
 
         {bioAvailable && bioHasCreds && !passkeyAvailable && (
           <>
-            <button
+            <UIButton
               type="button"
               onClick={handleBiometricLogin}
               disabled={bioLoading}
               style={{
                 width: "100%",
                 height: 46,
-                borderRadius: 10,
-                background: "rgba(212,175,55,0.1)",
-                border: "1px solid rgba(212,175,55,0.35)",
+                borderRadius: 8,
+                background: "hsl(var(--primary) / 0.08)",
+                border: "1px solid hsl(var(--primary) / 0.25)",
                 color: GOLD,
                 fontWeight: 700,
                 fontSize: 14,
@@ -373,8 +373,8 @@ export default function AuthPage() {
                   <Fingerprint className="h-4 w-4" /> {t("authBiometricLogin").replace("{label}", bioLabel)}
                 </>
               )}
-            </button>
-            <div style={{ textAlign: "center", fontSize: 11, color: "rgba(255,255,255,0.62)", marginBottom: 16, letterSpacing: "0.1em" }}>
+            </UIButton>
+            <div style={{ textAlign: "center", fontSize: 11, color: "hsl(var(--muted-foreground))", marginBottom: 16, letterSpacing: "0.1em" }}>
               {t("usePasswordInstead")}
             </div>
           </>
@@ -400,20 +400,20 @@ export default function AuthPage() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
               <label style={{ ...labelStyle, marginBottom: 0 }}>{t("password")}</label>
-              <button
+              <UIButton
                 type="button"
                 onClick={handleForgotPassword}
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "rgba(255,255,255,0.55)",
+                  color: "hsl(var(--muted-foreground))",
                   fontSize: 12,
                   cursor: "pointer",
                   padding: 0,
                 }}
               >
                 {t("forgotPassword")}
-              </button>
+              </UIButton>
             </div>
             <input
               type="password"
@@ -427,16 +427,16 @@ export default function AuthPage() {
             />
           </div>
 
-          <button
+          <UIButton
             type="submit"
             disabled={loading}
             style={{
               width: "100%",
               height: 48,
-              borderRadius: 10,
+              borderRadius: 8,
               border: "none",
               background: GOLD,
-              color: BG,
+              color: "hsl(var(--primary-foreground))",
               fontWeight: 800,
               fontSize: 15,
               cursor: loading ? "not-allowed" : "pointer",
@@ -445,7 +445,7 @@ export default function AuthPage() {
             }}
           >
             {loading ? t("pleaseWait") : t("signIn")}
-          </button>
+          </UIButton>
         </form>
 
         {/* Coach / club sign-up CTA */}
@@ -453,47 +453,47 @@ export default function AuthPage() {
           style={{
             marginTop: 32,
             padding: "20px 20px 22px",
-            borderRadius: 14,
-            background: "rgba(212,175,55,0.06)",
-            border: "1px solid rgba(212,175,55,0.28)",
+            borderRadius: 8,
+            background: "hsl(var(--muted))",
+            border: "1px solid hsl(var(--border))",
             textAlign: "center",
           }}
         >
           <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 6 }}>
             {t("authCoachCtaTitle" as any)}
           </div>
-          <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)", marginBottom: 14, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 13, color: "hsl(var(--muted-foreground))", marginBottom: 14, lineHeight: 1.5 }}>
             {t("authCoachCtaBody" as any)}
           </div>
-          <button
+          <UIButton
             type="button"
             onClick={() => navigate("/signup/coach")}
             style={{
               width: "100%",
               height: 44,
-              borderRadius: 10,
+              borderRadius: 8,
               border: "none",
               background: GOLD,
-              color: BG,
+              color: "hsl(var(--primary-foreground))",
               fontWeight: 800,
               fontSize: 14,
               cursor: "pointer",
             }}
           >
             {t("authCoachCtaButton" as any)}
-          </button>
+          </UIButton>
         </div>
 
-        <p style={{ textAlign: "center", fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 20, lineHeight: 1.5 }}>
+        <p style={{ textAlign: "center", fontSize: 12, color: "hsl(var(--muted-foreground))", marginTop: 20, lineHeight: 1.5 }}>
           {t("authAthleteHint" as any)}
         </p>
 
         <div
           style={{
             marginTop: 40,
-            borderRadius: 16,
+            borderRadius: 8,
             overflow: "hidden",
-            border: "0.5px solid rgba(255,255,255,0.08)",
+            border: "1px solid hsl(var(--border))",
           }}
         >
           <img
