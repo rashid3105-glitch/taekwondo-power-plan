@@ -76,7 +76,7 @@ const WEIGHTS = ["Fin (-54kg)", "Fly (-58kg)", "Bantam (-63kg)", "Feather (-68kg
 
 export default function MatchAnalyzerLab() {
   const { athleteId } = useParams<{ athleteId?: string }>();
-  return athleteId ? <CloudAnalyzer athleteParam={athleteId} /> : <LocalAnalyzer />;
+  return <CloudAnalyzer athleteParam={athleteId ?? "me"} />;
 }
 
 function Shell({ matches, update, onCreate, onDelete, readOnly, cloud }: {

@@ -1,3 +1,3 @@
 - Parental consent Release A (birth-date capture, coach set, guardian conversion, funnel, age-field removal) — plan awaiting approval
 - Parental consent Release B (threshold config, server enforcement, staggered grace) — blocked on legal review
-- Match Analyzer test version on /lab/match-analyzer — awaiting user review
+- Match monitoring — complete: both existing matches already converted; /match-analysis/me now uses cloud data, regression tests pass, authenticated create/reload/open/delete verified.
