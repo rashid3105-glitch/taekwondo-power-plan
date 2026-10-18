@@ -1,6 +1,6 @@
 import { trackCta } from "@/lib/ctaTracking";
 import { useState, useMemo } from "react";
-import { LandingLayout } from "@/components/landing/LandingLayout";
+import { LightLayout as LandingLayout } from "@/components/landing/LightLayout";
 import { PageMeta } from "@/components/PageMeta";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -150,27 +150,29 @@ const COPY = {
   },
 } as const;
 
-const GOLD = "#D4AF37";
+const GOLD = "#B8901F";
+const BLUE = "#1F5BD8";
+const INK = "#0F172A";
 const RED = "#E05252";
 const GREEN = "#4CAF7D";
 
 type Stage = "intro" | "q" | "milestone" | "gate" | "result";
 
 const card: React.CSSProperties = {
-  background: "rgba(255,255,255,0.035)",
-  border: "0.5px solid rgba(255,255,255,0.12)",
+  background: "rgba(15,23,42,0.04)",
+  border: "0.5px solid rgba(15,23,42,0.12)",
   borderRadius: 14,
   padding: 20,
 };
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
-  background: "rgba(255,255,255,0.05)",
-  border: "0.5px solid rgba(255,255,255,0.12)",
+  background: "rgba(15,23,42,0.05)",
+  border: "0.5px solid rgba(15,23,42,0.12)",
   borderRadius: 8,
   padding: "12px 14px",
   fontSize: 15,
-  color: "#fff",
+  color: INK,
   outline: "none",
   boxSizing: "border-box",
 };
@@ -338,7 +340,7 @@ export default function Klubanalyse() {
 
       {/* Progressbar */}
       {stage !== "intro" && stage !== "result" && (
-        <div style={{ height: 3, background: "rgba(255,255,255,0.08)" }}>
+        <div style={{ height: 3, background: "rgba(15,23,42,0.08)" }}>
           <div style={{ height: "100%", width: `${progress}%`, background: GOLD, transition: "width .25s ease" }} />
         </div>
       )}
@@ -352,15 +354,15 @@ export default function Klubanalyse() {
             <h1 style={{ fontSize: "clamp(28px,6vw,44px)", fontWeight: 900, lineHeight: 1.1, letterSpacing: "-0.03em", margin: "0 0 22px" }}>
               {C.heroTitle}
             </h1>
-            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.65)", margin: "0 0 16px" }}>
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(15,23,42,0.9)", margin: "0 0 16px" }}>
               {C.heroP1}
             </p>
-            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.65)", margin: "0 0 32px" }}>
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(15,23,42,0.9)", margin: "0 0 32px" }}>
               {C.heroP2}
             </p>
             <button
               onClick={() => { setStage("q"); setIndex(0); }}
-              style={{ padding: "15px 34px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
+              style={{ padding: "15px 34px", borderRadius: 10, border: "none", background: BLUE, color: "#fff", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
             >
               {C.start}
             </button>
@@ -370,10 +372,10 @@ export default function Klubanalyse() {
         {stage === "q" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 26 }}>
-              <button onClick={back} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.55)", fontSize: 13, cursor: "pointer", padding: 0 }}>
+              <button onClick={back} style={{ background: "none", border: "none", color: "rgba(15,23,42,0.8)", fontSize: 13, cursor: "pointer", padding: 0 }}>
                 {C.back}
               </button>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em" }}>
+              <div style={{ fontSize: 12, color: "rgba(15,23,42,0.7)", letterSpacing: "0.08em" }}>
                 {index + 1} / {TOTAL} · {DIMENSIONS[QUESTIONS[index].dim].name}
               </div>
             </div>
@@ -391,9 +393,9 @@ export default function Klubanalyse() {
                       textAlign: "left",
                       padding: "16px 18px",
                       borderRadius: 12,
-                      border: `0.5px solid ${selected ? GOLD : "rgba(255,255,255,0.14)"}`,
-                      background: selected ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.035)",
-                      color: "#fff",
+                      border: `0.5px solid ${selected ? BLUE : "rgba(15,23,42,0.14)"}`,
+                      background: selected ? "rgba(31,91,216,0.08)" : "rgba(15,23,42,0.04)",
+                      color: INK,
                       fontSize: 15,
                       lineHeight: 1.5,
                       cursor: "pointer",
@@ -409,9 +411,9 @@ export default function Klubanalyse() {
                   textAlign: "left",
                   padding: "14px 18px",
                   borderRadius: 12,
-                  border: `0.5px dashed ${answers[index] === UNKNOWN && index < 0 ? GOLD : "rgba(255,255,255,0.18)"}`,
+                  border: `0.5px dashed ${answers[index] === UNKNOWN && index < 0 ? GOLD : "rgba(15,23,42,0.18)"}`,
                   background: "transparent",
-                  color: "rgba(255,255,255,0.55)",
+                  color: "rgba(15,23,42,0.8)",
                   fontSize: 14,
                   lineHeight: 1.5,
                   cursor: "pointer",
@@ -431,20 +433,20 @@ export default function Klubanalyse() {
             <h2 style={{ fontSize: "clamp(23px,5vw,34px)", fontWeight: 900, lineHeight: 1.15, letterSpacing: "-0.03em", margin: "0 0 20px" }}>
               {C.milestoneTitle}
             </h2>
-            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.65)", margin: "0 0 14px" }}>
-              {C.milestoneP1a}<strong style={{ color: "#fff" }}>{partialWeakest}</strong>{C.milestoneP1b}
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(15,23,42,0.9)", margin: "0 0 14px" }}>
+              {C.milestoneP1a}<strong style={{ color: INK }}>{partialWeakest}</strong>{C.milestoneP1b}
             </p>
-            <p style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.45)", margin: "0 0 32px" }}>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "rgba(15,23,42,0.7)", margin: "0 0 32px" }}>
               {C.milestoneP2}
             </p>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <button
                 onClick={() => { setStage("q"); setIndex(HALF); }}
-                style={{ padding: "14px 32px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
+                style={{ padding: "14px 32px", borderRadius: 10, border: "none", background: BLUE, color: "#fff", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
                 {C.continue}
               </button>
-              <button onClick={back} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.5)", fontSize: 13, cursor: "pointer" }}>
+              <button onClick={back} style={{ background: "none", border: "none", color: "rgba(15,23,42,0.75)", fontSize: 13, cursor: "pointer" }}>
                 {C.back}
               </button>
             </div>
@@ -453,13 +455,13 @@ export default function Klubanalyse() {
 
         {stage === "gate" && (
           <div>
-            <button onClick={back} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.55)", fontSize: 13, cursor: "pointer", padding: 0, marginBottom: 24 }}>
+            <button onClick={back} style={{ background: "none", border: "none", color: "rgba(15,23,42,0.8)", fontSize: 13, cursor: "pointer", padding: 0, marginBottom: 24 }}>
               {C.back}
             </button>
             <h2 style={{ fontSize: "clamp(23px,5vw,34px)", fontWeight: 900, lineHeight: 1.15, letterSpacing: "-0.03em", margin: "0 0 16px" }}>
               {C.gateTitle}
             </h2>
-            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.6)", margin: "0 0 28px" }}>
+            <p style={{ fontSize: 16, lineHeight: 1.7, color: "rgba(15,23,42,0.85)", margin: "0 0 28px" }}>
               {C.gateP}
             </p>
 
@@ -483,7 +485,7 @@ export default function Klubanalyse() {
                 style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }}
                 aria-hidden="true"
               />
-              <label style={{ display: "flex", gap: 12, alignItems: "flex-start", fontSize: 14, lineHeight: 1.6, color: "rgba(255,255,255,0.75)", cursor: "pointer" }}>
+              <label style={{ display: "flex", gap: 12, alignItems: "flex-start", fontSize: 14, lineHeight: 1.6, color: "rgba(15,23,42,1)", cursor: "pointer" }}>
                 <input
                   type="checkbox"
                   checked={consent}
@@ -492,7 +494,7 @@ export default function Klubanalyse() {
                 />
                 <span>{C.consent}</span>
               </label>
-              <a href="/privacy" style={{ fontSize: 13, color: "rgba(255,255,255,0.45)", textDecoration: "underline" }}>
+              <a href="/privacy" style={{ fontSize: 13, color: "rgba(15,23,42,0.7)", textDecoration: "underline" }}>
                 {C.privacy}
               </a>
               {error && <div style={{ fontSize: 13, color: RED }}>{error}</div>}
@@ -503,8 +505,8 @@ export default function Klubanalyse() {
                   padding: "15px 20px",
                   borderRadius: 10,
                   border: "none",
-                  background: !email.trim() || !consent || saving ? "rgba(255,255,255,0.12)" : GOLD,
-                  color: !email.trim() || !consent || saving ? "rgba(255,255,255,0.4)" : "#0A0A0A",
+                  background: !email.trim() || !consent || saving ? "rgba(15,23,42,0.12)" : BLUE,
+                  color: !email.trim() || !consent || saving ? "rgba(15,23,42,0.4)" : "#fff",
                   fontSize: 15,
                   fontWeight: 800,
                   cursor: !email.trim() || !consent || saving ? "not-allowed" : "pointer",
@@ -526,7 +528,7 @@ export default function Klubanalyse() {
               <h1 style={{ fontSize: "clamp(26px,5.5vw,38px)", fontWeight: 900, margin: "8px 0 4px", letterSpacing: "-0.03em" }}>
                 {LEVELS[overall - 1].name}
               </h1>
-              <div style={{ fontSize: 15, color: "rgba(255,255,255,0.5)" }}>{LEVELS[overall - 1].subtitle}</div>
+              <div style={{ fontSize: 15, color: "rgba(15,23,42,0.75)" }}>{LEVELS[overall - 1].subtitle}</div>
             </div>
 
             {/* 2. Dom */}
@@ -534,7 +536,7 @@ export default function Klubanalyse() {
               <div style={{ fontSize: 17, fontWeight: 800, marginBottom: 10 }}>
                 {C.blockedBy(DIMENSIONS[weakestIdx].name)}
               </div>
-              <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: "rgba(255,255,255,0.7)" }}>
+              <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7, color: "rgba(15,23,42,0.95)" }}>
                 {LEVELS[overall - 1].verdict}
               </p>
             </div>
@@ -552,8 +554,8 @@ export default function Klubanalyse() {
                         style={{
                           height: 130,
                           borderRadius: 10,
-                          border: isWeak ? `2px dashed ${RED}` : "0.5px solid rgba(255,255,255,0.16)",
-                          background: "rgba(255,255,255,0.04)",
+                          border: isWeak ? `2px dashed ${RED}` : "0.5px solid rgba(15,23,42,0.16)",
+                          background: "rgba(15,23,42,0.04)",
                           position: "relative",
                           overflow: "hidden",
                           display: "flex",
@@ -568,7 +570,7 @@ export default function Klubanalyse() {
                           }}
                         />
                       </div>
-                      <div style={{ fontSize: 10, marginTop: 8, color: "rgba(255,255,255,0.6)", lineHeight: 1.3 }}>
+                      <div style={{ fontSize: 10, marginTop: 8, color: "rgba(15,23,42,0.85)", lineHeight: 1.3 }}>
                         {d.shortName}
                       </div>
                     </div>
@@ -577,18 +579,18 @@ export default function Klubanalyse() {
               </div>
 
               {/* 4. Forklaring */}
-              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "18px 0 0" }}>
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(15,23,42,0.67)", margin: "18px 0 0" }}>
                 {C.ceiling}
               </p>
-              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(15,23,42,0.67)", margin: "8px 0 0" }}>
                 {C.average(avgLevel)}
               </p>
               {unknownCount > 0 && (
-                <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+                <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(15,23,42,0.67)", margin: "8px 0 0" }}>
                   {C.unknownNote(unknownCount)}
                 </p>
               )}
-              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(255,255,255,0.42)", margin: "8px 0 0" }}>
+              <p style={{ fontSize: 13, lineHeight: 1.65, color: "rgba(15,23,42,0.67)", margin: "8px 0 0" }}>
                 {strongestIdx === weakestIdx
                   ? C.even
                   : C.strongestLine(DIMENSIONS[strongestIdx].name, DIMENSIONS[weakestIdx].name)}
@@ -597,7 +599,7 @@ export default function Klubanalyse() {
 
             {/* 5. Fordeling */}
             <div>
-              <h3 style={{ fontSize: 13, letterSpacing: "0.1em", color: "rgba(255,255,255,0.45)", fontWeight: 800, margin: "0 0 14px" }}>
+              <h3 style={{ fontSize: 13, letterSpacing: "0.1em", color: "rgba(15,23,42,0.7)", fontWeight: 800, margin: "0 0 14px" }}>
                 {C.distribution}
               </h3>
               <div style={{ display: "grid", gap: 10 }}>
@@ -607,7 +609,7 @@ export default function Klubanalyse() {
                       <span>{d.name}</span>
                       <span style={{ color: GOLD, fontWeight: 700 }}>{C.level} {levels[i]}</span>
                     </div>
-                    <div style={{ height: 8, borderRadius: 4, background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
+                    <div style={{ height: 8, borderRadius: 4, background: "rgba(15,23,42,0.07)", overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${(scores[i] / MAX_DIM_SCORE) * 100}%`, background: i === weakestIdx ? RED : i === strongestIdx ? GREEN : GOLD }} />
                     </div>
                   </div>
@@ -624,13 +626,13 @@ export default function Klubanalyse() {
                 {lowestThree.map(({ i }) => (
                   <div key={DIMENSIONS[i].key} style={card}>
                     <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 10 }}>{DIMENSIONS[i].name}</div>
-                    <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.65)" }}>
+                    <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.7, color: "rgba(15,23,42,0.9)" }}>
                       {DIMENSIONS[i].consequence}
                     </p>
                     <div style={{ fontSize: 11, letterSpacing: "0.1em", color: GOLD, fontWeight: 800, marginBottom: 6 }}>
                       {C.firstStep}
                     </div>
-                    <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: "rgba(255,255,255,0.8)" }}>
+                    <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: "rgba(15,23,42,1)" }}>
                       {DIMENSIONS[i].firstStep}
                     </p>
                   </div>
@@ -640,15 +642,15 @@ export default function Klubanalyse() {
 
             {/* 7. Afslutning */}
             <div style={{ ...card, borderColor: "rgba(212,175,55,0.28)", background: "rgba(212,175,55,0.06)" }}>
-              <p style={{ margin: "0 0 14px", fontSize: 16, lineHeight: 1.75, color: "rgba(255,255,255,0.8)" }}>
+              <p style={{ margin: "0 0 14px", fontSize: 16, lineHeight: 1.75, color: "rgba(15,23,42,1)" }}>
                 {C.closingP1}
               </p>
-              <p style={{ margin: "0 0 20px", fontSize: 16, lineHeight: 1.75, color: "rgba(255,255,255,0.8)" }}>
+              <p style={{ margin: "0 0 20px", fontSize: 16, lineHeight: 1.75, color: "rgba(15,23,42,1)" }}>
                 {C.closingP2}
               </p>
               <button
                 onClick={() => { trackCta("analysis_result_contact"); navigate("/contact"); }}
-                style={{ padding: "14px 28px", borderRadius: 10, border: "none", background: GOLD, color: "#0A0A0A", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
+                style={{ padding: "14px 28px", borderRadius: 10, border: "none", background: BLUE, color: "#fff", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
               >
                 {C.cta}
               </button>
@@ -657,7 +659,7 @@ export default function Klubanalyse() {
             {/* 8. Frivillige profilfelter */}
             <div style={card}>
               <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 6 }}>{C.profileTitle}</div>
-              <p style={{ margin: "0 0 16px", fontSize: 14, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+              <p style={{ margin: "0 0 16px", fontSize: 14, color: "rgba(15,23,42,0.75)", lineHeight: 1.6 }}>
                 {C.profileP}
               </p>
               <div style={{ display: "grid", gap: 12 }}>
@@ -666,19 +668,19 @@ export default function Klubanalyse() {
                 <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
                   <option value="">{C.chooseRole}</option>
                   {ROLES.map((r) => (
-                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                    <option key={r} value={r} >{r}</option>
                   ))}
                 </select>
                 <select value={memberRange} onChange={(e) => setMemberRange(e.target.value)} style={inputStyle}>
                   <option value="">{C.chooseMembers}</option>
                   {MEMBERS.map((r) => (
-                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                    <option key={r} value={r} >{r}</option>
                   ))}
                 </select>
                 <select value={coachRange} onChange={(e) => setCoachRange(e.target.value)} style={inputStyle}>
                   <option value="">{C.chooseCoaches}</option>
                   {COACHES.map((r) => (
-                    <option key={r} value={r} style={{ background: "#0A0A0A" }}>{r}</option>
+                    <option key={r} value={r} >{r}</option>
                   ))}
                 </select>
                 <button
@@ -687,9 +689,9 @@ export default function Klubanalyse() {
                   style={{
                     padding: "13px 20px",
                     borderRadius: 10,
-                    border: "0.5px solid rgba(255,255,255,0.18)",
+                    border: "0.5px solid rgba(15,23,42,0.18)",
                     background: "transparent",
-                    color: profileSaved ? GREEN : "#fff",
+                    color: profileSaved ? GREEN : INK,
                     fontSize: 14,
                     fontWeight: 700,
                     cursor: saving || profileSaved ? "default" : "pointer",
@@ -698,7 +700,7 @@ export default function Klubanalyse() {
                   {profileSaved ? C.profileSaved : C.saveProfile}
                 </button>
                 {profileFailed && !profileSaved && (
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6 }}>
+                  <div style={{ fontSize: 13, color: "rgba(15,23,42,0.75)", lineHeight: 1.6 }}>
                     {C.profileFailed}
                   </div>
                 )}
