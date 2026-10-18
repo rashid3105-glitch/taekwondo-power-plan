@@ -4,7 +4,7 @@ import { useChatNotifications } from "@/hooks/useChatNotifications";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { ClubThemeProvider } from "@/components/ClubThemeProvider";
@@ -25,7 +25,7 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { AppUpdateBanner } from "@/components/AppUpdateBanner";
 import { SplashScreen } from "@/components/SplashScreen";
 import { isNativeApp } from "@/lib/platform";
-import Index from "./pages/Index";
+// Legacy dark front page kept in src/pages/Index.tsx; no longer routed.
 import PostTrainingLogV2 from "./pages/prototypes/PostTrainingLogV2";
 import PostTrainingLogLive from "./pages/lab/PostTrainingLogLive";
 import MatchAnalyzerLab from "./pages/lab/MatchAnalyzerLab";
