@@ -161,10 +161,10 @@ export default function DraftHome() {
       <div style={{ background: C.gold, color: C.ink, textAlign: "center", fontSize: 12, fontWeight: 700, padding: "6px 0" }}>{k.draft}</div>
 
       <header style={{ maxWidth: 1120, margin: "0 auto", padding: `16px ${pad}px`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ color: C.ink }}><BrandLogo /></div>
+        <div style={{ color: C.ink }}><BrandLogo height={m ? 34 : 40} textColor={C.ink} accentColor={C.gold} /></div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <LanguageSwitcher />
-          <button onClick={() => navigate("/auth")} style={{ ...secondary, padding: "8px 16px", fontSize: 14 }}>{k.login}</button>
+          <button onClick={() => navigate("/auth")} style={{ ...secondary, padding: "8px 16px", fontSize: 14, whiteSpace: "nowrap" }}>{k.login}</button>
         </div>
       </header>
 
