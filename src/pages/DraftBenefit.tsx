@@ -204,7 +204,7 @@ export default function DraftBenefit() {
         </button>
         <h1 style={{ fontSize: m ? 32 : 48, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 18px" }}>{p.h1}</h1>
         <p style={{ fontSize: m ? 16 : 19, color: C.muted, lineHeight: 1.55, margin: "0 0 32px" }}>{p.intro}</p>
-        <Placeholder label={u.img} hint={u.imgHint} src={img(`${slug}-hero`)} />
+        <Placeholder label={u.img} hint={u.imgHint} slot={`${slug}-hero`} />
       </section>
 
       <section style={{ background: C.soft }}>
@@ -226,7 +226,7 @@ export default function DraftBenefit() {
                 </div>
                 <p style={{ fontSize: 16, color: C.muted, lineHeight: 1.6, margin: 0 }}>{pt.d}</p>
               </div>
-              <Placeholder label={u.img} hint={u.imgHint} tall src={img(`${slug}-${i + 1}`)} />
+              <Placeholder label={u.img} hint={u.imgHint} tall slot={`${slug}-${i + 1}`} />
             </div>
           ))}
         </div>
