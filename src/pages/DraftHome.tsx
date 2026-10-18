@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import coachSitting from "@/assets/coach-sitting.png";
 import { BENEFIT_SLUGS, UI_COPY } from "./DraftBenefit";
 import { EditableImage } from "@/components/EditableImage";
+import { PublicFooter } from "@/components/landing/PublicFooter";
 
 // Public front page (light design). Benefit cards link to /fordele/:slug.
 const C = {
@@ -257,7 +258,7 @@ export default function DraftHome() {
         </div>
       </section>
 
-      <footer style={{ textAlign: "center", padding: "28px 20px", fontSize: 13, color: C.muted }}>© Sportstalent.dk</footer>
+      <PublicFooter />
     </div>
   );
 }

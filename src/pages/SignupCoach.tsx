@@ -111,7 +111,7 @@ export default function SignupCoach() {
   const shareMsg = `Jeg inviterer dig til mit hold på Sportstalent. Tilmeld dig her: ${inviteUrl}`;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="theme-public-light min-h-screen bg-background flex flex-col">
       <PageMeta
         title="Opret coach-konto"
         description="Kom i gang gratis med Sportstalent. Opret en trænerkonto til din klub og styr træning, sæsonplan og atleter ét sted."
@@ -201,7 +201,7 @@ export default function SignupCoach() {
                   <p className="text-[10px] text-muted-foreground/70">{t("passwordRequirementsHint")}</p>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
+                <Button type="submit" disabled={loading} className="w-full h-11 rounded-xl font-bold">
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Opret konto"}
                 </Button>
 
@@ -300,7 +300,7 @@ export default function SignupCoach() {
                   </div>
                 </div>
 
-                <Button type="submit" disabled={loading} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
+                <Button type="submit" disabled={loading} className="w-full h-11 rounded-xl font-bold">
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (<>Fortsæt <ArrowRight className="h-4 w-4 ml-1" /></>)}
                 </Button>
 
@@ -349,7 +349,7 @@ export default function SignupCoach() {
                 </CardContent>
               </Card>
 
-              <Button onClick={() => navigate("/coach")} className="w-full h-11 rounded-xl font-bold bg-landing-red hover:bg-landing-red/90 text-white">
+              <Button onClick={() => navigate("/coach")} className="w-full h-11 rounded-xl font-bold">
                 Gå til dit dashboard <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             </>
