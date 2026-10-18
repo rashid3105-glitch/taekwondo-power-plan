@@ -39,6 +39,7 @@ const COPY: Record<string, Copy> = {
       { t: "Spar tid i hverdagen", d: "Slip for regneark og spredte beskeder. Alt ligger ét sted." },
       { t: "Se hvordan atleterne har det", d: "Trivsel og restitution før træning — så I opdager problemer i tide." },
       { t: "Rød tråd i hele klubben", d: "Samme udvikling, uanset hvilken træner der står på måtten." },
+      { t: "Video- og kampanalyse", d: "Pointtavle, tidslinje og automatisk kamprapport — klar til at dele." },
     ],
     fQuote: "Jeg har bygget det system, jeg selv manglede som træner.", fRole: "Grundlægger · 40+ års erfaring i sporten",
     pTitle: "Én enkel pris for hele klubben", pAmount: "7.500 kr.", pPer: "/år ekskl. moms", pNote: "Op til 50 medlemmer",
@@ -55,6 +56,7 @@ const COPY: Record<string, Copy> = {
       { t: "Save time every week", d: "No more spreadsheets and scattered messages. Everything in one place." },
       { t: "See how athletes are doing", d: "Wellbeing and recovery before training — spot problems in time." },
       { t: "A common thread", d: "The same development path, whichever coach is on the mat." },
+      { t: "Video and match analysis", d: "Scoreboard, timeline and an automatic match report — ready to share." },
     ],
     fQuote: "I built the system I always missed as a coach.", fRole: "Founder · 40+ years in the sport",
     pTitle: "One simple price for the whole club", pAmount: "DKK 7,500", pPer: "/year excl. VAT", pNote: "Up to 50 members",
@@ -71,6 +73,7 @@ const COPY: Record<string, Copy> = {
       { t: "Spara tid i vardagen", d: "Slipp kalkylark och utspridda meddelanden. Allt på ett ställe." },
       { t: "Se hur idrottarna mår", d: "Välmående och återhämtning före träning — upptäck problem i tid." },
       { t: "Röd tråd i hela klubben", d: "Samma utveckling, oavsett vilken tränare som står på mattan." },
+      { t: "Video- och matchanalys", d: "Poängtavla, tidslinje och automatisk matchrapport — klar att dela." },
     ],
     fQuote: "Jag byggde systemet jag själv saknade som tränare.", fRole: "Grundare · 40+ år inom idrotten",
     pTitle: "Ett enkelt pris för hela klubben", pAmount: "7 500 DKK", pPer: "/år exkl. moms", pNote: "Upp till 50 medlemmar",
@@ -87,6 +90,7 @@ const COPY: Record<string, Copy> = {
       { t: "Zeit sparen im Alltag", d: "Schluss mit Tabellen und verstreuten Nachrichten. Alles an einem Ort." },
       { t: "Sehen, wie es den Athleten geht", d: "Wohlbefinden und Erholung vor dem Training — Probleme früh erkennen." },
       { t: "Ein roter Faden", d: "Dieselbe Entwicklung, egal welcher Trainer auf der Matte steht." },
+      { t: "Video- und Kampfanalyse", d: "Punktetafel, Zeitleiste und automatischer Kampfbericht — bereit zum Teilen." },
     ],
     fQuote: "Ich habe das System gebaut, das mir als Trainer immer gefehlt hat.", fRole: "Gründer · 40+ Jahre im Sport",
     pTitle: "Ein einfacher Preis für den ganzen Verein", pAmount: "7.500 DKK", pPer: "/Jahr zzgl. MwSt.", pNote: "Bis zu 50 Mitglieder",
@@ -103,6 +107,7 @@ const COPY: Record<string, Copy> = {
       { t: "وفّر الوقت يوميًا", d: "وداعًا للجداول والرسائل المتفرقة. كل شيء في مكان واحد." },
       { t: "اعرف حال الرياضيين", d: "الرفاهية والتعافي قبل التدريب — لاكتشاف المشكلات مبكرًا." },
       { t: "خيط مشترك في النادي", d: "نفس مسار التطوير أيًا كان المدرب." },
+      { t: "تحليل الفيديو والمباريات", d: "لوحة نقاط وخط زمني وتقرير مباراة تلقائي — جاهز للمشاركة." },
     ],
     fQuote: "بنيت النظام الذي كنت أفتقده كمدرب.", fRole: "المؤسس · أكثر من 40 عامًا في الرياضة",
     pTitle: "سعر واحد بسيط للنادي بأكمله", pAmount: "7,500 كرونة", pPer: "/سنة بدون ضريبة", pNote: "حتى 50 عضوًا",
@@ -119,6 +124,7 @@ const COPY: Record<string, Copy> = {
       { t: "Spar tid i hverdagen", d: "Slipp regneark og spredte meldinger. Alt på ett sted." },
       { t: "Se hvordan utøverne har det", d: "Trivsel og restitusjon før trening — oppdag problemer i tide." },
       { t: "Rød tråd i hele klubben", d: "Samme utvikling, uansett hvilken trener som står på matta." },
+      { t: "Video- og kampanalyse", d: "Poengtavle, tidslinje og automatisk kamprapport — klar til deling." },
     ],
     fQuote: "Jeg bygde systemet jeg selv manglet som trener.", fRole: "Grunnlegger · 40+ år i idretten",
     pTitle: "Én enkel pris for hele klubben", pAmount: "7 500 DKK", pPer: "/år eks. mva.", pNote: "Opptil 50 medlemmer",
@@ -135,6 +141,7 @@ const COPY: Record<string, Copy> = {
       { t: "Ahorra tiempo cada semana", d: "Adiós a hojas de cálculo y mensajes dispersos. Todo en un lugar." },
       { t: "Ve cómo están los deportistas", d: "Bienestar y recuperación antes de entrenar — detecta problemas a tiempo." },
       { t: "Un hilo conductor", d: "El mismo desarrollo, sea cual sea el entrenador." },
+      { t: "Análisis de vídeo y combates", d: "Marcador, línea de tiempo e informe automático del combate, listo para compartir." },
     ],
     fQuote: "Construí el sistema que siempre eché de menos como entrenador.", fRole: "Fundador · 40+ años en el deporte",
     pTitle: "Un precio sencillo para todo el club", pAmount: "7.500 DKK", pPer: "/año sin IVA", pNote: "Hasta 50 miembros",
@@ -192,7 +199,7 @@ export default function DraftHome() {
       <section style={{ background: C.soft }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: `${m ? 56 : 88}px ${pad}px` }}>
           <h2 style={{ fontSize: m ? 26 : 36, fontWeight: 800, letterSpacing: "-0.02em", textAlign: "center", margin: "0 0 40px" }}>{k.bTitle}</h2>
-          <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(3,1fr)", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: m ? "1fr" : "repeat(2,1fr)", gap: 20 }}>
             {k.b.map((b, i) => {
               const Icon = ICONS[i];
               return (

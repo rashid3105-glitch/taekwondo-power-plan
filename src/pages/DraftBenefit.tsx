@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 // Draft benefit subpages linked from /draft-home. Not public, noindex.
 const C = { bg: "#FFFFFF", soft: "#F5F7FB", ink: "#0F172A", muted: "#526079", line: "#E4E8F0", blue: "#1F5BD8", gold: "#C9A227" };
 
-export const BENEFIT_SLUGS = ["spar-tid", "trivsel", "roed-traad"] as const;
+export const BENEFIT_SLUGS = ["spar-tid", "trivsel", "roed-traad", "videoanalyse"] as const;
 type Slug = (typeof BENEFIT_SLUGS)[number];
 
 type Page = { h1: string; problem: string; intro: string; points: { t: string; d: string }[] };
@@ -40,6 +40,34 @@ const P: Record<string, Record<Slug, Page>> = {
       { t: "Fælles retning og progression", d: "Byg klubbens standarder for teknik, styrke og motorik fra ungdom til senior." },
       { t: "Gnidningsfri overlevering", d: "Nye trænere ser atletens historik, tests og udvikling over tid fra dag ét." },
       { t: "Atleter der bliver", d: "Kontinuitet og tryghed — også når atleten skifter hold eller træner." } ] },
+    videoanalyse: { h1: "Se kampen igen — og forstå den.", problem: "Trænere filmer kampe på telefonen, men har sjældent tid til at gennemgå dem. Feedbacken drukner i en gruppechat.", intro: "Upload kampvideoen, og få pointtavle, tidslinje og en kamprapport, som træneren kan finjustere og dele.", points: [
+      { t: "Officiel pointtavle og tidslinje", d: "Registrér spark, træffere og advarsler for rød og blå — klik på en hændelse for at hoppe til stedet i videoen." },
+      { t: "Automatisk kamprapport", d: "Kamp-IQ, banekontrol, sparketeknik, momentum og konkrete råd til næste træning. Træneren retter det til." },
+      { t: "Rapport og deling", d: "Eksportér en grafisk PDF med pointkurve og statistik, eller del et link med atleten og forældrene." } ] },
+    videoanalyse: { h1: "Watch the match again — and understand it.", problem: "Coaches film matches on their phone but rarely have time to review them. Feedback gets lost in a group chat.", intro: "Upload the match video and get a scoreboard, timeline and match report the coach can fine-tune and share.", points: [
+      { t: "Official scoreboard and timeline", d: "Log kicks, hits and penalties for red and blue — tap an event to jump to that moment in the video." },
+      { t: "Automatic match report", d: "Fight IQ, ring control, kick technique, momentum and concrete tips for the next session. The coach adjusts it." },
+      { t: "Report and sharing", d: "Export a visual PDF with score curve and statistics, or share a link with the athlete and parents." } ] },
+    videoanalyse: { h1: "Se matchen igen — och förstå den.", problem: "Tränare filmar matcher med mobilen men hinner sällan gå igenom dem. Feedbacken drunknar i en gruppchatt.", intro: "Ladda upp matchvideon och få poängtavla, tidslinje och en matchrapport som tränaren kan finjustera och dela.", points: [
+      { t: "Officiell poängtavla och tidslinje", d: "Registrera sparkar, träffar och varningar för röd och blå — klicka på en händelse för att hoppa dit i videon." },
+      { t: "Automatisk matchrapport", d: "Match-IQ, ringkontroll, sparkteknik, momentum och konkreta råd. Tränaren justerar." },
+      { t: "Rapport och delning", d: "Exportera en grafisk PDF med poängkurva och statistik, eller dela en länk med idrottaren och föräldrarna." } ] },
+    videoanalyse: { h1: "Den Kampf noch einmal sehen — und verstehen.", problem: "Trainer filmen Kämpfe mit dem Handy, haben aber selten Zeit für die Auswertung. Feedback geht im Gruppenchat unter.", intro: "Kampfvideo hochladen und Punktetafel, Zeitleiste und Kampfbericht erhalten, die der Trainer anpassen und teilen kann.", points: [
+      { t: "Offizielle Punktetafel und Zeitleiste", d: "Tritte, Treffer und Verwarnungen für Rot und Blau erfassen — ein Klick springt zur Stelle im Video." },
+      { t: "Automatischer Kampfbericht", d: "Kampf-IQ, Flächenkontrolle, Tritttechnik, Momentum und konkrete Tipps. Der Trainer passt an." },
+      { t: "Bericht und Teilen", d: "Grafisches PDF mit Punktekurve und Statistik exportieren oder einen Link mit Athlet und Eltern teilen." } ] },
+    videoanalyse: { h1: "شاهد المباراة مجددًا — وافهمها.", problem: "يصوّر المدربون المباريات بالهاتف لكن نادرًا ما يجدون وقتًا لمراجعتها، وتضيع الملاحظات في الدردشات.", intro: "ارفع فيديو المباراة واحصل على لوحة نقاط وخط زمني وتقرير يمكن للمدرب تعديله ومشاركته.", points: [
+      { t: "لوحة نقاط وخط زمني رسميان", d: "سجّل الركلات والإصابات والإنذارات للأحمر والأزرق — اضغط على حدث للانتقال إليه في الفيديو." },
+      { t: "تقرير مباراة تلقائي", d: "ذكاء القتال والسيطرة على الحلبة وتقنية الركل والزخم ونصائح عملية. يعدّله المدرب." },
+      { t: "تقرير ومشاركة", d: "صدّر ملف PDF مرئيًا بمنحنى النقاط والإحصاءات، أو شارك رابطًا مع الرياضي وأولياء الأمور." } ] },
+    videoanalyse: { h1: "Se kampen igjen — og forstå den.", problem: "Trenere filmer kamper på mobilen, men har sjelden tid til å gå gjennom dem. Tilbakemeldingen drukner i en gruppechat.", intro: "Last opp kampvideoen og få poengtavle, tidslinje og en kamprapport treneren kan finjustere og dele.", points: [
+      { t: "Offisiell poengtavle og tidslinje", d: "Registrer spark, treff og advarsler for rød og blå — trykk på en hendelse for å hoppe dit i videoen." },
+      { t: "Automatisk kamprapport", d: "Kamp-IQ, banekontroll, sparketeknikk, momentum og konkrete råd. Treneren justerer." },
+      { t: "Rapport og deling", d: "Eksporter en grafisk PDF med poengkurve og statistikk, eller del en lenke med utøveren og foreldrene." } ] },
+    videoanalyse: { h1: "Vuelve a ver el combate — y entiéndelo.", problem: "Los entrenadores graban combates con el móvil pero rara vez tienen tiempo de revisarlos. El feedback se pierde en un chat.", intro: "Sube el vídeo y obtén marcador, línea de tiempo e informe del combate que el entrenador puede ajustar y compartir.", points: [
+      { t: "Marcador oficial y línea de tiempo", d: "Registra patadas, impactos y amonestaciones para rojo y azul; toca un evento para saltar a ese momento." },
+      { t: "Informe automático", d: "IQ de combate, control del área, técnica de patada, momentum y consejos concretos. El entrenador lo ajusta." },
+      { t: "Informe y compartir", d: "Exporta un PDF visual con curva de puntos y estadísticas, o comparte un enlace con el deportista y los padres." } ] },
   },
   en: {
     "spar-tid": { h1: "Less admin. More time on the mat.", problem: "Coaches spend hours every week on group chats, spreadsheets and the same questions from parents.", intro: "Sportstalent keeps everything in one place, so planning and communication take minutes instead of hours.", points: [
