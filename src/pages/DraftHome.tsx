@@ -197,8 +197,8 @@ export default function DraftHome() {
           </h1>
           <p style={{ fontSize: m ? 16 : 19, lineHeight: 1.55, color: C.muted, margin: "0 0 28px", maxWidth: 520 }}>{k.sub}</p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button style={primary} onClick={() => { trackCta("draft_hero_trial"); navigate("/contact"); }}>{k.ctaTrial}</button>
-            <button style={secondary} onClick={() => { trackCta("draft_hero_demo"); navigate("/contact"); }}>{k.ctaDemo}</button>
+            <button style={primary} onClick={() => { trackCta("draft_hero_trial"); navigate("/contact?offer=trial"); }}>{k.ctaTrial}</button>
+            <button style={secondary} onClick={() => { trackCta("draft_hero_demo"); navigate("/contact?offer=demo"); }}>{k.ctaDemo}</button>
           </div>
           <div style={{ marginTop: 16, fontSize: 13, color: C.muted }}>{k.micro}</div>
         </div>

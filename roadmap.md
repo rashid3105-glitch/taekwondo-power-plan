@@ -3,3 +3,5 @@
 - Match monitoring — complete: both existing matches already converted; /match-analysis/me now uses cloud data, regression tests pass, authenticated create/reload/open/delete verified.
 - Public light design — complete: nine requested pages, blog articles/comments and shared navigation updated; desktop/mobile checks passed, club assessment submitted with test addresses and result/contact flow verified; content and prices preserved. Not published.
 - Front page footer and blue coach signup buttons — complete: mobile footer links, navigation to pricing, blue signup button and error-free rendering verified. Not published.
+
+- Contact offers and outreach kit — in progress: selected demo/trial, next-step copy, verified inquiry storage/owner email, club materials.
