@@ -48,10 +48,13 @@ export default function ClubOutreachKit() {
     const popup = window.open("", "_blank");
     if (!popup) { toast.error(t("outreachPrintBlocked")); return; }
     popup.opener = null;
-    popup.document.write(outreachOverviewHtml(t("outreachOverview"), materials.overview, generatedLocale));
-    popup.document.close();
-    popup.focus();
-    popup.print();
+    const url = URL.createObjectURL(new Blob([outreachOverviewHtml(t("outreachOverview"), materials.overview, generatedLocale)], { type: "text/html;charset=utf-8" }));
+    popup.addEventListener("load", () => {
+      popup.focus();
+      popup.print();
+      URL.revokeObjectURL(url);
+    }, { once: true });
+    popup.location.href = url;
   };
 
   return <section className="mt-8 border-y border-border py-6" aria-labelledby="outreach-heading">
