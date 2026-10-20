@@ -5,3 +5,4 @@
 - Front page footer and blue coach signup buttons — complete: mobile footer links, navigation to pricing, blue signup button and error-free rendering verified. Not published.
 
 - Contact offers and outreach kit — complete: demo/trial UI and both real submissions verified, owner email sends confirmed, trial read back in authenticated admin, test rows deleted; 7 languages and offer tests pass. Outreach script/email and visually checked one-page PDF saved. Frontend not published.
+- Club outreach automation — in progress: admin-only personalization, editable script/email/overview, downloads and printable overview; no automatic sending.
