@@ -10,6 +10,7 @@ export interface TemplateEntry {
 }
 
 import { template as newUserNotification } from './new-user-notification.tsx'
+import { template as contactOwnerNotification } from './contact-owner-notification.tsx'
 import { template as eventReminder } from './event-reminder.tsx'
 import { template as coachProfileReady } from './coach-profile-ready.tsx'
 import { template as coachWeeklyDigest } from './coach-weekly-digest.tsx'
@@ -29,6 +30,7 @@ import { template as retentionDeletionWarning } from './retention-deletion-warni
 
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
+  'contact-owner-notification': contactOwnerNotification,
   'new-user-notification': newUserNotification,
   'event-reminder': eventReminder,
   'coach-profile-ready': coachProfileReady,

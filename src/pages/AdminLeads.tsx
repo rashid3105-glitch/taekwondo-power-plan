@@ -34,6 +34,7 @@ type LeadRow = {
 };
 
 const STATUSES = ["new", "contacted", "declined", "won"] as const;
+type ContactInquiry = { id: string; name: string; email: string; message: string; created_at: string };
 const STATUS_ORDER: Record<string, number> = { new: 0, contacted: 1, won: 2, declined: 3 };
 
 const isTestAccount = (email: string | null) => {
@@ -56,6 +57,7 @@ export default function AdminLeads() {
   const [error, setError] = useState<string | null>(null);
   const [demo, setDemo] = useState<LeadRow[]>([]);
   const [never, setNever] = useState<LeadRow[]>([]);
+  const [inquiries, setInquiries] = useState<ContactInquiry[]>([]);
   const [hideTests, setHideTests] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [busy, setBusy] = useState<string | null>(null);
@@ -72,6 +74,7 @@ export default function AdminLeads() {
     } else {
       setDemo(((data as any).demo_signups ?? []) as LeadRow[]);
       setNever(((data as any).never_signed_in ?? []) as LeadRow[]);
+      setInquiries(data.contact_inquiries ?? []);
     }
     setLoading(false);
   };
@@ -209,6 +212,15 @@ export default function AdminLeads() {
           <p className="mt-6 text-sm text-destructive">{error}</p>
         ) : (
           <>
+            <h2 className="mt-8 text-sm font-semibold text-muted-foreground">{t("contactInquiries")} ({inquiries.length})</h2>
+            <div className="mt-3 space-y-3">
+              {inquiries.length === 0 && <p className="text-sm text-muted-foreground">{t("adminLeadsEmpty")}</p>}
+              {inquiries.map(r => <article key={r.id} className="rounded-lg border border-border bg-card p-4">
+                <div className="flex flex-wrap justify-between gap-2"><h3 className="font-semibold">{r.name}</h3><time className="text-xs text-muted-foreground">{fmt(r.created_at)}</time></div>
+                <a className="text-sm text-primary break-all" href={`mailto:${r.email}`}>{r.email}</a>
+                <p className="mt-2 whitespace-pre-wrap break-words text-sm">{r.message}</p>
+              </article>)}
+            </div>
             <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {t("adminLeadsDemoSection")} ({demoRows.length})
             </h2>
