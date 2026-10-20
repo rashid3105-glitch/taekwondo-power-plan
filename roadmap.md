@@ -4,4 +4,4 @@
 - Public light design — complete: nine requested pages, blog articles/comments and shared navigation updated; desktop/mobile checks passed, club assessment submitted with test addresses and result/contact flow verified; content and prices preserved. Not published.
 - Front page footer and blue coach signup buttons — complete: mobile footer links, navigation to pricing, blue signup button and error-free rendering verified. Not published.
 
-- Contact offers and outreach kit — in progress: selected demo/trial, next-step copy, verified inquiry storage/owner email, club materials.
+- Contact offers and outreach kit — complete: demo/trial UI and both real submissions verified, owner email sends confirmed, trial read back in authenticated admin, test rows deleted; 7 languages and offer tests pass. Outreach script/email and visually checked one-page PDF saved. Frontend not published.
