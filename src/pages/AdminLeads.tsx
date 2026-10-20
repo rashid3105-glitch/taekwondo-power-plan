@@ -7,6 +7,7 @@ import { Loader2, ArrowLeft, UserPlus, Mail, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useLanguage } from "@/i18n/LanguageContext";
+import ClubOutreachKit from "@/components/admin/ClubOutreachKit";
 import {
   sendPasswordResetEmail,
   resendConfirmationEmail,
@@ -186,6 +187,7 @@ export default function AdminLeads() {
           <h1 className="text-2xl font-black tracking-tight text-foreground">{t("adminLeads")}</h1>
         </div>
         <p className="mt-1 text-sm text-muted-foreground">{t("adminLeadsIntro")}</p>
+        <ClubOutreachKit />
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => setHideTests((v) => !v)}>
