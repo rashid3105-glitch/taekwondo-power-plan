@@ -152,7 +152,10 @@ Deno.serve(async (req) => {
     };
 
     const all = authUsers.map(shape);
+    const { data: contactInquiries, error: contactError } = await admin.from("contact_submissions").select("id,name,email,message,created_at").order("created_at", { ascending: false }).limit(100);
+    if (contactError) throw contactError;
     return json({
+      contact_inquiries: contactInquiries ?? [],
       demo_signups: all.filter((r) => r.wants_demo),
       never_signed_in: all.filter((r) => !r.last_sign_in_at),
     });
