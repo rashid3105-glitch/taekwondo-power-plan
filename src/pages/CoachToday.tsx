@@ -14,6 +14,8 @@ import { CoachTriage } from "@/components/coach/CoachTriage";
 import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
 import { useCoachLogCount } from "@/hooks/useCoachLogCount";
 import { usePostTrainingLog } from "@/hooks/usePostTrainingLog";
+import { useSuperadminLab } from "@/hooks/useSuperadminLab";
+import { QuickCheckIn } from "@/components/coach/QuickCheckIn";
 
 interface MiniAthlete {
   user_id: string;
@@ -31,6 +33,7 @@ export default function CoachToday() {
   const [loading, setLoading] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
   const { enabled: labEnabled } = usePostTrainingLog();
+  const { labEnabled: draftEnabled } = useSuperadminLab();
   const { count: logCount } = useCoachLogCount(labEnabled);
 
   useEffect(() => {
@@ -110,6 +113,10 @@ export default function CoachToday() {
       </header>
 
       <main className="container max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+
+        {draftEnabled && coachUserId && (
+          <QuickCheckIn coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
+        )}
 
         <CoachTriage athletes={athletes} />
 
