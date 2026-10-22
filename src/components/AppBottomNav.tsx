@@ -93,11 +93,11 @@ export function AppBottomNav() {
 
   const items = coachMode
     ? [
-        { key: "coach-home", label: t("navHome") || "Hjem", icon: Home, iconClassName: "text-primary", active: path === "/coach", badge: 0, onClick: () => navigate("/coach") },
+        { key: "coach-today", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
+        { key: "coach-team", label: t("navTeam") || "Hold", icon: CalendarCheck, iconClassName: "text-tab-plan", active: path === "/coach", badge: 0, onClick: () => navigate("/coach") },
         ...(labEnabled
           ? [{ key: "coach-logs", label: t("labLogsNav") || "Logs", icon: ClipboardList, iconClassName: "text-primary", active: path.startsWith("/coach/logs"), badge: logCount, onClick: () => navigate("/coach/logs") }]
           : []),
-        { key: "coach-fremmoede", label: t("todayTab") || "Fremmøde", icon: CalendarCheck, iconClassName: "text-tab-plan", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
         { key: "coach-staevner", label: t("competitionsTitle") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), badge: 0, onClick: () => navigate("/coach/competitions") },
         chatItem,
         meItem,
@@ -124,7 +124,7 @@ export function AppBottomNav() {
 
     { key: "profile", label: t("profile") || "Profil", icon: UserIcon, to: "/profile" },
     ...(hasCoachRole
-      ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach" }]
+      ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach/today" }]
       : []),
     { key: "help", label: t("helpTitle") || "Hjælp", icon: HelpCircle, to: "/help" },
   ];
