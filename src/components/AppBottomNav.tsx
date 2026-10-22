@@ -124,7 +124,7 @@ export function AppBottomNav() {
 
     { key: "profile", label: t("profile") || "Profil", icon: UserIcon, to: "/profile" },
     ...(hasCoachRole
-      ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach" }]
+      ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach/today" }]
       : []),
     { key: "help", label: t("helpTitle") || "Hjælp", icon: HelpCircle, to: "/help" },
   ];
