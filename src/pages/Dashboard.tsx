@@ -232,7 +232,7 @@ export default function Dashboard() {
     if (!isActiveCoachClub) return;
 
     if (isCoachMode) {
-      navigate("/coach", { replace: true });
+      navigate("/coach/today", { replace: true });
       return;
     }
 
@@ -241,7 +241,7 @@ export default function Dashboard() {
     try { storedMode = localStorage.getItem("tkd-coach-mode"); } catch { /* ignore */ }
     if (hasCoachRole && storedMode === null) {
       setCoachMode(true);
-      navigate("/coach", { replace: true });
+      navigate("/coach/today", { replace: true });
     }
   }, [role, hasCoachRole, memberships.length, activeMembership, activeClubLoading, isCoachMode, setCoachMode, navigate, searchParams]);
 
