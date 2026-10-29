@@ -12,7 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip } from "lucide-react";
+import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip, UserSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSignedStorageUrl } from "@/lib/storageUrl";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
@@ -439,6 +439,7 @@ export default function CoachCompetitions() {
           <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label={t("back")} title={t("back")}><ArrowLeft className="h-4 w-4" /></Button>
           <Trophy className="h-5 w-5 text-primary" />
           <span className="font-bold flex-1 truncate">{labelCompetitions}</span>
+          <Button variant="outline" size="icon" onClick={() => navigate("/fighter-search")} aria-label={t("fsTitle")} title={t("fsTitle")}><UserSearch className="h-4 w-4" /></Button>
           <ClubSwitcher />
           <CoachBulkCreateCompetitionDialog
             athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
