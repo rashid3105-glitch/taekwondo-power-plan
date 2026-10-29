@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Trophy, Plus, ArrowLeft, Loader2, Scale, AlertTriangle, Calendar, Sparkles, CheckCircle2 } from "lucide-react";
+import { Trophy, Plus, ArrowLeft, Loader2, Scale, AlertTriangle, Calendar, Sparkles, CheckCircle2, UserSearch } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Watermark } from "@/components/Watermark";
 import { AppFooter } from "@/components/AppFooter";
@@ -188,7 +188,8 @@ export default function Competitions() {
       <div className="relative z-10 max-w-4xl mx-auto p-4 md:p-6 space-y-6">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}><ArrowLeft className="h-4 w-4 mr-1" /> {t("competitionsBack")}</Button>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Trophy className="h-6 w-6 text-primary" /> {t("competitionsTitle")}</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2 flex-1"><Trophy className="h-6 w-6 text-primary" /> {t("competitionsTitle")}</h1>
+          <Button variant="outline" size="sm" onClick={() => navigate("/fighter-search")} title={t("fsTitle")}><UserSearch className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">{t("fsTitle")}</span></Button>
         </div>
 
         {/* Past competitions promoted to top when something needs reflection */}
