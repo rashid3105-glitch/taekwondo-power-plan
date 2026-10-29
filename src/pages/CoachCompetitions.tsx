@@ -435,21 +435,37 @@ export default function CoachCompetitions() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b border-border bg-card/50 sticky top-0 z-10 pt-safe">
-        <div className="container max-w-4xl mx-auto px-3 py-3 flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label={t("back")} title={t("back")}><ArrowLeft className="h-4 w-4" /></Button>
-          <Trophy className="h-5 w-5 text-primary" />
-          <span className="font-bold flex-1 truncate">{labelCompetitions}</span>
-          <Button variant="outline" size="icon" onClick={() => navigate("/fighter-search")} aria-label={t("fsTitle")} title={t("fsTitle")}><UserSearch className="h-4 w-4" /></Button>
-          <ClubSwitcher />
-          <CoachBulkCreateCompetitionDialog
-            athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
-            onCreated={async () => {
-              setReloadTick((t) => t + 1);
-            }}
-          />
+        <div className="container max-w-4xl mx-auto px-3 py-3 flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Button variant="ghost" size="icon" className="shrink-0" onClick={() => navigate("/coach")} aria-label={t("back")} title={t("back")}><ArrowLeft className="h-4 w-4" /></Button>
+            <Trophy className="h-5 w-5 text-primary shrink-0" />
+            <span className="font-bold truncate">{labelCompetitions}</span>
+          </div>
+          <div className="flex items-center gap-2 min-w-0 max-w-full">
+            <ClubSwitcher />
+            <CoachBulkCreateCompetitionDialog
+              athletes={myAthletes.map((a) => ({ user_id: a.user_id, display_name: a.display_name }))}
+              onCreated={async () => {
+                setReloadTick((t) => t + 1);
+              }}
+            />
+          </div>
         </div>
       </header>
       <main className="container max-w-4xl mx-auto px-3 py-4 space-y-4">
+        <button
+          type="button"
+          onClick={() => navigate("/fighter-search")}
+          className="w-full flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-start hover:bg-primary/10 transition-colors min-h-11"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+            <UserSearch className="h-5 w-5" />
+          </span>
+          <span className="min-w-0">
+            <span className="block font-semibold">{t("fsTitle")}</span>
+            <span className="block text-xs text-muted-foreground line-clamp-2">{t("fsHint")}</span>
+          </span>
+        </button>
         {loading ? (
           <p className="text-center text-muted-foreground py-12 text-sm">{labelLoading}</p>
         ) : myAthletes.length === 0 ? (
