@@ -65,6 +65,7 @@ import CoachMessages from "./pages/CoachMessages";
 import CoachMentalReview from "./pages/CoachMentalReview";
 import CoachAthleteOverview from "./pages/CoachAthleteOverview";
 import CoachCompetitions from "./pages/CoachCompetitions";
+import FighterSearch from "./pages/FighterSearch";
 import SeasonCalendar from "./pages/SeasonCalendar";
 
 import SubscriptionSettings from "./pages/SubscriptionSettings";
@@ -275,6 +276,7 @@ const AnimatedRoutes = () => {
         <Route path="/coach/mental" element={<Page><CoachMentalReview /></Page>} />
         <Route path="/coach/athlete/:athleteId" element={<Page><CoachAthleteOverview /></Page>} />
         <Route path="/coach/competitions" element={<Page><CoachCompetitions /></Page>} />
+        <Route path="/fighter-search" element={<Page><FighterSearch /></Page>} />
         <Route path="/coach/season-calendar" element={<Page><SeasonCalendar /></Page>} />
         <Route path="/coach/testing/sessions" element={<Page><CoachTestSessions /></Page>} />
         <Route path="/coach/testing/sessions/:sessionId" element={<Page><CoachTestSession /></Page>} />
