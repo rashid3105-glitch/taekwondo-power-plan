@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { transpileModule, ModuleKind } from "typescript";
+import { transpileModule, ModuleKind, ScriptTarget } from "typescript";
 import { z } from "zod";
 import { describe, expect, it, vi } from "vitest";
 
@@ -14,7 +14,7 @@ describe("fighter-search data minimisation", () => {
     const source = readFileSync("supabase/functions/fighter-search/index.ts", "utf8")
       .replace(/^import .*;\s*$/gm, "");
     const compiled = transpileModule(source, {
-      compilerOptions: { module: ModuleKind.None },
+      compilerOptions: { module: ModuleKind.None, target: ScriptTarget.ES2022 },
     }).outputText;
     new Function("Deno", "createClient", "z", "corsHeaders", "fetch", compiled)(
       { env: { get: () => "test-value" }, serve: (fn: typeof handler) => { handler = fn; } },
