@@ -12,6 +12,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
 import { ArrowLeft, Trophy, MapPin, Calendar, Users, Sparkles, CheckCircle2, Clock, Pencil, Trash2, X, Check, FileText, Paperclip, UserSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getSignedStorageUrl } from "@/lib/storageUrl";
@@ -75,6 +76,7 @@ function groupComps(list: Comp[]): CompGroup[] {
 }
 
 export default function CoachCompetitions() {
+  const { profile: fsSport } = useMySportProfile();
   const { t } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -453,7 +455,7 @@ export default function CoachCompetitions() {
         </div>
       </header>
       <main className="container max-w-4xl mx-auto px-3 py-4 space-y-4">
-        <button
+        {fsSport.slug === "taekwondo" && (<button
           type="button"
           onClick={() => navigate("/fighter-search")}
           className="w-full flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-start hover:bg-primary/10 transition-colors min-h-11"
@@ -465,7 +467,7 @@ export default function CoachCompetitions() {
             <span className="block font-semibold">{t("fsTitle")}</span>
             <span className="block text-xs text-muted-foreground line-clamp-2">{t("fsHint")}</span>
           </span>
-        </button>
+        </button>)}
         {loading ? (
           <p className="text-center text-muted-foreground py-12 text-sm">{labelLoading}</p>
         ) : myAthletes.length === 0 ? (
