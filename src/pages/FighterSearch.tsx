@@ -52,6 +52,7 @@ export default function FighterSearch() {
   };
   const displayName = (n: string) => { const [l, f] = n.split(",").map((s) => s.trim()); return f ? `${f} ${l}` : n; };
 
+  if (!sportLoading && sport.slug !== "taekwondo") return <Navigate to="/coach/competitions" replace />;
   return (
     <div className="min-h-screen bg-background pb-24">
       <header className="border-b border-border bg-card/50 sticky top-0 z-10 pt-safe">
