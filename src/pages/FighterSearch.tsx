@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Search, Loader2, Medal, ListOrdered, UserSearch, User } from "lucide-react";
+import { ArrowLeft, Search, Loader2, Medal, ListOrdered, UserSearch } from "lucide-react";
 
 // TaekwondoData nation code (ISO numeric) → ISO alpha-2
 const NATIONS: [string, string][] = [
@@ -16,7 +16,7 @@ const NATIONS: [string, string][] = [
 ];
 const flag = (a2: string) => String.fromCodePoint(...[...a2].map((c) => 127397 + c.charCodeAt(0)));
 
-interface Fighter { name: string; role: string; country: string | null; born: string | null; gender: string | null; photo: string | null; profileUrl: string; }
+interface Fighter { name: string; role: string; country: string | null; profileUrl: string; }
 
 export default function FighterSearch() {
   const navigate = useNavigate();
@@ -87,23 +87,19 @@ export default function FighterSearch() {
         {results && results.length > 0 && (
           <div className="space-y-3">
             {results.map((r) => (
-              <Card key={r.profileUrl} className="p-4 flex gap-4 items-start">
-                <div className="h-20 w-16 shrink-0 rounded-md overflow-hidden bg-muted flex items-center justify-center">
-                  {r.photo ? <img src={r.photo} alt={displayName(r.name)} loading="lazy" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-muted-foreground" />}
-                </div>
+              <Card key={r.profileUrl} className="p-4">
                 <div className="flex-1 min-w-0 space-y-2">
                   <div>
-                    <p className="font-semibold leading-tight">{displayName(r.name)}</p>
+                    <p className="font-semibold leading-tight break-words">{displayName(r.name)}</p>
                     <div className="flex flex-wrap gap-1.5 mt-1 text-xs text-muted-foreground items-center">
                       {r.country && <Badge variant="secondary">{r.country}</Badge>}
-                      {r.born && <span>{t("fsBorn")} {r.born}</span>}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button asChild size="sm" className="h-11 sm:h-9">
+                    <Button asChild size="sm" className="min-h-11 h-auto whitespace-normal py-2">
                       <a href={r.profileUrl} target="_blank" rel="noopener noreferrer"><Medal className="h-4 w-4 mr-1.5" />{t("fsProfile")}</a>
                     </Button>
-                    <Button asChild size="sm" variant="outline" className="h-11 sm:h-9">
+                    <Button asChild size="sm" variant="outline" className="min-h-11 h-auto whitespace-normal py-2">
                       <a href={resultsUrl(r.name)} target="_blank" rel="noopener noreferrer"><ListOrdered className="h-4 w-4 mr-1.5" />{t("fsResults")}</a>
                     </Button>
                   </div>

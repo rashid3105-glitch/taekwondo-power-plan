@@ -43,15 +43,10 @@ Deno.serve(async (req) => {
       const link = row.match(/<a href="([a-z0-9-]+\.[a-z0-9]+\.html)">([^<]+)<\/a>\s*\(([^)]+)\)/i);
       if (!link) continue;
       const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((m) => m[1]);
-      const img = row.match(/<img src="(cache\/img\/persons\/[^"]+)"/i);
-      const gender = /female\.png/i.test(row) ? "female" : /male\.png/i.test(row) ? "male" : null;
       results.push({
         name: decode(link[2]),
         role: decode(link[3]),
         country: cells[4] ? decode(cells[4]) : null,
-        born: cells[5] ? decode(cells[5]) || null : null,
-        gender,
-        photo: img ? BASE + img[1] : null,
         profileUrl: BASE + link[1],
       });
       if (results.length >= 30) break;
