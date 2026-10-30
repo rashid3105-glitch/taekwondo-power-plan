@@ -2,7 +2,10 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3";
 
+// Each sport maps to its own data source; only taekwondo (TaekwondoData) is supported today.
+const SUPPORTED_SPORTS = ["taekwondo"] as const;
 const Body = z.object({
+  sport: z.string().default("taekwondo"),
   firstname: z.string().trim().max(60).default(""),
   surname: z.string().trim().max(60).default(""),
   nation: z.string().regex(/^(\d{3}|ALLNATIONS)$/).default("ALLNATIONS"),
@@ -26,7 +29,8 @@ Deno.serve(async (req) => {
 
     const parsed = Body.safeParse(await req.json().catch(() => ({})));
     if (!parsed.success) return json({ error: "invalid_input" }, 400);
-    const { firstname, surname, nation } = parsed.data;
+    const { sport, firstname, surname, nation } = parsed.data;
+    if (!(SUPPORTED_SPORTS as readonly string[]).includes(sport)) return json({ error: "unsupported_sport" }, 400);
 
     const form = new URLSearchParams({ surname, firstname, nation, "find-fighter": "1", submit: "search" });
     const res = await fetch(BASE + "person_searchresult.html", {

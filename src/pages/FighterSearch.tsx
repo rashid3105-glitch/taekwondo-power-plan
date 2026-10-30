@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMySportProfile } from "@/hooks/useMySportProfile";
+import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ interface Fighter { name: string; role: string; country: string | null; profileU
 export default function FighterSearch() {
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
+  const { profile: sport, loading: sportLoading } = useMySportProfile();
   const [first, setFirst] = useState("");
   const [last, setLast] = useState("");
   const [nation, setNation] = useState("ALLNATIONS");
@@ -37,7 +40,7 @@ export default function FighterSearch() {
     e.preventDefault();
     if ((first + last).trim().length < 2) { setError(t("fsNameRequired")); return; }
     setLoading(true); setError(null); setResults(null);
-    const { data, error: err } = await supabase.functions.invoke("fighter-search", { body: { firstname: first, surname: last, nation } });
+    const { data, error: err } = await supabase.functions.invoke("fighter-search", { body: { sport: sport.slug, firstname: first, surname: last, nation } });
     setLoading(false);
     if (err || data?.error) { setError(t("fsError")); return; }
     setResults(data.results ?? []);
@@ -49,6 +52,7 @@ export default function FighterSearch() {
   };
   const displayName = (n: string) => { const [l, f] = n.split(",").map((s) => s.trim()); return f ? `${f} ${l}` : n; };
 
+  if (!sportLoading && sport.slug !== "taekwondo") return <Navigate to="/coach/competitions" replace />;
   return (
     <div className="min-h-screen bg-background pb-24">
       <header className="border-b border-border bg-card/50 sticky top-0 z-10 pt-safe">
