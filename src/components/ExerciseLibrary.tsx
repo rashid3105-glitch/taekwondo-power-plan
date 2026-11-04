@@ -5,8 +5,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { AddExerciseForm } from "./AddExerciseForm";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, Trash2, Search, MessageCircle, Target, ShieldAlert, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Search, X, MessageCircle, Target, ShieldAlert, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -86,6 +87,7 @@ function toExercise(ue: UserExercise, currentUserId: string): Exercise & { isCus
 }
 
 export function ExerciseLibrary() {
+  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<ExerciseCategory | "all" | "custom">("all");
   const [goalFilters, setGoalFilters] = useState<Set<ExerciseGoal>>(new Set());
   const [riskFilters, setRiskFilters] = useState<Set<RiskLevel>>(new Set());
@@ -176,7 +178,9 @@ export function ExerciseLibrary() {
     ? userExercises
     : allExercises.filter((e) => e.category === filter);
 
+  const searchQuery = search.trim().toLocaleLowerCase(locale);
   const filtered = baseFiltered.filter((e) => {
+    if (searchQuery && !e.name.toLocaleLowerCase(locale).includes(searchQuery)) return false;
     if (goalFilters.size > 0) {
       const goals = getExerciseGoals(e);
       if (!goals.some((g) => goalFilters.has(g))) return false;
@@ -216,6 +220,30 @@ export function ExerciseLibrary() {
           </AlertDescription>
         </div>
       </Alert>
+
+      <div className="relative">
+        <Search aria-hidden="true" className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={t("exerciseSearchPlaceholder")}
+          aria-label={t("exerciseSearchPlaceholder")}
+          className="h-11 ps-10 pe-12 [&::-webkit-search-cancel-button]:hidden"
+        />
+        {search && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSearch("")}
+            aria-label={t("exerciseClearSearch")}
+            title={t("exerciseClearSearch")}
+            className="absolute end-0 top-0 h-11 w-11"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
@@ -311,6 +339,9 @@ export function ExerciseLibrary() {
 
       {/* Exercise list — collapsible category sections (closed by default) */}
       <div className="space-y-3">
+        {filtered.length === 0 && (
+          <p role="status" className="py-6 text-center text-sm text-muted-foreground">{t("noResults")}</p>
+        )}
         {(filter === "custom" ? ["custom" as const] : CATEGORIES).map((cat) => {
           const catItems = filter === "custom"
             ? filtered
@@ -320,7 +351,7 @@ export function ExerciseLibrary() {
           const { Icon, tile, icon } = EXERCISE_CATEGORY_STYLE[styleKey];
           const label = cat === "custom" ? t("myExercises") : CATEGORY_LABELS[cat as ExerciseCategory];
           return (
-            <Collapsible key={cat} defaultOpen={false}>
+            <Collapsible key={`${cat}-${Boolean(searchQuery)}`} defaultOpen={Boolean(searchQuery)}>
               <CollapsibleTrigger className="group w-full flex items-center gap-3 px-3 py-3 rounded-xl border border-border bg-card hover:bg-accent/30 transition-colors">
                 <span className={cn("shrink-0 inline-flex items-center justify-center h-10 w-10 rounded-xl", tile)}>
                   <Icon className={cn("h-5 w-5", icon)} />
