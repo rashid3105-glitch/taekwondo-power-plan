@@ -2,6 +2,8 @@ export type Locale = "en" | "da" | "sv" | "de" | "ar" | "no" | "es";
 
 const translations = {
   en: {
+    exerciseSearchPlaceholder: "Search exercises…",
+    exerciseClearSearch: "Clear search",
     qciTitle: "Quick check-in",
     qciDraft: "Draft",
     qciHint: "Tap attendance, then readiness. Saved instantly.",
@@ -4784,6 +4786,8 @@ const translations = {
     homeFaq6A: "You can export the club's data at any time. If you cancel, we delete the data as agreed and no later than the end of the retention period. We do not sell data and use it only to run the platform.",
   },
   da: {
+    exerciseSearchPlaceholder: "Søg efter øvelser…",
+    exerciseClearSearch: "Ryd søgning",
     qciTitle: "Hurtig check-in",
     qciDraft: "Kladde",
     qciHint: "Tryk fremmøde, derefter parathed. Gemmes med det samme.",
@@ -9549,6 +9553,8 @@ const translations = {
     homeFaq6A: "I kan til enhver tid eksportere klubbens data. Siger I op, sletter vi data efter aftale og senest når opbevaringsfristen udløber. Vi sælger ikke data og bruger dem ikke til andet end at drive platformen.",
   },
   sv: {
+    exerciseSearchPlaceholder: "Sök efter övningar…",
+    exerciseClearSearch: "Rensa sökning",
     qciTitle: "Snabb incheckning",
     qciDraft: "Utkast",
     qciHint: "Tryck närvaro, sedan beredskap. Sparas direkt.",
@@ -14273,6 +14279,8 @@ const translations = {
     homeFaq6A: "Ni kan när som helst exportera klubbens data. Om ni säger upp avtalet raderar vi data enligt överenskommelse och senast när lagringstiden löper ut. Vi säljer inte data och använder dem bara för att driva plattformen.",
   },
   de: {
+    exerciseSearchPlaceholder: "Übungen suchen…",
+    exerciseClearSearch: "Suche löschen",
     qciTitle: "Schneller Check-in",
     qciDraft: "Entwurf",
     qciHint: "Anwesenheit tippen, dann Bereitschaft. Wird sofort gespeichert.",
@@ -18947,6 +18955,8 @@ const translations = {
     homeFaq6A: "Ihr könnt die Vereinsdaten jederzeit exportieren. Bei einer Kündigung löschen wir die Daten wie vereinbart, spätestens nach Ablauf der Aufbewahrungsfrist. Wir verkaufen keine Daten und nutzen sie nur für den Betrieb der Plattform.",
   },
   ar: {
+    exerciseSearchPlaceholder: "ابحث عن التمارين…",
+    exerciseClearSearch: "مسح البحث",
     qciTitle: "تسجيل سريع",
     qciDraft: "مسودة",
     qciHint: "اضغط على الحضور ثم الجاهزية. يُحفظ فورًا.",
@@ -23622,6 +23632,8 @@ const translations = {
     homeFaq6A: "يمكنكم تصدير بيانات النادي في أي وقت. وعند الإنهاء نحذف البيانات وفق الاتفاق وبحد أقصى عند انتهاء مدة الاحتفاظ. لا نبيع البيانات ولا نستخدمها إلا لتشغيل المنصة.",
   },
   no: {
+    exerciseSearchPlaceholder: "Søk etter øvelser…",
+    exerciseClearSearch: "Tøm søk",
     qciTitle: "Rask innsjekk",
     qciDraft: "Utkast",
     qciHint: "Trykk oppmøte, deretter beredskap. Lagres med en gang.",
@@ -28356,6 +28368,8 @@ export type TranslationKey = keyof typeof translations.en;
 // AI-generated plans (training, nutrition, mental, rehab) are produced in
 // Spanish server-side regardless of UI string coverage.
 const esOverrides: Partial<Record<TranslationKey, string>> = {
+  exerciseSearchPlaceholder: "Buscar ejercicios…",
+  exerciseClearSearch: "Borrar búsqueda",
   qciTitle: "Registro rápido",
   qciDraft: "Borrador",
   qciHint: "Toca asistencia y luego disposición. Se guarda al instante.",
