@@ -15,6 +15,7 @@ import { GradePicker } from "@/components/GradePicker";
 import { gradeLabelFor } from "@/lib/sportGrade";
 import { AIPlanCard } from "@/components/AIPlanCard";
 import { AssistantDisclosure } from "@/components/AssistantDisclosure";
+import { StrengthTemplateAssign } from "@/components/coach/StrengthTemplateAssign";
 import { RehabPlanCard } from "@/components/RehabPlanCard";
 import { WeekSchedulePicker, type DaySchedule } from "@/components/WeekSchedulePicker";
 import { Loader2, Plus, Zap, Heart, Save, Calendar, UserCog, Target, CalendarRange, Brain, Activity as ActivityIcon, ListChecks, Pencil, Lock, Scale } from "lucide-react";
@@ -599,6 +600,12 @@ export function CoachAthleteDetail({ athlete, plans, rehabPlans, onRefresh }: Co
                 )}
               </Button>
             </div>
+            <StrengthTemplateAssign
+              athleteUserId={athlete.user_id}
+              clubId={(athlete as any)?.club_id || null}
+              athleteName={athlete.display_name}
+              onAssigned={onRefresh}
+            />
             {activePlan ? (
               <div className="space-y-2">
                 <AssistantDisclosure />
