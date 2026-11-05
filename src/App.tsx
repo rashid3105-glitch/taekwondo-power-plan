@@ -77,7 +77,6 @@ import AdminSportPreview from "./pages/AdminSportPreview";
 import NotFound from "./pages/NotFound";
 import MockupSeasonOnboarding from "./pages/MockupSeasonOnboarding";
 import MockupAthleteGoals from "./pages/MockupAthleteGoals";
-import MockupAppRedesign from "./pages/MockupAppRedesign";
 import Methodology from "./pages/Methodology";
 import Unsubscribe from "./pages/Unsubscribe";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -347,7 +346,6 @@ const AnimatedRoutes = () => {
         <Route path="/progress" element={<Navigate to="/dashboard" replace />} />
         <Route path="/mockup/season-onboarding" element={<Page><MockupSeasonOnboarding /></Page>} />
         <Route path="/mockup/athlete-goals" element={<Page><MockupAthleteGoals /></Page>} />
-        <Route path="/mockup/app-redesign" element={<Page><MockupAppRedesign /></Page>} />
         <Route path="/prototypes/post-training-log-v2" element={<PostTrainingLogV2 />} />
         <Route path="/lab/post-training-log" element={<Page><PostTrainingLogLive /></Page>} />
         <Route path="/lab/match-analyzer" element={<Navigate to="/match-analysis/me" replace />} />
