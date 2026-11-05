@@ -39,7 +39,7 @@ export const SplashScreen = ({ duration = 2500, onFinish }: SplashScreenProps) =
     <div
       aria-hidden="true"
       style={{ backgroundColor: "#0a0a0a" }}
-      className={`pointer-events-none fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500 ${
+      className={`pointer-events-none fixed inset-0 z-[9999] flex flex-col items-center justify-center px-6 transition-opacity duration-500 ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -55,7 +55,7 @@ export const SplashScreen = ({ duration = 2500, onFinish }: SplashScreenProps) =
 
       {/* Wordmark */}
       <h1
-        className="mt-8 text-5xl tracking-[0.15em] sm:text-6xl"
+        className="mt-8 max-w-full whitespace-nowrap text-3xl tracking-normal sm:text-5xl"
         style={{ fontFamily: "'Bebas Neue', sans-serif", lineHeight: 1 }}
       >
         <span style={{ color: "#ffffff" }}>SPORTS</span>
