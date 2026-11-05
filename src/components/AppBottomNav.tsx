@@ -115,7 +115,7 @@ export function AppBottomNav() {
   const accountLinks: MoreLink[] = [
     { key: "profile", label: t("profile") || "Profil", icon: UserIcon, to: "/profile" },
     ...(hasCoachRole
-      ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach/today" }]
+      ? [{ key: "switch", label: coachMode ? t("navAthleteView") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach/today" }]
       : []),
     { key: "help", label: t("helpTitle") || "Hjælp", icon: HelpCircle, to: "/help" },
   ];
