@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, CalendarCheck, ClipboardList } from "lucide-react";
+import { Loader2, CalendarCheck } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useActiveClub } from "@/contexts/ActiveClubContext";
 import { ClubSwitcher } from "@/components/ClubSwitcher";
@@ -12,8 +12,6 @@ import { SessionAttendance } from "@/components/coach/SessionAttendance";
 import { AttendanceStatsDialog } from "@/components/coach/AttendanceStatsDialog";
 import { CoachTriage } from "@/components/coach/CoachTriage";
 import { CoachEveningFeed } from "@/components/coach/CoachEveningFeed";
-import { useCoachLogCount } from "@/hooks/useCoachLogCount";
-import { usePostTrainingLog } from "@/hooks/usePostTrainingLog";
 
 interface MiniAthlete {
   user_id: string;
@@ -30,8 +28,6 @@ export default function CoachToday() {
   const [athletes, setAthletes] = useState<MiniAthlete[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
-  const { enabled: labEnabled } = usePostTrainingLog();
-  const { count: logCount } = useCoachLogCount(labEnabled);
 
   useEffect(() => {
     (async () => {
@@ -98,9 +94,6 @@ export default function CoachToday() {
       <Watermark />
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 pt-safe">
         <div className="container max-w-4xl mx-auto px-3 sm:px-4 py-3 flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/coach")} aria-label={t("back")} title={t("back")}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
           <CalendarCheck className="h-5 w-5 text-primary" />
           <span className="text-base font-extrabold text-card-foreground">{t("todayTab")}</span>
           <div className="ml-auto flex items-center gap-2">
@@ -113,26 +106,12 @@ export default function CoachToday() {
 
         <CoachTriage athletes={athletes} />
 
-        {labEnabled && (
-          <button
-            type="button"
-            onClick={() => navigate("/coach/logs")}
-            className="w-full flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5 text-left"
-          >
-            <ClipboardList className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold text-card-foreground">
-              {(t("labLogsPending") || "{n}").replace("{n}", String(logCount))}
-            </span>
-            <span className="ml-auto text-xs font-bold text-primary">{t("labLogsOpen")}</span>
-          </button>
+        {coachUserId && (
+          <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} onOpenStats={() => setStatsOpen(true)} />
         )}
 
         {coachUserId && (
           <CoachEveningFeed coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} />
-        )}
-
-        {coachUserId && (
-          <SessionAttendance coachId={coachUserId} athletes={athletes} activeClubId={activeClubId} onOpenStats={() => setStatsOpen(true)} />
         )}
       </main>
       {coachUserId && (

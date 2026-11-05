@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   Home, Zap, CalendarRange, Heart, Video as VideoIcon, Trophy,
   MessageCircle, User as UserIcon, BookOpen, HelpCircle, Repeat, ClipboardList,
-  CalendarCheck, NotebookPen,
+  CalendarCheck, NotebookPen, Menu, Settings, Users, Timer, Brain, ShieldCheck,
+  Package, BarChart3, Salad, HeartPulse,
 } from "lucide-react";
+import { useAthleteModuleAccess } from "@/hooks/useEntitlements";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useCoachMode } from "@/contexts/CoachModeContext";
@@ -44,6 +46,7 @@ export function AppBottomNav() {
   const coachModeActive = (isCoachMode || isCoachRoute) && hasCoachRole;
   const { count: logCount } = useCoachLogCount(labEnabled && coachModeActive);
   const [meOpen, setMeOpen] = useState(false);
+  const { isModuleEnabled, loading: modulesLoading } = useAthleteModuleAccess();
 
   const path = location.pathname;
   const hidden =
@@ -81,53 +84,70 @@ export function AppBottomNav() {
     badge: totalUnread,
     onClick: () => navigate("/messages"),
   };
-  const meItem = {
-    key: "me",
-    label: t("navMe"),
-    icon: UserIcon,
+
+  const moreItem = {
+    key: "more",
+    label: coachMode ? t("navClub") : t("navMore"),
+    icon: coachMode ? Settings : Menu,
     iconClassName: "text-muted-foreground",
     active: meOpen,
-    badge: 0,
+    badge: coachMode && labEnabled ? logCount : 0,
     onClick: () => setMeOpen(true),
   };
 
   const items = coachMode
     ? [
         { key: "coach-today", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: path.startsWith("/coach/today"), badge: 0, onClick: () => navigate("/coach/today") },
-        { key: "coach-team", label: t("navTeam") || "Hold", icon: CalendarCheck, iconClassName: "text-tab-plan", active: path === "/coach", badge: 0, onClick: () => navigate("/coach") },
-        ...(labEnabled
-          ? [{ key: "coach-logs", label: t("labLogsNav") || "Logs", icon: ClipboardList, iconClassName: "text-primary", active: path.startsWith("/coach/logs"), badge: logCount, onClick: () => navigate("/coach/logs") }]
-          : []),
-        { key: "coach-staevner", label: t("competitionsTitle") || "Stævner", icon: Trophy, iconClassName: "text-amber-500", active: path.startsWith("/coach/competitions"), badge: 0, onClick: () => navigate("/coach/competitions") },
+        { key: "coach-team", label: t("navSquad"), icon: Users, iconClassName: "text-tab-plan", active: path === "/coach" || path.startsWith("/coach/athlete"), badge: 0, onClick: () => navigate("/coach") },
+        { key: "coach-season", label: t("navSeason"), icon: Trophy, iconClassName: "text-primary", active: path.startsWith("/coach/season-calendar") || path.startsWith("/coach/competitions"), badge: 0, onClick: () => navigate("/coach/season-calendar") },
         chatItem,
-        meItem,
+        moreItem,
       ]
     : [
         { key: "idag", label: t("today") || "I dag", icon: Home, iconClassName: "text-primary", active: dashboardTab === "hub", badge: 0, onClick: () => navigate("/dashboard?tab=hub") },
-        { key: "traen", label: t("train") || "Træn", icon: Zap, iconClassName: "text-tab-plan", active: dashboardTab === "plan", badge: 0, onClick: () => navigate("/dashboard?tab=plan") },
-        { key: "kalender", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, iconClassName: "text-tab-progress", active: dashboardTab === "calendar", badge: 0, onClick: () => navigate("/dashboard?tab=calendar") },
+        { key: "traen", label: t("navTraining"), icon: Zap, iconClassName: "text-tab-plan", active: dashboardTab === "plan", badge: 0, onClick: () => navigate("/dashboard?tab=plan") },
+        { key: "dagbog", label: t("diary") || "Dagbog", icon: NotebookPen, iconClassName: "text-tab-progress", active: path.startsWith("/diary"), badge: 0, onClick: () => navigate("/diary") },
         chatItem,
-        meItem,
+        moreItem,
       ];
 
-  const meLinks = [
-    ...(coachMode
-      ? []
-      : [
-          { key: "diary", label: t("diary") || "Dagbog", icon: NotebookPen, to: "/diary" },
-          { key: "health", label: t("healthNav"), icon: Heart, to: "/health" },
-          ...(matchAnalysisEnabled
-            ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, to: "/match-analysis/me" }]
-            : []),
-          { key: "library", label: t("library"), icon: BookOpen, to: "/library" },
-        ]),
-
+  type MoreLink = { key: string; label: string; icon: typeof Home; to: string; badge?: number };
+  const accountLinks: MoreLink[] = [
     { key: "profile", label: t("profile") || "Profil", icon: UserIcon, to: "/profile" },
     ...(hasCoachRole
       ? [{ key: "switch", label: coachMode ? (t("today") || "Atlet") : (t("coachNav") || "Træner"), icon: Repeat, to: coachMode ? "/dashboard?tab=hub" : "/coach/today" }]
       : []),
     { key: "help", label: t("helpTitle") || "Hjælp", icon: HelpCircle, to: "/help" },
   ];
+  const on = (m: string) => modulesLoading || isModuleEnabled(m);
+  const moreSections: { title: string; links: MoreLink[] }[] = coachMode
+    ? [
+        { title: t("navCoachTools"), links: [
+          { key: "comp", label: t("competitionsTitle") || "Stævner", icon: Trophy, to: "/coach/competitions" },
+          ...(labEnabled ? [{ key: "logs", label: t("labLogsNav"), icon: ClipboardList, to: "/coach/logs", badge: logCount }] : []),
+          { key: "tests", label: t("navTestSessions"), icon: Timer, to: "/coach/testing/sessions" },
+          { key: "mental", label: t("navMentalReview"), icon: Brain, to: "/coach/mental" },
+          { key: "library", label: t("library"), icon: BookOpen, to: "/library" },
+        ] },
+        { title: t("navClubAdmin"), links: [
+          { key: "consents", label: t("navConsents"), icon: ShieldCheck, to: "/coach/consents" },
+          { key: "modules", label: t("navModules"), icon: Package, to: "/hold/moduler" },
+        ] },
+        { title: t("navAccount"), links: accountLinks },
+      ]
+    : [
+        { title: t("navMyModules"), links: [
+          { key: "calendar", label: t("seasonCalendar") || "Kalender", icon: CalendarRange, to: "/dashboard?tab=calendar" },
+          ...(on("progress") ? [{ key: "progress", label: t("progress"), icon: BarChart3, to: "/dashboard?tab=progress" }] : []),
+          ...(on("nutrition") ? [{ key: "nutrition", label: t("nutrition"), icon: Salad, to: "/dashboard?tab=nutrition" }] : []),
+          ...(on("mental") ? [{ key: "mental", label: t("mental"), icon: Brain, to: "/dashboard?tab=mental" }] : []),
+          ...(on("rehab") ? [{ key: "rehab", label: t("injuryRehabPlan"), icon: HeartPulse, to: "/dashboard?tab=rehab" }] : []),
+          { key: "health", label: t("healthNav"), icon: Heart, to: "/health" },
+          ...(matchAnalysisEnabled ? [{ key: "video", label: t("hubMatchTitle") || "Video", icon: VideoIcon, to: "/match-analysis/me" }] : []),
+          { key: "library", label: t("library"), icon: BookOpen, to: "/library" },
+        ] },
+        { title: t("navAccount"), links: accountLinks },
+      ];
 
   return (
     <>
@@ -170,23 +190,32 @@ export function AppBottomNav() {
       <Sheet open={meOpen} onOpenChange={setMeOpen}>
         <SheetContent side="bottom" className="pb-safe">
           <SheetHeader>
-            <SheetTitle>{t("navMe")}</SheetTitle>
+            <SheetTitle>{coachMode ? t("navClub") : t("navMore")}</SheetTitle>
           </SheetHeader>
-          <ul className="mt-3 space-y-1">
-            {meLinks.map(({ key, label, icon: Icon, to }) => (
-              <li key={key}>
-                <button
-                  type="button"
-                  onClick={() => { setMeOpen(false); navigate(to); }}
-                  className="w-full flex items-center gap-3 rounded-lg px-3 py-3 text-left hover:bg-muted transition-colors"
-                  style={{ minHeight: 48 }}
-                >
-                  <Icon className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-semibold text-foreground">{label}</span>
-                </button>
-              </li>
+          <div className="mt-3 space-y-4 max-h-[70vh] overflow-y-auto">
+            {moreSections.map((sec) => (
+              <section key={sec.title}>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">{sec.title}</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {sec.links.map(({ key, label, icon: Icon, to, badge }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => { setMeOpen(false); navigate(to); }}
+                      className="relative rounded-xl border border-border bg-background p-3 flex flex-col items-center justify-center gap-1.5 text-center hover:bg-muted transition-colors"
+                      style={{ minHeight: 72 }}
+                    >
+                      <Icon className="h-5 w-5 text-primary" />
+                      <span className="text-[11px] font-semibold text-foreground leading-tight">{label}</span>
+                      {!!badge && badge > 0 && (
+                        <span className="absolute right-1.5 top-1.5 min-w-[16px] h-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">{badge > 9 ? "9+" : badge}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </section>
             ))}
-          </ul>
+          </div>
         </SheetContent>
       </Sheet>
     </>

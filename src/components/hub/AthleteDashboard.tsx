@@ -339,25 +339,6 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
       className="space-y-5 rounded-2xl p-4"
       style={{ backgroundColor: "#0a0a0a" }}
     >
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-[#c9a84c]/20 pb-4">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-['Sora'] uppercase">
-            {t("today").toUpperCase()}<span className="text-[#c9a84c]">.</span>
-          </h1>
-          <p className="text-xs font-bold uppercase tracking-widest text-[#c9a84c]/60 mt-1 font-['Manrope']">
-            {weekdayLong(locale).toUpperCase()} · {todayDateLabel}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => navigate(activeRole === "coach" ? "/coach/today" : "/dashboard?tab=plan")}
-          className="px-4 py-2.5 bg-[#c9a84c] text-[#0d0d0d] font-bold text-xs rounded-lg hover:bg-[#f0d78c] transition-colors flex items-center justify-center gap-2 font-['Manrope']"
-        >
-          <CalendarCheck className="h-4 w-4" />
-          {activeRole === "coach" ? t("todayTab") : t("hubCheckIn")}
-        </button>
-      </header>
 
       <AnnouncementsCard />
 
@@ -559,220 +540,50 @@ export function AthleteDashboard({ clubSeason }: { clubSeason?: ClubSeasonData |
         </div>
       )}
 
-      {/* Diary + Messages side-by-side */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Diary */}
-        {diaryLoading ? (
-          <SkeletonBlock className="h-32" />
-        ) : latestDiary ? (
-          <section
-            role="button"
-            tabIndex={0}
-            onClick={() => setDiaryOpen(true)}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDiaryOpen(true); } }}
-            className="relative rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
-            style={goldBorderLeft}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <NotebookPen className="h-5 w-5" style={goldStyle} />
-              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
-                {t("diaryWriteOrLatest")}
-              </h2>
-              {hasCoachComments && (
-                <span
-                  aria-label={t("hubCoachComments")}
-                  className="ml-auto h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.7)]"
-                />
-              )}
-            </div>
-            <p className="text-[11px] text-white/50">{diaryDateLabel}</p>
-            <p className="text-sm text-white mt-1 line-clamp-2">
-              {diaryPreview || <span className="text-white/50 italic">{t("hubEmptyEntry")}</span>}
-            </p>
-          </section>
-        ) : (
-          <section
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate("/diary")}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/diary"); } }}
-            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
-            style={goldBorderLeft}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <NotebookPen className="h-5 w-5" style={goldStyle} />
-              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
-                {t("diaryWriteOrLatest")}
-              </h2>
-            </div>
-            <EmptyState
-              icon={<Book size={24} style={goldStyle} />}
-              text={t("hubNoDiaryYet")}
-            />
-          </section>
-        )}
-
-        {/* Messages */}
-        {isLoading ? (
-          <SkeletonBlock className="h-32" />
-        ) : totalUnread > 0 ? (
-          <section
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate("/messages")}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/messages"); } }}
-            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors flex flex-col justify-between"
-            style={goldLightBorderLeft}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-9 w-9 rounded-lg bg-white/[0.06] flex items-center justify-center relative">
-                <MessageCircle className="h-5 w-5" style={goldLightStyle} />
-                <span
-                  className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center text-black"
-                  style={{ backgroundColor: "var(--gold)" }}
-                >
-                  {totalUnread}
-                </span>
-              </div>
-              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
-                {t("messages")}
-              </h2>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-white">{totalUnread} {t("hubUnreadMessages")}</p>
-              <p className="text-xs text-white/60">{t("hubFromCoach")}</p>
-            </div>
-            <div className="pt-3">
-              <span
-                className="inline-flex items-center text-xs font-bold px-3 py-1.5 rounded-lg"
-                style={{ backgroundColor: "var(--gold)", color: "#000" }}
-              >
-                {t("hubSeeMessages")}
-              </span>
-            </div>
-          </section>
-        ) : (
-          <section
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate("/messages")}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/messages"); } }}
-            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
-            style={goldLightBorderLeft}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <MessageCircle className="h-5 w-5" style={goldLightStyle} />
-              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
-                {t("messages")}
-              </h2>
-            </div>
-            <EmptyState
-              icon={<MessageCircle size={24} style={goldLightStyle} />}
-              text={t("hubNoNewMessages")}
-            />
-          </section>
-        )}
-      </div>
-
-      {/* Next event + quick access */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Next event */}
-        {isLoading ? (
-          <SkeletonBlock className="h-40" />
-        ) : (
-          <section
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate("/competitions")}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/competitions"); } }}
-            className="rounded-xl border border-white/10 bg-[#111] p-5 cursor-pointer hover:bg-[#161616] transition-colors"
-            style={goldBorderLeft}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <Trophy className="h-5 w-5" style={goldStyle} />
-              <h2 className="font-['Sora'] text-lg font-bold text-white uppercase tracking-tight">
-                {t("nextEventTitle")}
-              </h2>
-            </div>
-            {nextCompetition && countdown ? (
-              <div>
-                <p className="text-sm font-semibold text-white">{nextCompetition.name}</p>
-                <p className="text-xs text-white/60 mt-1">
-                  {nextCompetition.dateLabel}{nextCompetition.location ? ` · ${nextCompetition.location}` : ""}
-                </p>
-                <div className="grid grid-cols-3 gap-2 mt-3">
-                  <CountBox value={countdown.days} label={t("hubCountDays")} accentStyle={goldStyle} />
-                  <CountBox value={countdown.hours} label={t("hubCountHours")} accentStyle={goldStyle} />
-                  <CountBox value={countdown.minutes} label={t("hubCountMinutes")} accentStyle={goldStyle} />
-                </div>
-              </div>
-            ) : (
-              <EmptyState
-                icon={<Trophy size={24} style={goldStyle} />}
-                text={t("hubNoUpcomingComp")}
-                sub={t("hubAddNextComp")}
-              />
-            )}
-          </section>
-        )}
-
-        {/* Quick access */}
-        <section className="grid grid-cols-2 gap-3">
-          {activeRole === "coach" ? (
-            <>
-              <button
-                type="button"
-                onClick={() => navigate("/library/testing")}
-                className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
-              >
-                <ClipboardList className="h-4 w-4" style={goldStyle} />
-                {t("ptTestingButton")}
-              </button>
-              {matchAnalysisEnabled && (
-                <button
-                  type="button"
-                  onClick={() => navigate("/match-analysis/me")}
-                  className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
-                >
-                  <Video className="h-4 w-4" style={goldStyle} />
-                  {t("hubVideoAnalysis")}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={() => navigate("/library/supplement")}
-                className="col-span-2 rounded-xl p-4 flex items-center gap-2 font-semibold text-sm hover:opacity-90 transition-opacity"
-                style={{ backgroundColor: "var(--gold)", color: "#000" }}
-              >
-                <ShieldCheck className="h-4 w-4" />
-                {t("libSupplementLabel")}
-              </button>
-
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard?tab=progress")}
-                className="rounded-xl p-4 flex items-center gap-2 font-semibold text-sm hover:opacity-90 transition-opacity"
-                style={{ backgroundColor: "var(--gold)", color: "#000" }}
-              >
-                <BarChart3 className="h-4 w-4" />
-                {t("progress")}
-              </button>
-              {matchAnalysisEnabled && (
-                <button
-                  type="button"
-                  onClick={() => navigate("/match-analysis/me")}
-                  className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex items-center gap-2 font-semibold text-sm text-white hover:bg-white/[0.08] transition-colors"
-                >
-                  <Video className="h-4 w-4" style={goldStyle} />
-                  {t("hubVideoAnalysis")}
-                </button>
-              )}
-            </>
-          )}
+      {/* Important right now — only when something is active */}
+      {!isLoading && nextCompetition && countdown && (
+        <section
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate("/competitions")}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate("/competitions"); } }}
+          className="rounded-xl border border-white/10 bg-[#111] p-4 cursor-pointer hover:bg-[#161616] transition-colors flex items-center gap-3"
+          style={goldBorderLeft}
+        >
+          <Trophy className="h-5 w-5 shrink-0" style={goldStyle} />
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-white/50">{t("nextEventTitle")}</p>
+            <p className="text-sm font-semibold text-white truncate">{nextCompetition.name}</p>
+          </div>
+          <div className="text-right shrink-0">
+            <p className="text-xl font-extrabold" style={goldStyle}>{countdown.days}</p>
+            <p className="text-[10px] text-white/50">{t("hubCountDays")}</p>
+          </div>
         </section>
+      )}
+
+      {/* Compact status strip */}
+      <div className="grid grid-cols-3 gap-2">
+        {[
+          { key: "diary", icon: NotebookPen, label: t("diary"), to: "/diary", dot: hasCoachComments, badge: 0 },
+          { key: "messages", icon: MessageCircle, label: t("messages"), to: "/messages", dot: false, badge: totalUnread },
+          { key: "comp", icon: Trophy, label: t("nextEventTitle"), to: "/competitions", dot: false, badge: 0 },
+        ].map((x) => (
+          <button
+            key={x.key}
+            type="button"
+            onClick={() => (x.key === "diary" && latestDiary ? setDiaryOpen(true) : navigate(x.to))}
+            className="relative rounded-xl border border-white/10 bg-[#111] p-3 flex flex-col items-center gap-1.5 text-center hover:bg-[#161616] transition-colors"
+            style={{ minHeight: 72 }}
+          >
+            <x.icon className="h-5 w-5" style={goldStyle} />
+            <span className="text-[11px] font-semibold text-white leading-tight line-clamp-2">{x.label}</span>
+            {x.badge > 0 && (
+              <span className="absolute right-1.5 top-1.5 min-w-[16px] h-4 px-1 rounded-full text-[9px] font-bold flex items-center justify-center text-black" style={{ backgroundColor: "var(--gold)" }}>{x.badge > 9 ? "9+" : x.badge}</span>
+            )}
+            {x.dot && <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-emerald-400" />}
+          </button>
+        ))}
       </div>
 
       {/* Diary read-only modal */}
